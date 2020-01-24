@@ -160,11 +160,6 @@ class DataFile(ArrayProjFile):
   # -----------------------------------------------------------------------------   
 
 
-#@traced
-#@logged
-#class DataFileFilt(ArrayProjFile):
-
-
 # -------------------------------------------------------------------------------
 
 
@@ -223,18 +218,29 @@ class ObsDataFile(DataFile):
       self.suffix += 'Raw'
 
     if create and filt:
-      self.filt = self.__class__(proj, path, create=False, filt=True, raw=0, mute=0)
+      self.filtered = self.__class__(proj, path, create=False, filt=True, raw=0, mute=0)
     elif filt:
       self.suffix += 'Filt'
       
     if create and mute:
-      self.mute = self.__class__(proj, path, create=False, mute=True, raw=0, filt=0)
+      self.muted = self.__class__(proj, path, create=False, mute=True, raw=0, filt=0)
     elif mute:
       self.suffix += 'Mute'      
 
     self.name = proj.name + '-' + self.suffix + self.ext
     self.fname = path + self.name    
     self.__log.debug('self.fname: ' + self.fname)  
+  
+  # -----------------------------------------------------------------------------  
+  
+  def filt(self, **kwargs):
+    kwargs['overwrite'] = kw('overwrite', True, kwargs)
+    try:
+      self.filtered.dupl(self.raw.fname)
+      self.filtered.filt(**kwargs)
+      self.dupl(self.filtered.fname)
+    except AttributeError: # RECURSION
+      super().filt(**kwargs)
   
   # -----------------------------------------------------------------------------  
   
