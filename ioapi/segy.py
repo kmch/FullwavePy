@@ -1,0 +1,686 @@
+"""
+(c) 2019 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
+
+"""
+import numpy as np
+from autologging import logged, traced
+
+from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.decor import timer
+from fullwavepy.generic.parse import kw, strip, exten
+
+
+json_header_suffix = '_HEAD.json'
+filt_suffix = '_filt.sgy'
+filt_mute_suffix = '_filt_mute.sgy'
+
+
+# -------------------------------------------------------------------------------
+# SGY
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SgyFile(object):
+  """
+  SEG-Y file.
+  
+  Notes
+  -----
+  It should be used as a second-parent
+  class (multi-inheritance).
+  
+  It's just adds some methods for dealing with 
+  SEGY files, usually through calling SeismicUnix.
+  
+  It is meant to have no overlap with other classes 
+  to avoid multi-inheritance problems.
+  
+  """
+
+  # -----------------------------------------------------------------------------  
+  
+  def surange(self, **kwargs):
+    if not exists(self.fname):
+      raise FileNotFoundError(self.fname)    
+    
+    o, e = bash('segyread tape=' + self.fname + ' | ' +
+                'surange')
+    self.__log.info(e + '\n' + o)
+  
+  # -----------------------------------------------------------------------------  
+  
+  @timer
+  def _gethw(self, key, unique_values=False, **kwargs):
+    """
+    Get header-word values.
+    
+    Returns
+    -------
+    hw_values : list
+      List of floats, one per trace
+      in order of traces.
+    
+    Notes
+    -----
+    Probably we need a parent class SEGY_File
+    and some multi-inheritance for neatness...
+    
+    """
+    from fullwavepy.ioapi.su import sugethw
+    hw_values = sugethw(self.fname, key, unique_values, **kwargs)
+    
+    return hw_values
+
+  # -----------------------------------------------------------------------------
+  
+  def _get_sr_coords(self, datafile=None, **kwargs):
+    """
+    Get HORIZONTAL (x,y) coordinates of sources and 
+    receivers.
+    
+    datafile : DataFile 
+      Different sgy file to 
+      parse a header from.
+    
+    """
+    if datafile is None:
+      datafile = self
+      
+    sx = datafile._gethw('sx', **kwargs)
+    sy = datafile._gethw('sy', **kwargs)
+    gx = datafile._gethw('gx', **kwargs)
+    gy = datafile._gethw('gy', **kwargs)
+    
+    #plt.plot(sx, sy, '.')
+    #plt.plot(gx, gy, '.')
+    s = list(zip(sx, sy))
+    r = list(zip(gx, gy))
+    self.s = s
+    self.r = r
+    
+    return s, r
+    
+  # -----------------------------------------------------------------------------
+
+  def resize(self, box, **kwargs): #FIXME
+    """
+    Cut the model to fit the proj.box.
+    
+    Parameters
+    ----------
+    file_z0 : integer
+      physical coordinate in m of the 
+      first (0th) sample in the file.
+      Can be < 0.
+      
+    kwargs
+    
+    Returns
+    -------
+    None
+    
+    Notes
+    -----
+    First make sure the proj.box is correct!
+    
+    Although dt is defined in SEGY
+    headers in microseconds, tmin and tmax are in
+    seconds (these are not header words, and can be 
+    floats).
+    dt is expected to be in metres. If z1 and z2 are 
+    also in metres, we have to divide them by 1e6,
+    because suwind tmin=... takes values in microseconds!
+    
+    """    
+    self.__log.info('Assuming integer box coords, as required by SEGY')
+    x1, x2, y1, y2, z1, z2 = box
+    
+    #self.__log.warn('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
+    #z1 -= file_z0
+    #z2 -= file_z0
+    
+    self.__log.debug('z1={}, z2={}'.format(z1, z2))
+    
+    dt = int(self._gethw('dt', unique_values=True, timer=True, **kwargs)[0])
+    self.__log.debug('Converting z1,z2 into microsec as required by suwind')
+    if dt > 1000:
+      self.__log.info('Header dt > 1000. Assuming miliseconds or milimetres')
+      z1 /= 1e3
+      z2 /= 1e3
+    elif dt <= 1000:
+      self.__log.info('Header dt <= 1000. Assuming seconds or metres')
+      z1 /= 1e6
+      z2 /= 1e6
+
+    self.__log.debug('z1={}, z2={}'.format(z1, z2))
+    
+    scalco = int(self._gethw('scalco', unique_values=True, timer=True, **kwargs)[0])
+    if scalco < 0: 
+      scalco = abs(scalco)
+    elif scalco == 0:
+      scalco = 1
+    else: # scalco > 0 MEANS IT IS USED AS A MULTIPLIER NOT A DIVISOR IN THE HEADER
+      scalco = 1 / abs(scalco) # WE NEED TO DO THE OPPOSITE THING TO OUR BOX
+      
+    self.__log.debug('scalco' + str(scalco))
+    x1, x2, y1, y2 = np.array([x1, x2, y1, y2]) * scalco
+    
+    key_x = self.proj.sgy.hw['xmod']
+    key_y = self.proj.sgy.hw['ymod'] 
+    
+    tmp_fname = 'tmp.sgy'
+    cmd = str('segyread tape=' + self.fname + ' | ' +
+              'suwind key=' + key_x + 
+              ' min=' + str(x1) + 
+              ' max=' + str(x2) + ' | ' + 
+              'suwind key=' + key_y + 
+              ' min=' + str(y1) + 
+              ' max=' + str(y2) + ' | ' +  
+              'suwind tmin=' + str(z1) + ' tmax=' + str(z2) + ' | ' + 
+              'segyhdrs | ' +
+              'segywrite tape=' + tmp_fname)
+    
+    self.__log.debug(cmd)
+    o, e = bash(cmd)
+    o, e = bash('mv ' + tmp_fname + ' ' + self.fname) 
+  
+  # -----------------------------------------------------------------------------
+
+  def filt(self, pad, overwrite=False, **kwargs):
+    """
+    Overwrites.
+    
+    """
+    from fullwavepy.ioapi.su import sushw
+    from ..signal.su import su_filter_full
+    
+    self.__log.info('Using ' + str(pad) + ' samples of padding')
+    self.__log.info('Setting dt in the header of: ' + self.fname)
+    sushw(self.fname, 'dt', (self.proj.dt*1e6), **kwargs)
+    
+    nfname = su_filter_full(self.fname, pad, **kwargs)
+    fname_filt = strip(self.fname) + filt_suffix
+    
+    o, e = bash('mv ' + nfname + ' ' + fname_filt)
+    
+    if overwrite: #THIS IS DANGEROUS (FILTERING MORE THAN ONCE)
+      self.__log.warning('Overwriting ' + self.fname + ' with a filtered one')
+      o, e = bash('mv ' + fname_filt + ' ' + self.fname)
+    
+    return fname_filt
+
+  # -----------------------------------------------------------------------------  
+  
+  def mute(self, first_breaks, ntaper=100, twin=1, overwrite=False, **kwargs):
+    """
+    Apply top+bottom mute based on picked first breaks.
+    
+    Parameters
+    ----------
+    first_breaks : list 
+      Or 1D array with picks [in samples]
+      Usually generated from Synthetic file 
+      (in synthetic project)
+    ntaper : int 
+      Samples
+    twin : float
+      Seconds.
+    
+    Notes
+    -----
+    split to allow for top/bottom only.
+    
+    """
+    from fullwavepy.signal.su import su_mute
+    from fullwavepy.ioapi.generic import save_txt, read_txt
+    
+    proj = self.proj
+    
+    if isinstance(first_breaks, str):
+      first_breaks = [float(i[0]) for i in read_txt(first_breaks)]
+    
+    picks = np.array(first_breaks) * proj.dt
+    bpicks = np.array(first_breaks) * proj.dt + twin # NOTE
+    nmute = len(picks)
+    xmute = range(1, nmute + 1)
+    tmute = picks
+    tmute2 = bpicks
+    
+    for data, prefix in zip([xmute, tmute, tmute2], 
+                            ['xmute', 'tmute', 'tmute2']):
+      
+      data = [str(i) for i in data]
+      fname = proj.inp.path + prefix + '.txt'
+      save_txt(fname, data)
+      
+      fname_bin = strip(fname) + '.bin'
+      cmd = 'a2b < ' + fname + ' n1=1 > ' + fname_bin
+      print('cmddd', cmd)
+      o, e = bash(cmd)
+    
+    #filt = strip(self.fname)+'_filt.'+exten(self.fname)
+    #filt_mute = strip(self.fname)+'_filt_mute.'+exten(self.fname)
+    xfile = proj.inp.path + 'xmute.bin'
+    tfile = proj.inp.path + 'tmute.bin'
+    cmd = str('segyread tape='+self.fname+
+              ' | sumute key=tracr nmute='+str(nmute)+
+              ' mode=0 ntaper='+str(ntaper)+
+              ' xfile='+xfile+' tfile='+tfile+
+              ' | segyhdrs' +
+              ' | segywrite tape=tmp.sgy')
+    
+    o, e = bash(cmd)
+    if len(e) > 0:
+      self.__log.warn(e)
+      
+    tfile = proj.inp.path + 'tmute2.bin'
+    cmd = str('segyread tape=tmp.sgy'+
+              ' | sumute key=tracr nmute='+str(nmute)+
+              ' mode=1 ntaper='+str(ntaper)+
+              ' xfile='+xfile+' tfile='+tfile+
+              ' | segyhdrs' +
+              ' | segywrite tape='+self.fname)
+    
+    o, e = bash(cmd)
+    if len(e) > 0:
+      self.__log.warn(e)              
+    
+    #!su_sgyread.sh './p12//inp/p12-Observed_filt.sgy' | sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute.bin'} | segyhdrs | segywrite tape=tmp.sgy
+    
+    #!su_sgyread.sh tmp.sgy | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute2.bin'} | segyhdrs | segywrite tape=out.sgy    
+    #
+
+  # -----------------------------------------------------------------------------  
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def array2sgy(fname, A, dt, **kwargs): # save_sgy
+  """
+  Export an array to a .sgy file.
+  
+  Parameters
+  ----------
+  fname : str 
+    SEGY file to be created.
+
+  Notes
+  -----
+  It doesn't preserve a 3D structure.
+  
+  """
+  from .fw3d import save_vtr
+  
+  # HANDLE VARIOUS DIMENSIONALITIES (-> func?)
+  shape = A.shape
+  if len(shape) == 3:
+    An = A
+  elif len(shape) == 2:
+    array2sgy._log.warn('Array 2D detected, adding Y-dimension of length 1')
+    An = np.zeros((shape[0], 1, shape[1]))
+    An[:,0,:] = A
+  elif len(shape) == 1:
+    array2sgy._log.warn('Array 1D detected, adding X- and Y- dimensions of length 1')
+    An = np.zeros((1, 1, shape[0]))
+    An[0,0,:] = A
+  else:
+    raise IOError('Array has wrong no. of dimensions: ' + str(len(shape)))
+  
+  # ACTUAL JOB
+  fvtr = strip(fname) + '.vtr'
+  save_vtr(An, fvtr)
+  vtr2sgy(fvtr, dt)
+
+
+# --------------------------------------------------------------------------------
+
+ 
+@traced
+@logged
+def vtr2sgy(fname, dt, **kwargs): 
+  """
+  fname : str 
+    Name of the vtr file.
+  
+  dt : float 
+    In seconds.
+  
+  Notes
+  -----
+  It is more tricky to convert the model # FIXME
+  preserving nx,ny,nz.
+  
+  CAUTION
+  fortran vtr2sgy fails to handle 1-letter file-names
+  like d.vtr - it outputs d.vtr.sgy instead.
+  
+  """
+  from .su import sushw
+  
+  if not exists(fname):
+    raise FileNotFoundError(fname)  
+  
+  cmd = str('printf "yes\n' + fname + '\n\n\nyes\n" | ' + 
+            'vtr2sgy')
+  vtr2sgy._log.debug('cmd: ' + cmd)
+  o, e  = bash(cmd)  
+  #print(o, e)
+  
+  fsgy = strip(fname) + '.sgy'
+  dtmicros = int(dt * 1e6)
+  sushw(fsgy, 'dt', dtmicros)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def sgy2vtr(fname, nx=None, **kwargs):
+  """
+  Convert sgy to vtr using Fullwave's 
+  sgy2vtr utility.
+  
+  Parameters
+  ----------
+  nx : int
+    No. of inline nodes. This is needed 
+    to split the SEG-Y in a way that retaining its 3D
+    structure (as we want especially for 
+    models).
+    Default: None => set as a total no. 
+  
+  Returns
+  -------
+  None
+  
+  Notes
+  -----
+  We treat the data as 2D here, i.e.
+  having a shape: (ntraces, nsamples)
+  by passing no. of all traces (ntraces)
+  as no. of in-line traces (nx).
+  
+  """
+  from .su import get_ntraces
+  
+  if not exists(fname):
+    raise FileNotFoundError(fname)  
+  
+  if nx is None:
+    nx = get_ntraces(fname, **kwargs)
+  
+  cmd = str('printf "yes\n' + fname + '\n' + str(nx) + '\n\nyes\n" | ' + 
+            'sgy2vtr ' + fname) 
+  o, e = bash(cmd)
+  
+  if len(e) > 0:
+    sgy2vtr._log.warn(e)
+
+
+# -------------------------------------------------------------------------------
+
+
+@timer
+@traced
+@logged
+def read_sgy(fname, overwrite=True, **kwargs):
+  """
+  Read a .sgy file through 
+  conversion to .vtr.
+  
+  Parameters
+  ----------
+  fname : str    
+    File name. It should include  extension. 
+    It should include path if needed.
+  **kwargs : keyword arguments (optional)
+    Current capabilities:
+      
+  Returns
+  -------
+  data : array
+    3D data array as read by read_vtr.
+    Typically it will be (ntraces, 1, nsamples),
+    see sgy2vtr and read_vtr for details.
+  
+  Notes
+  -----
+  
+  """
+  from fullwavepy.generic.system import exists
+  from .fw3d import read_vtr
+  
+  if not exists(fname):
+    raise FileNotFoundError(fname + ' does not exist. Will NOT look ' +
+                           'for an associated vtr file')  
+  
+  if 'nx' in kwargs:
+    if 'shape' in kwargs and kwargs['shape'][0] != kwargs['nx']:
+      raise ValueError('nx ({}) inconsistent with shape {}'.format(nx, shape))
+  elif 'shape' in kwargs:
+    kwargs['nx'] = kwargs['shape'][0]
+  
+  else:
+    read_sgy._log.warn('No nx nor shape provided. You need it to preserve ' + 
+                       '3D array structure ' + 
+                       '(nx, ny, nz). Otherwise it is gonna be (ntraces, 1, nsamps).')
+  
+  read_sgy._log.debug('File to read: ' + fname)
+  fname_vtr = fname[:-len('sgy')] + 'vtr'
+  
+  convert = True
+  if exists(fname_vtr):
+    read_sgy._log.warn(fname_vtr + ' already exists.')
+    if overwrite:
+      read_sgy._log.warn('Overwriting ' + fname_vtr)
+    else:
+      read_sgy._log.warn('Skipping sgy2vtr because overwrite=0.')
+      convert = False
+  
+  if convert:
+    sgy2vtr(fname, **kwargs)
+  
+  A = read_vtr(fname_vtr, **kwargs)
+  
+  return A
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def read_header(fname, **kwargs):
+  """
+  SEGY -> SU -> dict.
+
+  Read all trace header values for
+  all non-empty header keywords.
+  
+  Returns
+  -------
+  header : dict
+    Dictionary with keys 
+    corresponding to non-empty 
+    header-words
+  
+  Notes
+  -----
+  It is quite slow.
+  
+  """
+  from .su import get_keywords, sugethw
+  
+  keys = get_keywords(fname, **kwargs)
+  header = {}
+  for key in keys:
+    header[key] = sugethw(fname, key, **kwargs)
+  
+  return header
+
+
+# -------------------------------------------------------------------------------
+                  
+
+@timer
+@traced
+@logged
+def header2json(fname, **kwargs):
+  """
+  Wrapper around read_header!
+  
+  SEGY -> read_header -> dict -> JSON
+  
+  Export the SEG-Y file's header 
+  to a JSON file.
+  
+  Notes
+  -----
+  Actually not used in the code.
+  Handy in ipynb though.
+  
+  """
+  from fullwavepy.generic.parse import strip
+  from .json import save_json
+  
+  nfname = strip(fname) + json_header_suffix
+  
+  header2json._log.info('Exporting the header of ' + 
+                        fname + ' to ' + nfname)
+  
+  h = read_header(fname, **kwargs)
+  save_json(nfname, h, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@timer
+@traced
+@logged
+def split_sgy(fname, key, value=None, **kwargs):
+  """
+  Split a sgy file into smaller 
+  files, one file for each value of 
+  the key.
+  
+  if no value is provided, it will take 
+  all values present in the file.
+  
+  Returns
+  -------
+  nfnames : list 
+    List of files resulted from 
+    the splitting. Each element
+    can be feed into another splitting.
+  
+  Notes
+  -----
+  Useful for storing shot lines 
+  separately for displaying.
+  
+  """
+  from .su import suwind, sugethw
+  from fullwavepy.generic.parse import extend_fname
+  
+  if not exists(fname):
+    raise FileNotFoundError(fname)  
+  
+  if value is None:
+    values = sugethw(fname, key, unique_values=True, **kwargs)
+  else:
+    values = [value]
+  
+  nfnames = []
+
+  for value in values:
+    nfname = extend_fname(fname, [[key, value]])
+    nfnames.append(nfname)
+    split_sgy._log.info('Output file: ' + nfname)
+    
+    suwind(fname, nfname, key, value, value, **kwargs)
+
+  return nfnames 
+
+
+# -------------------------------------------------------------------------------
+# GEO
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def read_geo(fname, unit='node', **kwargs):
+  """
+  Read .geo files (Fullwave's format 
+  of sources/receivers files).
+  
+  Parameters
+  ----------
+  fname : str    
+    File name. It should include  extension. 
+    It can include path if needed.
+  dx : float 
+    Size of the grid cell in metres.
+
+  Returns
+  -------
+  records : dict 
+    records[id] = [x, y, z]
+  
+  Notes
+  -----
+  CAUTION Metres are just nodes converted with dx, 
+  it has nothing to do with experiment coordinates 
+  frame (xorigin etc.)
+  
+  x AND z ARE NOT SWAPPED IN THIS FORMAT 
+    (IN CONTRAST TO .pgy)
+  '1 +' ENSURES CONSISTENCY WITH .pgy FILES  
+    
+  """
+  from .generic import read_txt
+  
+  content = read_txt(fname, **kwargs)
+  header = content[0]
+  data = content[1: ]
+  
+  records = {}
+  
+  for row in data:
+    if unit == 'm':
+      try:
+        x0 = kwargs['x0']
+        y0 = kwargs['y0']
+        z0 = kwargs['z0']
+      except KeyError as err:
+        raise KeyError('For unit={} you need to provide origin of the coordinate frame.'.format(unit), err)
+      
+      xyz = [float(row[1])+x0, 
+             float(row[2])+y0, 
+             float(row[3])+z0]       
+    
+    elif unit == 'node':
+      dx = kwargs['dx']
+      xyz = [1 + float(row[1]) / dx, 
+             1 + float(row[2]) / dx, 
+             1 + float(row[3]) / dx]  
+    else:
+      raise ValueError('Unknown unit: ' + str(unit))  
+    
+    records[int(row[0])] = xyz
+  
+  read_geo._log.debug('Assuming all keys are integer numbers')
+  
+  return records
+
+
+# -------------------------------------------------------------------------------
+

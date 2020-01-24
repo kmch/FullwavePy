@@ -1,0 +1,132 @@
+"""
+(c) 2019 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
+
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from autologging import logged, traced
+
+from fullwavepy.generic.parse import kw, del_kw, exten, strip
+from fullwavepy.generic.system import bash, exists
+from fullwavepy.project.files.generic import ArrayProjFile
+from fullwavepy.ioapi.segy import SgyFile
+from fullwavepy.ioapi.fw3d import VtrFile
+from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
+from fullwavepy.project.files.gridded.models import ModelFileVtr
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SurfaceFile(ModelFileVtr):
+  """
+  Free surface or a model
+  interface.
+  
+  """
+  pass
+
+
+# -------------------------------------------------------------------------------  
+
+
+@traced
+@logged
+class TopographyFile(SurfaceFile):
+  """
+  Topography of the topmost rock layer:
+  seafloor and/or land surface.
+  
+  """
+
+  # -----------------------------------------------------------------------------  
+  
+  def __init__(self, proj, path, dupl=None, **kwargs):
+    suffix = 'Topography'
+    super().__init__(suffix, proj, path, **kwargs)
+    if dupl is not None:
+      from fullwavepy.ioapi.generic import read_arrays
+      self.array = read_arrays(dupl, **kwargs)
+  
+  # -----------------------------------------------------------------------------  
+  
+  def plot(self, bathy=None, **kwargs): #?
+    """
+    if 'array' in dir(self):
+      print('hej')
+      #super().plot(array)
+    else:
+      print('boooo')    
+    """
+    from fullwavepy.plot.generic import plot
+    from fullwavepy.plot.misc import plot_square
+    
+    kwargs['cbar'] = kw('cbar', True, kwargs)
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    kwargs['shade'] = kw('shade', True, kwargs)
+    kwargs['cmap'] = kw('cmap', [], kwargs)
+    
+    if bathy is not None:
+      plot(bathy, **kwargs)  
+      plt.gca().set_aspect('equal')
+      plt.gca().invert_yaxis()
+    
+    plot_square(self.proj.box[0], self.proj.box[1], 
+                self.proj.box[2], self.proj.box[3])
+    
+
+    ## SOURCES AND RECEIVERS NOTE: LOOP OVER S, R
+    #path = '/home/kmc3817/heavy_PhD/meta_data/'
+    #sources, receivers = SR_Read_All_PROTEUS(**kwargs)    
+    #
+    #sx, sy = [], []
+    #for key in sources:
+    #
+    #  x = sources[key][0]
+    #  y = sources[key][1]
+    #  sx.append(x)
+    #  sy.append(y)   
+    #
+    #plt.scatter(sx, sy, s=1*s_factor, c='lightgray')
+    #
+    #sx, sy = [], []
+    #for key in receivers:
+    #  x = receivers[key][0]
+    #  y = receivers[key][1]
+    #  
+    #  sx.append(x)
+    #  sy.append(y)
+    #  plt.annotate(key, (x + shift_labels, y + shift_labels), 
+    #               clip_on=True) # NOTE: clip_on IS REQUIRED
+    #plt.scatter(sx, sy, s=10*s_factor, c='orange')    
+    #
+    #plt.xlim(xlim)
+    #plt.ylim(ylim)    
+      
+  # -----------------------------------------------------------------------------
+
+
+
+# -------------------------------------------------------------------------------  
+
+
+@traced
+@logged
+class FsFile(SurfaceFile):
+  """
+  Free surface
+  
+  """
+  def __init__(self, proj, path, **kwargs):
+    suffix = 'FreeSurf'
+    super().__init__(suffix, proj, path, **kwargs)
+  
+  def run(self, **kwargs):
+    cmd = self.proj.exe['fsprep'] + " " + self.proj.name
+    o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
+  
+  
+# -------------------------------------------------------------------------------  
+
