@@ -7,8 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
-from fullwavepy.generic.decor import timer, widgets
+from fullwavepy.generic.decor import timer, widgets#, widgets_boilerplate
 from fullwavepy.generic.parse import kw
+from fullwavepy.plot.generic import new_figure
 from ipywidgets import interact #, interactive, fixed, interact_manual
 
 
@@ -78,6 +79,36 @@ class Arr(np.ndarray):
 
   # -----------------------------------------------------------------------------
   
+  @widgets
+  def compare(self, other_array, fig, gs=None, widgets=False, **kwargs):
+    assert type(self) == type(other_array)
+    assert self.shape == other_array.shape
+
+    xlim = kw('xlim', None, kwargs)
+    ylim = kw('ylim', None, kwargs)
+    
+    if widgets:
+      figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+      fig = plt.figure(figsize=figsize)
+      kwargs['widgets'] = False
+
+    if gs is None:
+      gs = fig.add_gridspec(1,2)    
+
+    
+    ax1 = fig.add_subplot(gs[0,0])
+    self.plot(**kwargs)
+    ax2 = fig.add_subplot(gs[0,1])
+    other_array.plot(**kwargs)
+
+    for ax in [ax1, ax2]:
+      ax.set_xlim(xlim)
+      ax.set_ylim(ylim)
+
+   # -----------------------------------------------------------------------------
+
+  # -----------------------------------------------------------------------------
+
   
 # -------------------------------------------------------------------------------
 
@@ -140,13 +171,16 @@ class Arr2d(Arr):
 @logged
 class Arr3d(Arr):
   """
+  3D array.
+  
   """
   
   # -----------------------------------------------------------------------------
   
   @widgets
   def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
-    from matplotlib.gridspec import GridSpec
+    """
+    """
     from fullwavepy.plot.twod import plot_image
     
     # LABELS FOR EACH AXIS
@@ -156,29 +190,27 @@ class Arr3d(Arr):
     # CONVERT THE LABELS INTO ARRAY DIMENSIONS (AXES)
     convert_s2a = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice TO axis
     
+    if widgets: #or fig is None:
+      fig = new_figure(**kwargs)
+
     if gs is None:
-      gs = GridSpec(2,2)
-    
-    if widgets: #FIXME BOILERPLATE
-      figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
-      fig = plt.figure(figsize=figsize)
-    
-    kwargs['vmin'] = kw('vmin', np.min(self), kwargs)
-    kwargs['vmax'] = kw('vmax', np.max(self), kwargs)
-    self.__log.debug('Setting vmin, vmax to: {}, {}'.format(kwargs['vmin'], 
-                                                            kwargs['vmax']))
-    
-    kwargs['widgets'] = False
-    self.__log.debug('Disabling widgets.')
-    
+      gs = fig.add_gridspec(2,2)
+   
     axes = list(np.zeros(3))
     axes[0] = fig.add_subplot(gs[0,0])
     axes[1] = fig.add_subplot(gs[0,1])
     axes[2] = fig.add_subplot(gs[1,:]) 
     
+    kwargs['vmin'] = kw('vmin', np.min(self), kwargs)
+    kwargs['vmax'] = kw('vmax', np.max(self), kwargs)
+    self.__log.debug('Setting vmin, vmax to: {}, {}'.format(kwargs['vmin'], 
+                                                            kwargs['vmax']))
+    kwargs['widgets'] = False
+    self.__log.debug('Disabling widgets in inner functions.')
+    
     for i, ax in enumerate(axes):
       plt.sca(ax)
-      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
+      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), fig, **kwargs)
       
       # PLOT SLICING LINES
       a, b = [j for j in ['x', 'y', 'z'] if j != s[i]]
@@ -195,23 +227,7 @@ class Arr3d(Arr):
     
     #return ax1, ax2, ax3
     
-    
   # -----------------------------------------------------------------------------  
-
-    
-  def plot1d(self, **kwargs):
-    pass
-  
-  def plot2d(self, axis, **kwargs):
-    #axis = kw('axis', 0, kwargs)
-    coor = kw('coor', 0, kwargs)
-    def _plot2d(**kwargs):
-      a = np.take(np.copy(self), indices=kwargs['coor'], axis=axis)
-      plt.imshow(a.T)
-    
-    interact(_plot2d, coor=range(40))
-    
-  # -----------------------------------------------------------------------------
 
   def plot(self, svalue=0, **kwargs):
     from fullwavepy.plot.twod import plot_image
@@ -222,6 +238,12 @@ class Arr3d(Arr):
   
 
 # -------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 @traced

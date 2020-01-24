@@ -114,6 +114,13 @@ class ProjFile(object):
     
   # -----------------------------------------------------------------------------
 
+  def compare(self, other_file, fig, gs=None, **kwargs):
+    arr1 = self.read(**kwargs)
+    arr2 = other_file.read(**kwargs)
+    arr1.compare(arr2, fig, gs, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------  
 
@@ -155,6 +162,8 @@ class BinaryProjFile(ProjFile, BinaryFile):
 @logged
 class ArrayProjFile(ProjFile, ArrayFile):
   pass
+  #def compare(self, other_file, fig, gs=None, **kwargs):
+    #pass
 
 
 # -------------------------------------------------------------------------------

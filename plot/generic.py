@@ -15,6 +15,22 @@ from fullwavepy.generic.parse import kw
 
 @traced
 @logged
+def new_figure(**kwargs):
+  """
+  Apparently one has to create a new figure INSIDE 
+  a function passed to interact. 
+  This is the code that has to be put in every 
+  function decorated with @widgets then.
+  """
+  figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+  return plt.figure(figsize=figsize)
+    
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 def compare(arg1, arg2, **kwargs):
   """
   Compare two arrays of data.

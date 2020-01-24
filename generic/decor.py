@@ -5,11 +5,12 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from autologging import logged, traced
+
 from functools import wraps
 from ipywidgets import interact, fixed
 
 from fullwavepy.generic.parse import kw
-
 
 
 # -------------------------------------------------------------------------------
@@ -41,13 +42,8 @@ def timer(func):
 # -------------------------------------------------------------------------------
 
 
-def widgets(func): #, **widget_kwargs):
+def widgets(func):
   """
-  
-  Notes
-  -----
-  It is meant to wrap class methods, hence
-  the first argument is assumed to be self.
   
   """
   @wraps(func)
@@ -68,16 +64,11 @@ def widgets(func): #, **widget_kwargs):
     def ifunc(**kwargs): # SKIP *args - THEY WOULD BREAK interact!
       return func(*args, **kwargs) 
     
-    #try:
-    #print('self.proj.dims', self.proj.dims)
-    #except Eas err:
-      #print(err)
-    
     interact_kwargs = {
       #'figsize_x' : IntSlider(value=8, min=1, max=20, step=1, 
                               #layout=Layout(width='90%')),
       'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
-      #'cmap'      : Dropdown(options=['twilight_r', cividis','seismic']+plt.colormaps()),
+      'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
       #'slice'     : Dropdown(options=['y', 'x', 'z']),
       'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
       'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
@@ -113,6 +104,23 @@ def widgets(func): #, **widget_kwargs):
   
   return wrapper_widgets
 
+
+# -------------------------------------------------------------------------------
+
+
+#@traced
+#@logged
+#def widgets_boilerplate(widgets_enabled, **kwargs):
+#  """
+#  Apparently one has to create a new figure INSIDE 
+#  a function passed to interact. 
+#  This is the code that has to be put in every 
+#  function decorated with @widgets then.
+#  """
+#  if widgets_enabled:
+#    from fullwavepy.plot.generic import new_figure
+#    return new_figure(**kwargs)
+    
 
 # -------------------------------------------------------------------------------
 

@@ -36,17 +36,18 @@ def compare_2d(A1, A2, **kwargs):
 
 # -------------------------------------------------------------------------------  
 
-@traced
-@logged
-def superimpose(*args, **kwargs):
-  for arg in args:
-    arg.plot(**kwargs)
+#@traced
+#@logged
+#def superimpose(*args, **kwargs):
+  #for arg in args:
+    #arg.plot(**kwargs)
 
 
 @traced
 @logged
 @widgets
-def plot_image(image, widgets=False, **kwargs):
+def plot_image(image, fig, gs=None, widgets=False, center_cmap=False, 
+               cbar=True, **kwargs):
   """
   Wrapper around plt.imshow. 
   
@@ -58,14 +59,28 @@ def plot_image(image, widgets=False, **kwargs):
   -----
   
   """
+  from fullwavepy.plot.generic import new_figure
+  
   cmap = kw('cmap', 'twilight_r', kwargs)
-  vmin = kw('vmin', None, kwargs)
-  vmax = kw('vmax', None, kwargs)
+  vmin = kw('vmin', np.min(image), kwargs)
+  vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
   
-  plt.imshow(image.T, cmap=cmap, extent=extent, vmin=vmin, vmax=vmax)
-  
+  if widgets:# or fig is None:
+    fig = new_figure(**kwargs)
 
+  #if gs is None:
+    #gs = fig.add_gridspec(1,1)
+    
+  if center_cmap:
+    vmin, vmax = _center_around_zero(vmin, vmax)
+  
+  #ax = fig.add_subplot()
+  im = plt.imshow(image.T, cmap=cmap, extent=extent, 
+                  vmin=vmin, vmax=vmax)
+  if cbar:
+    colorbar(im, plt.gca())
+  
 # -------------------------------------------------------------------------------
 
 
@@ -116,7 +131,20 @@ def plot_wiggl(image, **kwargs): #NOTE
 
 # ------------------------------------------------------------------------------
 # FORMAT 2D
-# -------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def colorbar(imshow_object, ax, pos='right', size='3%', pad=0.2, **kwargs):
+  from mpl_toolkits.axes_grid1 import make_axes_locatable
+  divider = make_axes_locatable(ax)
+  cax = divider.append_axes(pos, size, pad)
+  cbar = plt.colorbar(imshow_object, cax=cax) 
+  plt.sca(ax)
+
+
+# ------------------------------------------------------------------------------
 
 
 @traced

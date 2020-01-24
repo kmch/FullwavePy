@@ -260,46 +260,6 @@ class ProjSyn(Proj):
     
   # -----------------------------------------------------------------------------
   
-  def plot_input_old2(self, widgets=False, **kwargs):
-    """
-    Add "not available in 2D"
-    
-    """
-    self.i.sgn.read(**kwargs)
-    self.i.rsg.read(**kwargs)
-    self.i.tvp.read(**kwargs)
-    
-    def _plot_input(**kwargs):
-      from matplotlib.gridspec import GridSpec
-      fig = plt.figure(figsize=(10,5))
-      gs = GridSpec(4,2, width_ratios=[3,1], height_ratios=[1,1,1,1])
-      
-      # SIGNATURES OF ALL SOURCES
-      fig.add_subplot(gs[0,0])
-      self.i.sgn.plot(**kwargs)
-      
-      # RAW SIGNATURE
-      fig.add_subplot(gs[0,1])
-      self.i.rsg.plot(**kwargs)
-      
-      # BATHY      
-      fig.add_subplot(gs[1,:])
-      
-      # MODEL SUBGRIDSPEC
-      gs_tvp = gs[2:, :].subgridspec(2,2)
-      kwargs['fig'] = fig
-      kwargs['gs'] = gs_tvp
-      kwargs['widgets'] = False
-      self.i.tvp.array.plot_3slices(**kwargs)      
-    
-    if widgets:
-      cmap = kw('cmap', ['cividis', 'seismic'] + plt.colormaps(), kwargs)
-      interact(_plot_input, cmap=cmap)
-    else:
-      _plot_input(**kwargs)      
-    
-  # ----------------------------------------------------------------------------- 
-  
   def plot_input_old(self, figsize, layers, **kwargs):
     """
     """

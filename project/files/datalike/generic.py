@@ -140,22 +140,23 @@ class DataFile(ArrayProjFile):
         
   # -----------------------------------------------------------------------------
    
-  def compare(self, fname2, **kwargs):
-    """
+  #def compare(self, fname2, **kwargs):
+    #"""
     
-    """
-    from fullwavepy.plot.generic import compare
-    
-    kwargs['norm'] = kw('norm', 'max', kwargs)
-    
-    spect = kw('spect', None, kwargs)
-    if spect == 'ampl' or spect == 'power':
-      kwargs['cmap'] = 'hot'
-      kwargs['center_cmap'] = False
-    else:
-      kwargs['cmap'] = 'seismic'
-    
-    compare(self.fname, fname2, **kwargs)
+    #"""
+    #pass
+    #from fullwavepy.plot.generic import compare
+    #
+    #kwargs['norm'] = kw('norm', 'max', kwargs)
+    #
+    #spect = kw('spect', None, kwargs)
+    #if spect == 'ampl' or spect == 'power':
+    #  kwargs['cmap'] = 'hot'
+    #  kwargs['center_cmap'] = False
+    #else:
+    #  kwargs['cmap'] = 'seismic'
+    #
+    #compare(self.fname, fname2, **kwargs)
     
   # -----------------------------------------------------------------------------   
 
@@ -203,8 +204,7 @@ class ObsDataFile(DataFile):
   
   """
 
-  def __init__(self, proj, path, create=True, raw=True, filt=True, mute=True, 
-               **kwargs):
+  def __init__(self, proj, path, create=True, raw=True, filt=True, mute=True, **kwargs):
     """
     Creates subobjects of the same type but after some processing 
     (raw, filtering, muting).
@@ -260,6 +260,42 @@ class ObsDataFile(DataFile):
 
   # -----------------------------------------------------------------------------
   
+  def mute(self, fbreaks, ntaper=100, twin=1, **kwargs):
+    #try:
+      #self.muted.dupl(self.filtered.fname)
+      #self.muted.mute(fbreaks, ntaper, twin, **kwargs) 
+    #except AttributeError: # RECURSION
+      #pass 
+    
+    from fullwavepy.signal.su import su_mute
+    from fullwavepy.ioapi.generic import save_txt
+    
+    fbreaks = np.array(fbreaks)
+    picks = fbreaks * self.proj.dt
+    bpicks = picks + twin
+    nmute = len(picks)
+    xmute = range(1, nmute + 1)
+    tmute = picks
+    tmute2 = bpicks
+    
+    xmute = [str(i) for i in xmute]
+    tmute = [str(i) for i in tmute]
+    tmute2 = [str(i) for i in tmute2]
+    
+    for data, prefix in zip([xmute, tmute, tmute2], ['xmute', 'tmute', 'tmute2']):
+      file_txt = self.proj.inp.path + prefix + '.txt'
+      file_bin = self.proj.inp.path + prefix + '.bin'
+      save_txt(file_txt, data)
+      o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
+      
+    # MAYBE IT NEEDS TO BE SPLIT IN TWO BITS WITH tmp.sg IN BETWEEN (AS WAS IN WORKING VERSION)
+    cmd =  'segyread tape={} | '.format(self.filtered.fname)
+    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin',
+                tmute2_bin='tmute2.bin')
+    cmd += 'segyhdrs | segywrite tape={fname_muted}'.format(fname_muted=self.muted.fname)
+              
+    o, e = bash(cmd)
+    
 
 # -------------------------------------------------------------------------------
 

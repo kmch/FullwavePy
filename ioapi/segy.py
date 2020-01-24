@@ -234,6 +234,7 @@ class SgyFile(object):
     split to allow for top/bottom only.
     
     """
+    raise NotImplementedError('This would work only for limited length of picks')
     from fullwavepy.signal.su import su_mute
     from fullwavepy.ioapi.generic import save_txt, read_txt
     
