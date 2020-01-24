@@ -215,7 +215,7 @@ class ProjSyn(Proj):
   # -----------------------------------------------------------------------------
   
   @widgets
-  def plot_input(self, **kwargs):
+  def plot_input(self, widgets=False, **kwargs):
     """
   
     Notes
@@ -226,7 +226,7 @@ class ProjSyn(Proj):
     
     """
     from matplotlib.gridspec import GridSpec
-    
+
     self.i.sgn.read(**kwargs)
     self.i.rsg.read(**kwargs)
     self.i.tvp.read(**kwargs)
@@ -251,7 +251,6 @@ class ProjSyn(Proj):
     gs_tvp = gs[2:, :].subgridspec(2,2)
     kwargs['fig'] = fig
     kwargs['gs'] = gs_tvp
-    kwargs['widgets'] = False
     self.i.tvp.plot_3slices(**kwargs) 
     
     if kwargs['sources']:

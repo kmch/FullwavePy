@@ -61,13 +61,14 @@ def plot_image(image, widgets=False, center_cmap=False,
   """
   from fullwavepy.plot.generic import new_figure
   
+  ax = kw('ax', plt.gca(), kwargs)
   cmap = kw('cmap', 'twilight_r', kwargs)
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
   
-  if widgets:# or fig is None:
-    fig = new_figure(**kwargs)
+  #if widgets:# or fig is None:
+    #fig = new_figure(**kwargs)
 
   #if gs is None:
     #gs = fig.add_gridspec(1,1)
@@ -76,10 +77,10 @@ def plot_image(image, widgets=False, center_cmap=False,
     vmin, vmax = _center_around_zero(vmin, vmax)
   
   #ax = fig.add_subplot()
-  im = plt.imshow(image.T, cmap=cmap, extent=extent, 
+  im = ax.imshow(image.T, cmap=cmap, extent=extent, 
                   vmin=vmin, vmax=vmax)
   if cbar:
-    colorbar(im, plt.gca())
+    colorbar(im, ax)
   
 # -------------------------------------------------------------------------------
 

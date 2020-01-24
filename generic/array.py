@@ -190,14 +190,21 @@ class Arr3d(Arr):
     s = [s0, s1, s2]
     # CONVERT THE LABELS INTO ARRAY DIMENSIONS (AXES)
     convert_s2a = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice TO axis
+
+    #if widgets: #FIXME BOILERPLATE
+      #figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+      #fig = plt.figure(figsize=figsize)
+    
+    if gs is None:
+      gs = GridSpec(2,2)
+      #gs = fig.add_gridspec(2,2)
+
     
     if widgets: #or fig is None:
       fig = new_figure(**kwargs)
       gs = fig.add_gridspec(2,2)
+     
 
-    if gs is None:
-      gs = GridSpec(2,2)
-      #gs = fig.add_gridspec(2,2)
    
     axes = list(np.zeros(3))
     axes[0] = fig.add_subplot(gs[0,0])
@@ -210,6 +217,7 @@ class Arr3d(Arr):
                                                             kwargs['vmax']))
     kwargs['widgets'] = False
     self.__log.debug('Disabling widgets in inner functions.')
+    
     
     for i, ax in enumerate(axes):
       plt.sca(ax)
