@@ -6,6 +6,7 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
+from matplotlib.gridspec import GridSpec
 
 from fullwavepy.generic.decor import timer, widgets#, widgets_boilerplate
 from fullwavepy.generic.parse import kw
@@ -192,9 +193,11 @@ class Arr3d(Arr):
     
     if widgets: #or fig is None:
       fig = new_figure(**kwargs)
+      gs = fig.add_gridspec(2,2)
 
     if gs is None:
-      gs = fig.add_gridspec(2,2)
+      gs = GridSpec(2,2)
+      #gs = fig.add_gridspec(2,2)
    
     axes = list(np.zeros(3))
     axes[0] = fig.add_subplot(gs[0,0])
@@ -210,7 +213,7 @@ class Arr3d(Arr):
     
     for i, ax in enumerate(axes):
       plt.sca(ax)
-      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), fig, **kwargs)
+      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
       
       # PLOT SLICING LINES
       a, b = [j for j in ['x', 'y', 'z'] if j != s[i]]
