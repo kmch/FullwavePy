@@ -137,7 +137,7 @@ class ProjThroughput(object):
     
     
 
-  def plot(self, **kwargs):
+  def plot(self, **kwargs): #FIXME
     """
     An elegant way of plotting all plottables.
     
@@ -151,7 +151,7 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------
 
-  def qc(self, **kwargs):
+  def qc(self, **kwargs): #FIXME
     self.ls(**kwargs)
     self.plot(**kwargs)
 
@@ -269,7 +269,7 @@ class ProjInput(ProjThroughput):
 
   # ----------------------------------------------------------------------------- 
   
-  def check_numerics(self, **kwargs):
+  def check_numerics(self, **kwargs): #FIXME
     """
     """
     from fullwavepy.generic.math import dft, dft_freqs
@@ -341,8 +341,7 @@ class ProjInput(ProjThroughput):
   def plot(self, *args, **kwargs):
     self.proj.plot_input(*args, **kwargs)
 
-  #def rm_job_files(self, **kwargs):
-    
+  # ----------------------------------------------------------------------------- 
 
 
 # -------------------------------------------------------------------------------

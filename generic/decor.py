@@ -44,6 +44,8 @@ def timer(func):
 
 def widgets(func):
   """
+  Rationale: cannot decorate class methods with @interact due to:
+   > ValueError: cannot find widget or abbreviation for argument: 'self'
   
   """
   @wraps(func)
@@ -61,24 +63,29 @@ def widgets(func):
                             Layout, TwoByTwoLayout) 
     widgets = kw('widgets', False, kwargs)
     
+    print('wow', args[0])
+    
     def ifunc(**kwargs): # SKIP *args - THEY WOULD BREAK interact!
       return func(*args, **kwargs) 
     
     interact_kwargs = {
       #'figsize_x' : IntSlider(value=8, min=1, max=20, step=1, 
                               #layout=Layout(width='90%')),
-      'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
-      'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
+      #'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
+      #'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
       #'slice'     : Dropdown(options=['y', 'x', 'z']),
-      'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      'z'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      'true_vp'   : Checkbox(True),
+      #'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
+      #'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
+      #'z'         : BoundedIntText(value=0, min=0, max=100, step=5),
+      #'true_vp'   : Checkbox(True),
       #'bathy'     : Checkbox(True),
       #'freesurf'  : Checkbox(True),
-      'sources'   : Checkbox(True),
-      'receivers' : Checkbox(True),
+      #'sources'   : Checkbox(True),
+      #'receivers' : Checkbox(True),
+      'sid'       : Dropdown(options=[4144, 4147]),
     }
+    
+    
 
     #app = TwoByTwoLayout(top_left=Dropdown(options=['y']), 
                          #top_right=Dropdown(options=['y']),

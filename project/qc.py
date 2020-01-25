@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, strip
+from fullwavepy.generic.decor import widgets
 
 
 # ------------------------------------------------------------------------------- 
@@ -123,6 +124,7 @@ class Functional(object):
   
   # ----------------------------------------------------------------------------- 
   
+  #@widgets
   def plot(self, run_ids, sids=None, misfit=True, **kwargs):
     """
     

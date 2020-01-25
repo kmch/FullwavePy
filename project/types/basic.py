@@ -14,8 +14,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
-
-from ipywidgets import interact, interactive, fixed, interact_manual 
+from fullwavepy.plot.generic import new_figure
 
 # FIXME DELETED LEADING UNDERSCORES IN _init_input ETC.
 
@@ -492,7 +491,75 @@ class ProjInv(Proj):
     pass
 
   # -----------------------------------------------------------------------------
+  
+  def prepare_output(self, **kwargs):
+    """
+    Read all the array to make interactive plots
+    run smoothly.
+    
+    """
+    sources_dict = self.i.s.read(**kwargs)
 
+  # -----------------------------------------------------------------------------    
+  
+  @widgets
+  def plot_output(self, widgets=False, **kwargs):
+    """
+    """
+    self.prepare_output(**kwargs)
+
+    it = kw('it', 1, kwargs)
+    source1_id = list(self.i.s.d.keys())[0]
+    sid = kw('sid', source1_id, kwargs)
+    
+    fig = new_figure(**kwargs)
+    gs = fig.add_gridspec(6, 1, height_ratios=[1,1,1,1,1,1])
+    
+    fig.add_subplot(gs[0,0])
+    self.o.fit.plot(range(3), sids=[sid], **kwargs)
+    
+    #fig.add_subplot(gs[1,0])
+    #self.o.dc.it[it][sid].plot()
+    
+    #run_ids, it, sid, freq,
+    #plt.figure()
+    #self.o.fit.plot(run_ids)
+    #plt.figure()
+    #self.o.dc.it[it][sid].plot()
+    #plt.figure()
+    #self.o.dc.it[it][sid].plot_phase(freq)
+    #plt.figure()
+    #self.i.svp.compare(self.o.vp.it[it], plt.gcf(), **kwargs)
+
+
+    #self.i.sgn.read(**kwargs)
+    #self.i.rsg.read(**kwargs)
+    #self.i.tvp.read(**kwargs)
+    #
+    #
+    #figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+    #fig = plt.figure(figsize=figsize)    
+    #
+    ## SIGNATURES OF ALL SOURCES
+    #fig.add_subplot(gs[0,0])
+    #self.i.sgn.plot(**kwargs)
+    #
+    ## RAW SIGNATURE
+    #fig.add_subplot(gs[0,1])
+    #self.i.rsg.plot(**kwargs)
+    #
+    ## BATHY      
+    #fig.add_subplot(gs[1,:])
+    #
+    ## MODEL SUBGRIDSPEC
+    #gs_tvp = gs[2:, :].subgridspec(2,2)
+    #kwargs['fig'] = fig
+    #kwargs['gs'] = gs_tvp
+    #self.i.tvp.plot_3slices(**kwargs) 
+    #
+    #if kwargs['sources']:
+    #  print('sources on')
+      #self.i.s.plot_3slices(**kwargs)
 
 # -------------------------------------------------------------------------------
 
