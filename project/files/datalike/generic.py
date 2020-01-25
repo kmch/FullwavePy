@@ -48,7 +48,7 @@ class DataFile(ArrayProjFile):
     self.lid = kw('lid', None, kwargs)
     super().__init__(proj, path, **kwargs)
 
-    self.name = proj.name + '-' + self.suffix + self.ext
+    self.name = proj.name + '-' + self.suffix + '.' + self.ext
     self.fname = path + self.name    
     self.__log.debug('self.fname: ' + self.fname)
   
@@ -227,7 +227,7 @@ class ObsDataFile(DataFile):
     elif mute:
       self.suffix += 'Mute'      
 
-    self.name = proj.name + '-' + self.suffix + self.ext
+    self.name = proj.name + '-' + self.suffix + '.' + self.ext
     self.fname = path + self.name    
     self.__log.debug('self.fname: ' + self.fname)  
   

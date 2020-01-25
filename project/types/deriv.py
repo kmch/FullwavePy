@@ -134,10 +134,15 @@ class ProjInvSyn(ProjInv):
     if exists(self.inp.startvp.fname):
       self.__log.warn(self.inp.startvp.fname + ' already exists.')
     else:
-      self.inp.startvp.prepare(dupl=self.syn.inp.truevp.fname, **kwargs)   
-   
+      try:
+        self.inp.startvp.prepare(dupl=self.syn.inp.truevp.bckgrnd.fname, **kwargs)   
+      except AttributeError:
+        self.__log.warn('syn.inp.truevp.bckg not implemented yet. Copying truevp')
+        self.inp.startvp.prepare(dupl=self.syn.inp.truevp.fname, **kwargs)
     self.inp.rawsign.prepare(dupl=self.syn.inp.rawsign.fname, **kwargs)
-   
+    #self.inp.runfile.prepare(dupl=self.syn.inp.runfile.fname, **kwargs)
+    self.__log.warn('You need to prepare the runfile manually!')
+    
   # -----------------------------------------------------------------------------
 
 

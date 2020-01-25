@@ -33,8 +33,9 @@ class DataFileTtr(DataFile, TtrFile):
     
     """  
     self.suffix = suffix
-    self.name = proj.name + '-' + suffix + '.ttr'
-    self.fname = path + self.name
+    self.ext = 'ttr'
+    #self.name = proj.name + '-' + suffix + '.ttr'
+    #self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
 
   # ----------------------------------------------------------------------------- 
@@ -175,7 +176,11 @@ class DumpCompareFile(DataFileTtr):
  
     srcs = self.proj.inp.s.read()
     recs = self.proj.inp.r.read()
-    c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
+    try:
+      c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
+    except FileNotFoundError as err:
+      self.__log.warn('Searching for Template.hed because: {}'.format(err))
+      c = read_txt(self.proj.inp.path + self.proj.name + '-Template.hed')
     c = c[2: ]
     rids = []
     for l in c:
@@ -195,7 +200,11 @@ class DumpCompareFile(DataFileTtr):
     srcs = self.proj.inp.s.read()
     recs = self.proj.inp.r.read()
     
-    c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
+    try:
+      c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
+    except FileNotFoundError as err:
+      self.__log.warn('Searching for Template.hed because: {}'.format(err))
+      c = read_txt(self.proj.inp.path + self.proj.name + '-Template.hed')
     c = c[2: ]
     hed = {} # IT'S A BIT REDUNDANT SINCE THERE'S ONLY ONE SOURCE PER FILE
     for sid in sorted(srcs.keys()):
@@ -230,16 +239,18 @@ class DumpCompareFile(DataFileTtr):
   
   
   def plot(self, **kwargs):
-    from fullwavepy.plot.generic import plot, compare
+    #from fullwavepy.plot.generic import plot, compare
     Asyn, Aobs, Adif = self.read(**kwargs)
     #plt.subplots(1,3, figsize=[15,5])
     #plt.subplot(1,3,1)
-    plot(Asyn)
+    #plot(Asyn)
     #plt.subplot(1,3,2)
-    plot(Aobs)
+    #plot(Aobs)
     #plt.subplot(1,3,3)
-    plot(Adif)
-    compare(Asyn, Aobs, **kwargs)
+    #plot(Adif)
+    #compare(Asyn, Aobs, **kwargs)
+    fig = plt.figure(figsize=(14,8))
+    Aobs.compare(Asyn, fig)
   
   # -----------------------------------------------------------------------------  
   
@@ -337,14 +348,14 @@ class DumpCompareFile(DataFileTtr):
     plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
     plt.xlabel('in-line node')
     plt.ylabel('cross-line node')
-    plt.gca().set_aspect('equal')
+    #plt.gca().set_aspect('equal')
     #plt.gca().invert_yaxis() # IT IS ALREADY CORRECT
     
     plt.subplot(1,3,2)
     plt.title('obs')
     plot_1d(scatts=[recs], scatt_ampl=[ph_obs.ravel()], **kwargs)
     plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    plt.gca().set_aspect('equal')
+    #plt.gca().set_aspect('equal')
     #plt.gca().invert_yaxis() 
     plt.xlabel('in-line node')
     plt.ylabel('cross-line node')    
@@ -353,7 +364,7 @@ class DumpCompareFile(DataFileTtr):
     plt.title('syn-obs (wrapped)')
     plot_1d(scatts=[recs], scatt_ampl=[ph_dif.ravel()], **kwargs)
     plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    plt.gca().set_aspect('equal')
+    #plt.gca().set_aspect('equal')
     #plt.gca().invert_yaxis()
     plt.xlabel('in-line node')
     plt.ylabel('cross-line node')   

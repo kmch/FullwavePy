@@ -35,7 +35,7 @@ class DataFileSgy(DataFile, SgyFile):
     self.suffix = suffix
     #self.name = proj.name + '-' + suffix + '.sgy'
     #self.fname = path + self.name
-    self.ext = '.sgy'
+    self.ext = 'sgy'
     super().__init__(proj, path, **kwargs)
 
   # -----------------------------------------------------------------------------   
@@ -145,7 +145,24 @@ class DataFileSgy(DataFile, SgyFile):
                                          sid=sid, lid=lid, **kwargs)
  
   # -----------------------------------------------------------------------------   
-
+  
+  def read(self, suwind_kwargs=None, **kwargs):
+    from fullwavepy.ioapi.su import suwind
+    if suwind_kwargs is not None:
+      fname_tmp = strip(self.fname) + '_tmp.' + exten(self.fname)
+      cmd = 'segyread tape={} | '.format(self.fname)
+      for key, values in suwind_kwargs.items():
+        cmd += 'suwind key={} max=-10000000 accept='.format(key)
+        for val in values:
+          cmd += '{},'.format(val)
+      cmd = cmd[ :-1] # LAST COMMA
+      cmd += ' segyhdrs | segywrite tape={}'.format(fname_tmp)
+      o, e = bash(cmd)
+      fname = fname_tmp
+    else:
+      fname = None
+    return super().read(fname, **kwargs)
+  
 
 # -------------------------------------------------------------------------------
 

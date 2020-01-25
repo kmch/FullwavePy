@@ -8,7 +8,7 @@ import pandas as pd
 from fullwavepy.logging_config import *
 from fullwavepy.generic.system import get_files
 from fullwavepy.generic.parse import strip, exten
-from fullwavepy.generic.array import Arr, tseries2array
+from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array
 from fullwavepy.plot.misc import time_freq
 from fullwavepy.plot.generic import plot, compare
 from fullwavepy.plot.oned import colors

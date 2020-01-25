@@ -92,7 +92,7 @@ def bash(command, path='./', truncate=150, **kwargs):
   
   
   if len(out) > truncate:
-    bash._log.debug('Truncated stdout (first ' + str(truncate) + 
+    bash._log.debug('Truncated stdout (after truncate= ' + str(truncate) + 
                     ' chars):' + str(out[ :truncate]) + '...')
   elif len(out) > 0:
     bash._log.debug('stdout:' + out)

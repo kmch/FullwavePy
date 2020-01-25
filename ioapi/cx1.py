@@ -393,6 +393,7 @@ class PbsFileCx1(PbsFile):
     """
     f.write('\n# RUN FULLWAVE \n')
     if self.q == 'debug':
+      self.__log.warn('Apparently pbsexec (=> grace period) does not work for debug')
       pbsexec = ''
     else:
       pbsexec = 'pbsexec '

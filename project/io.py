@@ -48,21 +48,38 @@ class ProjThroughput(object):
     
   # -----------------------------------------------------------------------------
   
-  def dupl(self, input_path, project_name, **kwargs):
+  def dupl(self, project=None, input_path=None, project_name=None, **kwargs):
     """
     Duplicate from another project.
+    
+    Used to be:
+    def dupl(self, input_path, project_name, **kwargs):
     
     """
     from fullwavepy.generic.system import get_files, duplicate
     from fullwavepy.generic.parse import path_leave, exten
     
+    if project is None:
+      if input_path is None or project_name is None:
+        raise TypeError('Input either a project-object or 2 strings: input_path and project_name')
+    else:
+      input_path = project.inp.path 
+      project_name = project.name
+      
+    
     fnames = get_files(input_path, project_name+'-*')
     for fname in fnames:
       nfname = path_leave(fname)
-      if exten(nfname) == 'pbs': 
+      
+      if exten(fname) == 'pbs': 
         self.__log.warn('Skipping PBS script ' + fname + 
                         ' prepare it yourself.')
         continue
+
+      if 'Job' in fname or (('Out' in fname or 'Err' in fname) and exten(fname) == 'log'):
+        self.__log.warn('Skipping ' + fname)
+        continue
+    
       nfname = self.path + self.proj.name + nfname[len(project_name): ]
       duplicate(fname, nfname, **kwargs)
 
@@ -324,6 +341,9 @@ class ProjInput(ProjThroughput):
   def plot(self, *args, **kwargs):
     self.proj.plot_input(*args, **kwargs)
 
+  #def rm_job_files(self, **kwargs):
+    
+
 
 # -------------------------------------------------------------------------------
 
@@ -366,10 +386,15 @@ class ProjOutput(ProjThroughput):
     self.__log.debug('Initializing generic-project output...')
     self.jobout = JobFileList(self.proj, self.path, JobOutLogFile, **kwargs)
     self.joberr = JobFileList(self.proj, self.path, JobErrLogFile, **kwargs)
+    self.jo = self.jobout
+    self.je = self.joberr
     self.out = JobFileList(self.proj, self.path, OutLogFile, **kwargs)
     self.err = JobFileList(self.proj, self.path, ErrLogFile, **kwargs)
+    self.o = self.out 
+    self.e = self.err
     self.jobstats = JobStats(self.proj, **kwargs)
-    self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
+    self.jstat = self.jobstats
+    #self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
       
     self.__log.debug('Initializing project-type-specific output...')
     self.proj._init_output(**kwargs)

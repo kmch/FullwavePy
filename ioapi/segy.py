@@ -47,7 +47,19 @@ class SgyFile(object):
       raise FileNotFoundError(self.fname)    
     
     o, e = bash('segyread tape=' + self.fname + ' | ' +
-                'surange')
+                'surange', **kwargs)
+    #self.__log.info
+    print(e + '\n' + o)
+  
+  # -----------------------------------------------------------------------------  
+  
+  def suximage(self, **kwargs):
+    if not exists(self.fname):
+      raise FileNotFoundError(self.fname)    
+    
+    self.__log.warn('suximage binaries seem to be broken')
+    o, e = bash('segyread tape=' + self.fname + ' | ' +
+                'suximage', **kwargs)
     self.__log.info(e + '\n' + o)
   
   # -----------------------------------------------------------------------------  
@@ -86,6 +98,7 @@ class SgyFile(object):
       parse a header from.
     
     """
+    self.__log.debug('Getting sx,sy,gx,gy from header')
     if datafile is None:
       datafile = self
       
@@ -103,6 +116,16 @@ class SgyFile(object):
     
     return s, r
     
+  # -----------------------------------------------------------------------------
+
+  def read_header(self, **kwargs):
+    import pandas as pd
+    
+    header_dict = read_header(self.fname, **kwargs)
+    self.header = pd.DataFrame(header_dict)
+    
+    return self.header
+  
   # -----------------------------------------------------------------------------
 
   def resize(self, box, **kwargs): #FIXME
@@ -292,8 +315,7 @@ class SgyFile(object):
     #!su_sgyread.sh './p12//inp/p12-Observed_filt.sgy' | sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute.bin'} | segyhdrs | segywrite tape=tmp.sgy
     
     #!su_sgyread.sh tmp.sgy | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute2.bin'} | segyhdrs | segywrite tape=out.sgy    
-    #
-
+    
   # -----------------------------------------------------------------------------  
 
 
@@ -302,7 +324,7 @@ class SgyFile(object):
 
 @traced
 @logged
-def array2sgy(fname, A, dt, **kwargs): # save_sgy
+def array2sgy(fname, A, dt, **kwargs):
   """
   Export an array to a .sgy file.
   
@@ -558,6 +580,7 @@ def header2json(fname, **kwargs):
   
   h = read_header(fname, **kwargs)
   save_json(nfname, h, **kwargs)
+  return nfname
 
 
 # -------------------------------------------------------------------------------

@@ -90,14 +90,16 @@ class ArrayFile(File):
   
   # -----------------------------------------------------------------------------    
 
-  def read(self, **kwargs):
+  def read(self, fname=None, overwrite=False, **kwargs):
     """
     """
-    if not hasattr(self, 'array'):
+    if (not hasattr(self, 'array')) or overwrite:
       from fullwavepy.generic.array import Arr3d
       self.__log.warn('{}.array does not exist and will be read.'.format(type(self)))
       kwargs['scoord'] = kw('scoord', None, kwargs)
-      self.array = Arr3d(self.fname, **kwargs)
+      if fname is None:
+        fname = self.fname
+      self.array = Arr3d(fname, **kwargs)
     return self.array
   
   # -----------------------------------------------------------------------------
