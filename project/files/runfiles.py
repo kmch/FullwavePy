@@ -709,11 +709,20 @@ class Runfile(ParameterFile):
     """
     from fullwavepy.ioapi.generic import read_txt_raw
     
-    if 'blocks' in kwargs:
-      blocks = kwargs['blocks']
+    if self.proj.problem == 'tomography':
+      blocks = kw('blocks', [{'freq': 3.0, 'nits': 20},
+                             {'freq': 3.5, 'nits': 20},
+                             {'freq': 4.0, 'nits': 20},
+                             {'freq': 4.5, 'nits': 20},
+                             {'freq': 5.0, 'nits': 20},
+                             {'freq': 5.5, 'nits': 20},
+                             {'freq': 6.0, 'nits': 20},
+                             {'freq': 6.5, 'nits': 20},
+                            ], kwargs)
+    elif self.proj.problem == 'synthetic':
+      blocks = kw('blocks', [], kwargs)
     else:
-      self.__log.warning('blocks keyword not specified. Setting to empty list.')
-      blocks = []
+      raise ValueError('Unknown problem type: %s' %str(self.proj.problem))
     
     fname = self.fname
     content = read_txt_raw(fname)

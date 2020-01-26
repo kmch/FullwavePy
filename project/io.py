@@ -222,6 +222,7 @@ class ProjInput(ProjThroughput):
     self.r = ReceiversFile(self.proj, self.path, **kwargs)
     
     self.skeleton = Skeleton(self.proj, self.path, **kwargs)
+    self.ske = self.skeleton
     self.runfile = Runfile(self.proj, self.path, **kwargs)
     self.rnf = self.runfile # ALIAS
     self.bash = JobFileList(self.proj, self.path, BashFile, **kwargs)

@@ -25,6 +25,11 @@ class ProjInvSyn(ProjInv):
   """
   Inversion of synthetic data.
   
+  Notes
+  -----
+  Input files of the synthetic project must be 
+  available.
+  
   """
   
   # -----------------------------------------------------------------------------  
@@ -40,7 +45,7 @@ class ProjInvSyn(ProjInv):
     
     """
     super().__init__(name, **kwargs)
-    del_kw('path', kwargs)
+    #del_kw('path', kwargs)
     
     self.__log.warn('Make sure ProjInvSyn kwargs match syn_proj ones!')
     
@@ -51,47 +56,51 @@ class ProjInvSyn(ProjInv):
       syn_proj_path = syn_proj_name
       
     self.__log.info('\n\nInitializing synthetic project to invert the data from...\n')
-    self.syn = ProjSyn(syn_proj_name, path=syn_proj_path)
+    self.psyn = ProjSyn(syn_proj_name, path=syn_proj_path)
 
   # -----------------------------------------------------------------------------    
 
-  def prepare_input(self, **kwargs):
+  def prepare_input(self, file_z0, **kwargs):
     """
+    Copy from the synthetic project.
+    
+    Notes
+    -----
+    synth-Synthetic.sgy -> inver-Observed.sgy 
+    synth-Template.[idx/hed] -> inver-Observed.[idx/hed]
+    
+    Skeleton.key is essential in creating the Runfile.
     
     """
-    #files = [self.i.sgn
+    for f_id in ['rawsign', 'sgn', 'rawseis', 'sp', 's', 'r', 'skeleton']:
+      finv = getattr(self.i, f_id)
+      fsyn = getattr(self.psyn.i, f_id)
+      finv.prep(dupl=fsyn.fname)
     
-    #super()._prepare_input(**kwargs)
+    for f_id in ['hed', 'idx']:
+      # SIGNATURE
+      finv = getattr(self.i.sgn, f_id) 
+      fsyn = getattr(self.psyn.i.sgn, f_id) 
+      finv.prep(dupl=fsyn.fname)
+      # TEMPLATE
+      finv = getattr(self.i.obs, f_id) 
+      fsyn = getattr(self.psyn.i.tmpl, f_id) 
+      finv.prep(dupl=fsyn.fname)
     
-    #files = [self.inp.obs, self.inp.obs_idx,  
+    self.i.obs.prep(dupl=self.psyn.o.syn.fname)
     
-    if exists(self.inp.obs.fname):
-      self.__log.warn(self.inp.obs.fname + ' already exists.')
-    else:
-      self.inp.obs.prepare(dupl=self.syn.out.syn.fname, **kwargs)
-
-    if exists(self.inp.obs_idx.fname):
-      self.__log.warn(self.inp.obs_idx.fname + ' already exists.')
-    else:
-      self.inp.obs_idx.prepare(dupl=self.syn.out.syn_idx.fname, **kwargs)
-
-    #for mod in [self.inp.startvp]:
-      #if exists(mod.fname):
-      #  self.__log.warn(mod.fname + ' already exists.')
-      #else:
-      #  mod.prepare(dupl=self.syn.out.syn_idx.fname, **kwargs)
-   
-    if exists(self.inp.startvp.fname):
-      self.__log.warn(self.inp.startvp.fname + ' already exists.')
-    else:
-      try:
-        self.inp.startvp.prepare(dupl=self.syn.inp.truevp.bckgrnd.fname, **kwargs)   
-      except AttributeError:
-        self.__log.warn('syn.inp.truevp.bckg not implemented yet. Copying truevp')
-        self.inp.startvp.prepare(dupl=self.syn.inp.truevp.fname, **kwargs)
-    self.inp.rawsign.prepare(dupl=self.syn.inp.rawsign.fname, **kwargs)
-    #self.inp.runfile.prepare(dupl=self.syn.inp.runfile.fname, **kwargs)
-    self.__log.warn('You need to prepare the runfile manually!')
+    try:
+      self.i.svp.prep(dupl=self.psyn.i.tvp.bckgnd.fname, file_z0=file_z0)
+    except AttributeError as err:
+      self.__log.warn('Copying TrueVp because of: ' + str(err))
+      self.i.svp.prep(dupl=self.psyn.i.tvp.fname, file_z0=file_z0)
+    
+    
+    self.__log.warn('Runfile and PBS script need to be created manually!')
+    
+  
+  def plot_input(self, **kwargs):
+    super().plot_input(**kwargs)
     
   # -----------------------------------------------------------------------------
 

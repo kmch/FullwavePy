@@ -42,14 +42,6 @@ class ProjFile(object):
 
   # -----------------------------------------------------------------------------
   
-  def prep(self, *args, **kwargs):
-    """
-    Just an alias for prepare.
-    """
-    self.prepare(*args, **kwargs)
-  
-  # -----------------------------------------------------------------------------
-
   def prepare(self, *args, **kwargs):
     """
     Prepare means either duplicate 
@@ -68,11 +60,14 @@ class ProjFile(object):
     dupl = kw('dupl', None, kwargs)
     
     if dupl is not None:
-      self.__log.warn('Using dupl='+dupl)
+      self.__log.info('Using dupl='+dupl)
       del_kw('dupl', kwargs)
       self.dupl(dupl, *args, **kwargs)
     else:
       self.create(*args, **kwargs)
+    
+  def prep(self, *args, **kwargs):
+    self.prepare(*args, **kwargs)
     
   # -----------------------------------------------------------------------------
 
