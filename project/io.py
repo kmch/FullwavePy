@@ -107,17 +107,17 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------
   
-  @widgets
-  def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
-    #FIXME BOILERPLATE
-    if widgets: 
-      figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
-      fig = plt.figure(figsize=figsize)
-    if gs is None:
-      gs = fig.add_gridspec(2,2)  
-    ax1 = fig.add_subplot(gs[0,0])
-    ax2 = fig.add_subplot(gs[0,1])
-    ax3 = fig.add_subplot(gs[1,:])        
+  #@widgets#FIXME
+  #def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
+  #  #FIXME BOILERPLATE
+  #  if widgets: 
+  #    figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+  #    fig = plt.figure(figsize=figsize)
+  #  if gs is None:
+  #    gs = fig.add_gridspec(2,2)  
+  #  ax1 = fig.add_subplot(gs[0,0])
+  #  ax2 = fig.add_subplot(gs[0,1])
+  #  ax3 = fig.add_subplot(gs[1,:])        
       
       
     if kwargs['true_vp']:

@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 from matplotlib.gridspec import GridSpec
 
-from fullwavepy.generic.decor import timer, widgets#, widgets_boilerplate
+from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.parse import kw
 from fullwavepy.plot.generic import new_figure
-from ipywidgets import interact #, interactive, fixed, interact_manual
+from fullwavepy.plot.twod import plot_image
 
 
 # -------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ class Arr(np.ndarray):
 
   # -----------------------------------------------------------------------------
   
-  @widgets()
+  #@widgets()
   def compare(self, other_array, fig, gs=None, widgets=False, **kwargs):
     assert type(self) == type(other_array)
     assert self.shape == other_array.shape
@@ -175,10 +175,18 @@ class Arr3d(Arr):
   3D array.
   
   """
+
+  # -----------------------------------------------------------------------------
+  
+  @widgets('cmap', 'slice_at', 'node')
+  def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
+    di = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice_at INTO AXIS NO.
+    axis = di[slice_at]
+    plot_image(np.take(self, indices=node, axis=axis), **kwargs)
   
   # -----------------------------------------------------------------------------
   
-  @widgets('cmap', 'slice', 'x', 'y', 'z')
+  #@widgets('cmap', 'slice', 'x', 'y', 'z')
   def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
     """
     """
@@ -241,7 +249,6 @@ class Arr3d(Arr):
   # -----------------------------------------------------------------------------  
 
   def plot(self, svalue=0, **kwargs):
-    from fullwavepy.plot.twod import plot_image
     self.__log.warn('scoord=y, svalue=0')
     plot_image(self[:, svalue, :], **kwargs)
 
@@ -249,6 +256,14 @@ class Arr3d(Arr):
   
 
 # -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 

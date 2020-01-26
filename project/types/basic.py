@@ -502,26 +502,23 @@ class ProjInv(Proj):
 
   # -----------------------------------------------------------------------------    
   
-  @widgets('sids', 'run_ids')
+  @widgets('sids', 'run_ids', 'it')
   def plot_output(self, widgets=False, **kwargs):
     """
     """
+    it = kw('it', 1, kwargs)
+    #sid = kwargs['sid', kwargs[
+    
     self.prepare_output(**kwargs)
 
-    #it = kw('it', 1, kwargs)
-    source1_id = list(self.i.s.d.keys())[0]
-    sids = kw('sids', [source1_id], kwargs)
-    
     fig = new_figure(**kwargs)
     gs = fig.add_gridspec(6, 1, height_ratios=[1,1,1,1,1,1])
     
     fig.add_subplot(gs[0,0])
-    kwargs['run_ids'] = kw('run_ids', [0,1], kwargs)
-    kwargs['sids'] = kw('sids', sids, kwargs)
     self.o.fit.plot(**kwargs)
     
     #fig.add_subplot(gs[1,0])
-    #self.o.dc.it[it][sid].plot()
+    #self.o.dc.it[it][4144].plot(**kwargs)
     
     #run_ids, it, sid, freq,
     #plt.figure()

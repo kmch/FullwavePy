@@ -42,6 +42,8 @@ def timer(func):
 # -------------------------------------------------------------------------------
 
 
+@traced
+@logged
 def widgets(*widgets_args):
   """
   A wrapper around an actual decorator (see below)
@@ -53,6 +55,8 @@ def widgets(*widgets_args):
   args to decorators.
   
   """
+  @traced
+  @logged
   def widgets_actual_decorator(func):
     """
     Rationale: cannot decorate class methods with @interact due to:
@@ -61,6 +65,8 @@ def widgets(*widgets_args):
     """
     print('THIS SHOULD NOT APPEAR ON SCREEN')
     
+    @traced
+    @logged
     def wrapper_widgets(*args, **kwargs):
       """
       Notes
@@ -75,10 +81,13 @@ def widgets(*widgets_args):
                               Layout, TwoByTwoLayout) 
       widgets = kw('widgets', False, kwargs)
       
-      
-      proj = args[0].proj
-      sids = list(proj.i.s.d.keys())
-      
+      try:
+        proj = args[0].proj
+        sids = list(proj.i.s.d.keys())
+      except AttributeError as err:
+        wrapper_widgets._log.warn('Setting sids to [] because of %s' % str(err))
+        sids = []
+        
       ##print('wow', args[0]) USE THIS TO ACCESS PROJECT METADATA! FIXME
       
       # NOTE: WE ARE SKIPPING *args - THEY WOULD BREAK interact!
@@ -89,7 +98,8 @@ def widgets(*widgets_args):
         'figsize_x' : IntSlider(value=8, min=1, max=20, step=1), #layout=Layout(width='90%')),
         'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
         'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
-        'slice'     : Dropdown(options=['y', 'x', 'z']),
+        'slice_at'  : Dropdown(options=['y', 'x', 'z']),
+        'node'      : BoundedIntText(value=0, min=0, max=100, step=5),
         'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
         'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
         'z'         : BoundedIntText(value=0, min=0, max=100, step=5),
@@ -100,6 +110,7 @@ def widgets(*widgets_args):
         'receivers' : Checkbox(True),
         'sids'      : SelectMultiple(options=sids, value=sids),
         'run_ids'   : SelectMultiple(options=range(20), value=[0]),
+        'it'        : IntSlider(value=1, min=0, max=20, step=1)
       }
       
       # CHUCK AWAY ALL kwargs THAT ARE NOT LISTED IN widgets_args
@@ -116,7 +127,7 @@ def widgets(*widgets_args):
       if widgets:
         interact(ifunc, widgets=fixed(True), **interact_kwargs)
       
-      else: 
+      else: #NOTE: NOW IT'S DONE IN THE INNER FUNCTION (I THINK IT'S BETTER)
         ## SET 'STATIC' VALUES FROM WIDGETS' DEFAULTS
         #for key, widget in interact_kwargs.items():
         #  #NOTE: WE HAVE TO USE kw TO PASS VALUES FROM WIDGETS

@@ -146,7 +146,6 @@ class Functional(object):
     misfit = kw('misfit', True, kwargs)
     
     functional = self.read(**dict(kwargs, misfit=misfit))
-    #plt.figure()
     
     # CONVERT KEYS TO INT TO SORT THEM
     functional = {int(k) : v for k, v in functional.items()}
