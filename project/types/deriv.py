@@ -19,58 +19,6 @@ from fullwavepy.project.types.basic import ProjSyn, ProjInv
 
 # -------------------------------------------------------------------------------
 
-
-@traced
-@logged
-class ProjSynVsObs(ProjSyn): #FIXME?
-  """
-  Generate synthetics and compare 
-  them to the observed data.
-
-  Notes
-  -----
-  The main difference between this and ProjSyn 
-  is handling OutSeis.sgy which is generated 
-  ONLY for sgfullwavepy.ioapi, even though documentation
-  claims to generate OutSeis.sgy (yes, .sgy)
-  for 'fw3d' as well NOTE
-  
-  """
-  
-  # -----------------------------------------------------------------------------   
-  
-  def _init_input(self, **kwargs): 
-    """
-    
-    """
-    from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
-    from fullwavepy.project.files.datalike.ttr import ObsDataFileTtr
-    
-    if self.io == 'sgy':
-      ObsDataClass = ObsDataFileSgy
-      suffix = 'OutSeis'
-    elif self.io == 'fw3d':
-      ObsDataClass = ObsDataFileTtr
-      suffix = 'TO_CHECK_OUTSEIS_IN_FW3D'
-      
-    self.inp.outseis = ObsDataClass(suffix, self, self.inp.path, **kwargs)
-    #self.inp.outseis_raw = ObsDataFile('OutSeis', self, self.inp.path, **kwargs)
-    #self.inp.outseis_filt = ObsDataFile('OutSeisFilt', self, self.inp.path, **kwargs)
-    #self.inp.outseis = ObsDataFile('OutSeisFiltMute', self, self.inp.path, **kwargs)
-    
-    #try:
-    #  self.inp.outseis.files(timer=True)
-    #except OSError as err_message: 
-    #  self.__log.warning(str(err_message))
-      
-    #self.inp.outseis_filt.files(timer=True)
-    #self.inp.outseis_raw.files(timer=True)
-    
-  # ----------------------------------------------------------------------------- 
-
-
-# -------------------------------------------------------------------------------
-
 @traced
 @logged
 class ProjInvSyn(ProjInv):
@@ -83,9 +31,9 @@ class ProjInvSyn(ProjInv):
 
   def __init__(self, name, syn_proj_name, **kwargs):
     """
+    
     Notes
     -----
-    FIXME this should be read from syn runfile.
     We don't pass kwargs (except for IO!) to ProjSyn 
     as they may differ (e.g. testing acoustic inv 
     of elastic data) and thus are dummy anyway.
@@ -107,10 +55,12 @@ class ProjInvSyn(ProjInv):
 
   # -----------------------------------------------------------------------------    
 
-  def _prepare_input(self, **kwargs):
+  def prepare_input(self, **kwargs):
     """
     
     """
+    #files = [self.i.sgn
+    
     #super()._prepare_input(**kwargs)
     
     #files = [self.inp.obs, self.inp.obs_idx,  
@@ -152,4 +102,67 @@ class ProjInvSyn(ProjInv):
     
 
 # -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjSynVsObs(ProjSyn): #FIXME?
+  """
+  Generate synthetics and compare 
+  them to the observed data.
+
+  Notes
+  -----
+  The main difference between this and ProjSyn 
+  is handling OutSeis.sgy which is generated 
+  ONLY for sgfullwavepy.ioapi, even though documentation
+  claims to generate OutSeis.sgy (yes, .sgy)
+  for 'fw3d' as well NOTE
+  
+  """
+  
+  # -----------------------------------------------------------------------------   
+  
+  def init_input(self, **kwargs): 
+    """
+    
+    """
+    from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
+    from fullwavepy.project.files.datalike.ttr import ObsDataFileTtr
+    
+    if self.io == 'sgy':
+      ObsDataClass = ObsDataFileSgy
+      suffix = 'OutSeis'
+    elif self.io == 'fw3d':
+      ObsDataClass = ObsDataFileTtr
+      suffix = 'TO_CHECK_OUTSEIS_IN_FW3D'
+      
+    self.inp.outseis = ObsDataClass(suffix, self, self.inp.path, **kwargs)
+    #self.inp.outseis_raw = ObsDataFile('OutSeis', self, self.inp.path, **kwargs)
+    #self.inp.outseis_filt = ObsDataFile('OutSeisFilt', self, self.inp.path, **kwargs)
+    #self.inp.outseis = ObsDataFile('OutSeisFiltMute', self, self.inp.path, **kwargs)
+    
+    #try:
+    #  self.inp.outseis.files(timer=True)
+    #except OSError as err_message: 
+    #  self.__log.warning(str(err_message))
+      
+    #self.inp.outseis_filt.files(timer=True)
+    #self.inp.outseis_raw.files(timer=True)
+    
+  # ----------------------------------------------------------------------------- 
 

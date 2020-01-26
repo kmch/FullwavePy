@@ -32,10 +32,12 @@ class DataFileSgy(DataFile, SgyFile):
     """
     
     """  
+    from fullwavepy.project.files.index import IndexFile
+    from fullwavepy.project.files.templates import HedFile
     self.suffix = suffix
-    #self.name = proj.name + '-' + suffix + '.sgy'
-    #self.fname = path + self.name
     self.ext = 'sgy'
+    self.idx = IndexFile(suffix, proj, path, **kwargs) # SIMILAR TO TEMPLATE
+    self.hed = HedFile(suffix, proj, path, **kwargs)
     super().__init__(proj, path, **kwargs)
 
   # -----------------------------------------------------------------------------   
@@ -146,7 +148,7 @@ class DataFileSgy(DataFile, SgyFile):
  
   # -----------------------------------------------------------------------------   
   
-  def read(self, suwind_kwargs=None, **kwargs):
+  def read(self, suwind_kwargs=None, **kwargs): #NOTE IMPORTANT SUWIND
     from fullwavepy.ioapi.su import suwind
     if suwind_kwargs is not None:
       fname_tmp = strip(self.fname) + '_tmp.' + exten(self.fname)
@@ -163,6 +165,8 @@ class DataFileSgy(DataFile, SgyFile):
       fname = None
     return super().read(fname, **kwargs)
   
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -179,7 +183,8 @@ class SynDataFileSgy(DataFileSgy, SynDataFile):
 
   def __init__(self, proj, path, **kwargs):
     suffix = 'Synthetic'
-    super().__init__(suffix, proj, path, **kwargs)  
+    super().__init__(suffix, proj, path, **kwargs)
+    self.hed = None # ACTUALLY IT IS NOT CREATED BY FULLWAVE
   
   # -----------------------------------------------------------------------------  
   
@@ -280,14 +285,6 @@ class ObsDataFileSgy(DataFileSgy, ObsDataFile):
   # -----------------------------------------------------------------------------  
 
 
-@traced
-@logged
-class ObsRawDataFileSgy(DataFileSgy, ObsDataFile):
-  def __init__(self, proj, path, **kwargs):
-    suffix = 'ObservedRaw'
-    super().__init__(suffix, proj, path, **kwargs)  
-    
-
 # -------------------------------------------------------------------------------
 
 
@@ -325,6 +322,8 @@ class RawSignFile(DataFileSgy):
     """
     suffix = 'RawSign'
     super().__init__(suffix, proj, path, **kwargs)
+    self.idx = None # 
+    self.hed = None ##
     
   # -----------------------------------------------------------------------------  
 

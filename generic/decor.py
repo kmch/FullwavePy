@@ -63,7 +63,7 @@ def widgets(*widgets_args):
      > ValueError: cannot find widget or abbreviation for argument: 'self'
     
     """
-    print('THIS SHOULD NOT APPEAR ON SCREEN')
+    print('THIS SHOULD NOT APPEAR ON SCREEN. RESTART THE NOTEBOOK AND TRY AGAIN')
     
     @traced
     @logged

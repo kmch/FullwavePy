@@ -67,8 +67,11 @@ class TemplateFileSgy(DataFileSgy):
   def __init__(self, proj, path, **kwargs):
     """
     
-    """  
+    """ 
+    from fullwavepy.project.files.index import IndexFile
     suffix = 'Template'
+    self.idx = IndexFile(suffix, proj, path, **kwargs)
+    self.hed = HedFile(suffix, proj, path, **kwargs) # NOT SURE THIS FILE IS CREATED BY SegyPrep
     super().__init__(suffix, proj, path, **kwargs)
 
 

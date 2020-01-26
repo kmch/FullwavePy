@@ -248,9 +248,17 @@ class Arr3d(Arr):
     
   # -----------------------------------------------------------------------------  
 
-  def plot(self, svalue=0, **kwargs):
-    self.__log.warn('scoord=y, svalue=0')
-    plot_image(self[:, svalue, :], **kwargs)
+  def plot(self, nslices=1, *args, **kwargs):
+    """
+    Note, it doesn't need to have @widgets!
+    
+    """
+    if nslices == 1:
+      self.plot_slice(*args, **kwargs)
+    elif nslices == 3:
+      self.plot_3slices(*args, **kwargs)
+    else:
+      raise ValueError('Wrong value of nslices: %s' %str(nslices))
 
   # -----------------------------------------------------------------------------
   

@@ -120,40 +120,36 @@ class ProjThroughput(object):
   #  ax3 = fig.add_subplot(gs[1,:])        
       
       
-    if kwargs['true_vp']:
-      self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
-    
-    #if kwargs['fw']:
-      #self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
+    #if kwargs['true_vp']:
+    #  self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
+    #
+    ##if kwargs['fw']:
+    #  #self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
+    #
+    #if kwargs['receivers']: # ALWAYS MORE THAN SOURCES (HOPEFULLY)
+    #  self.r.plot_3slices(fig, **kwargs)
+    #  
+    #if kwargs['sources']:
+    #  self.s.plot_3slices(fig, **kwargs)
 
-    if kwargs['receivers']: # ALWAYS MORE THAN SOURCES (HOPEFULLY)
-      self.r.plot_3slices(fig, **kwargs)
-      
-    if kwargs['sources']:
-      self.s.plot_3slices(fig, **kwargs)
 
-
-    
-    
-    
-
-  def plot(self, **kwargs): #FIXME
-    """
-    An elegant way of plotting all plottables.
-    
-    """
-    for attr in [getattr(self, i) for i in vars(self)]:
-      try:
-        attr.plot(**kwargs)
-        plt.figure()
-      except (AttributeError, FileNotFoundError) as err:
-        self.__log.debug(err)
+  #def plot(self, **kwargs): #FIXME
+  #  """
+  #  An elegant way of plotting all plottables.
+  #  
+  #  """
+  #  for attr in [getattr(self, i) for i in vars(self)]:
+  #    try:
+  #      attr.plot(**kwargs)
+  #      plt.figure()
+  #    except (AttributeError, FileNotFoundError) as err:
+  #      self.__log.debug(err)
 
   # -----------------------------------------------------------------------------
 
-  def qc(self, **kwargs): #FIXME
-    self.ls(**kwargs)
-    self.plot(**kwargs)
+  #def qc(self, **kwargs): #FIXME
+  #  self.ls(**kwargs)
+  #  self.plot(**kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -169,7 +165,7 @@ class ProjInput(ProjThroughput):
   Notes
   -----
   It contains some necessary work-arounds
-  because proj._init_input etc. refer to
+  because proj.init_input etc. refer to
   proj.inp so they must be called 
   AFTER the constructor (__init__), not from it.  
   
@@ -202,7 +198,7 @@ class ProjInput(ProjThroughput):
     from fullwavepy.ioapi.cx1 import PbsFileCx1
     
     self.__log.debug('Initializing project-type-specific  input...')
-    self.proj._init_input(**kwargs)
+    self.proj.init_input(**kwargs)
 
     self.__log.debug('Initializing generic-project input...')
     self.rawsign = RawSignFile(self.proj, self.path, **kwargs)
@@ -254,7 +250,7 @@ class ProjInput(ProjThroughput):
     #for f in self.other_input:
       #f.prepare(**kwargs)
     
-    self.proj._prepare_input(**kwargs)
+    self.proj.prepare_input(**kwargs)
 
   # -----------------------------------------------------------------------------    
     
@@ -370,7 +366,7 @@ class ProjOutput(ProjThroughput):
     Notes
     -----
     This is a necessary work-around 
-    because proj._init_input refer to
+    because proj.init_input refer to
     proj.inp so they must be called 
     AFTER the constructor, not from it.
     """    
@@ -396,7 +392,7 @@ class ProjOutput(ProjThroughput):
     #self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
       
     self.__log.debug('Initializing project-type-specific output...')
-    self.proj._init_output(**kwargs)
+    self.proj.init_output(**kwargs)
 
   # ----------------------------------------------------------------------------- 
 
@@ -420,26 +416,26 @@ class ProjOutput(ProjThroughput):
     for f in [self.out, self.err, self.jobout, self.joberr]:
       f.prepare(**kwargs)
     
-    self.proj._prepare_output(**kwargs)
+    self.proj.prepare_output(**kwargs)
     
   def prep(self, **kwargs):
     self.prepare(**kwargs)
     
-  # ----------------------------------------------------------------------------- 
-
-  def check(self, **kwargs):
-    """
-    
-    """
-    self.__log.warn('Implement checks for crucial files')
-    
-    self.proj._check_output(**kwargs)
-
   # -----------------------------------------------------------------------------
 
   def plot(self, *args, **kwargs):
     self.proj.plot_output(*args, **kwargs)
 
+  # ----------------------------------------------------------------------------- 
+
+  #def check(self, **kwargs):
+  #  """
+  #  
+  #  """
+  #  self.__log.warn('Implement checks for crucial files')
+  #  
+  #  self.proj.check_output(**kwargs)
+  
   # -----------------------------------------------------------------------------
 
 

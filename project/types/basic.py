@@ -16,8 +16,6 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.plot.generic import new_figure
 
-# FIXME DELETED LEADING UNDERSCORES IN _init_input ETC.
-
 
 # -------------------------------------------------------------------------------
 
@@ -145,7 +143,7 @@ class ProjSyn(Proj):
     
   # -----------------------------------------------------------------------------
   
-  def _init_input(self, **kwargs):
+  def init_input(self, **kwargs):
     """
     
     We don't probably need template idx.
@@ -170,7 +168,7 @@ class ProjSyn(Proj):
     self.inp.truevp = ModelClass('TrueVp', self, self.inp.path, **kwargs)
     self.inp.tvp = self.inp.truevp # ALIAS
     self.inp.template = TemplateClass(self, self.inp.path, **kwargs)
-    
+    self.i.tmpl = self.i.template
     #self.inp.template_hed = TemplateHedClass(template_suffix, self, self.inp.path, 
                                       #**kwargs)
     
@@ -179,7 +177,7 @@ class ProjSyn(Proj):
     
   # -----------------------------------------------------------------------------  
   
-  def _init_output(self, **kwargs): 
+  def init_output(self, **kwargs): 
     """
     This should be called by
     proj.ouplot(...)
@@ -382,25 +380,23 @@ class ProjInv(Proj):
 
   # -----------------------------------------------------------------------------  
   
-  def _init_input(self, **kwargs):
+  def init_input(self, **kwargs):
     """
     
     """
     from fullwavepy.project.files.gridded.models import ModelFileVtr, ModelFileSgy
-    from fullwavepy.project.files.datalike.ttr import ObsDataFileTtr, ObsRawDataFileTtr
-    from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy, ObsRawDataFileSgy
+    from fullwavepy.project.files.datalike.ttr import ObsDataFileTtr
+    from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
     from fullwavepy.project.files.index import ObsIndexFileSgy, ObsIndexFileTtr
     from fullwavepy.project.files.templates import ObsHedFile
     
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
       ObsDataClass = ObsDataFileSgy
-      ObsRawDataClass = ObsRawDataFileSgy
       ObsIndexClass = ObsIndexFileSgy
     elif self.io == 'fw3d':
       ModelClass = ModelFileVtr
       ObsDataClass = ObsDataFileTtr
-      ObsRawDataClass = ObsRawDataFileTtr
       ObsIndexClass = ObsIndexFileTtr
     else:
       raise ValueError('Unknown io: ' + self.io)
@@ -408,15 +404,10 @@ class ProjInv(Proj):
     self.inp.startvp = ModelClass('StartVp', self, self.inp.path, **kwargs)
     self.inp.svp = self.inp.startvp # ALIAS
     self.inp.obs = ObsDataClass(self, self.inp.path, **kwargs)    
-    self.inp.obs.raw = ObsRawDataClass(self, self.inp.path, **kwargs)
-    
-    self.inp.obs_idx = ObsIndexClass(self, self.inp.path, **kwargs)
-    self.inp.obs_hed = ObsHedFile(self, self.inp.path, **kwargs)
-    #self.inp.obs.files(timer=True)
     
   # -----------------------------------------------------------------------------
 
-  def _init_output(self, **kwargs):
+  def init_output(self, **kwargs):
     """
     
     Notes
@@ -472,7 +463,7 @@ class ProjInv(Proj):
 
   # -----------------------------------------------------------------------------
   
-  def _prepare_input(self, **kwargs):
+  def prepare_input(self, **kwargs):
     """
     
     """
@@ -502,7 +493,7 @@ class ProjInv(Proj):
 
   # -----------------------------------------------------------------------------    
   
-  @widgets('sids', 'run_ids', 'it')
+  @widgets('cmap', 'sids', 'run_ids', 'it')
   def plot_output(self, widgets=False, **kwargs):
     """
     """
@@ -512,12 +503,18 @@ class ProjInv(Proj):
     self.prepare_output(**kwargs)
 
     fig = new_figure(**kwargs)
-    gs = fig.add_gridspec(6, 1, height_ratios=[1,1,1,1,1,1])
+    nrows = 3
+    short = 1
+    tall = 3
+    height_ratios = [tall]*nrows
+    height_ratios[0] = short
+    gs = fig.add_gridspec(nrows, 1, height_ratios=height_ratios)
     
     fig.add_subplot(gs[0,0])
     self.o.fit.plot(**kwargs)
     
-    #fig.add_subplot(gs[1,0])
+    fig.add_subplot(gs[1,0])
+    self.o.vp.it[it].plot(**kwargs)
     #self.o.dc.it[it][4144].plot(**kwargs)
     
     #run_ids, it, sid, freq,
@@ -559,6 +556,7 @@ class ProjInv(Proj):
     #if kwargs['sources']:
     #  print('sources on')
       #self.i.s.plot_3slices(**kwargs)
+
 
 # -------------------------------------------------------------------------------
 

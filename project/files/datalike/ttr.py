@@ -249,8 +249,8 @@ class DumpCompareFile(DataFileTtr):
     #plt.subplot(1,3,3)
     #plot(Adif)
     #compare(Asyn, Aobs, **kwargs)
-    fig = plt.figure(figsize=(14,8))
-    Aobs.compare(Asyn, fig)
+    #fig = plt.figure(figsize=(14,8))
+    Aobs.plot_slice() #(Asyn, fig)
   
   # -----------------------------------------------------------------------------  
   
