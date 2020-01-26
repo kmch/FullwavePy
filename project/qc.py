@@ -124,8 +124,8 @@ class Functional(object):
   
   # ----------------------------------------------------------------------------- 
   
-  #@widgets
-  def plot(self, run_ids, sids=None, misfit=True, **kwargs):
+  @widgets('sids', 'run_ids')
+  def plot(self, widgets=False, **kwargs):
     """
     
     run_ids : list 
@@ -134,13 +134,18 @@ class Functional(object):
     
     """
     from fullwavepy.plot.oned import colors
-    #from lib_generic_PLOTT import Save
-    #save = kw('save', False, kwargs)
+    
+    misfit = kw('misfit', True, kwargs)   
     alpha = kw('alpha', 0.4, kwargs)
     ls = kw('ls', '.-', kwargs)
     lw = kw('lw', 3, kwargs)
     
-    functional = self.read(run_ids, misfit, **kwargs)
+    srcs = self.proj.i.s.read(**kwargs)
+    sids = kw('sids', list(srcs.keys()), kwargs)    
+    kwargs['run_ids'] = kw('run_ids', [0,1], kwargs)
+    misfit = kw('misfit', True, kwargs)
+    
+    functional = self.read(**dict(kwargs, misfit=misfit))
     #plt.figure()
     
     # CONVERT KEYS TO INT TO SORT THEM
@@ -151,7 +156,6 @@ class Functional(object):
       functional = {sid : functional[sid] for sid in sids}
 
     clrs = colors(len(functional))
-
     
     for sid, fit in sorted(functional.items()):
       plt.plot(list(range(1, len(fit) + 1)), fit, ls, lw=lw, label=sid, c=next(clrs), 
@@ -165,9 +169,6 @@ class Functional(object):
     
     if len(functional) < 50:
       plt.legend(prop={'size': 6})
-    
-    #if save:
-      #fname = Save(self.fname, **kwargs)
     
   # -----------------------------------------------------------------------------    
 

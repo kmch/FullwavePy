@@ -80,7 +80,7 @@ class Arr(np.ndarray):
 
   # -----------------------------------------------------------------------------
   
-  @widgets
+  @widgets()
   def compare(self, other_array, fig, gs=None, widgets=False, **kwargs):
     assert type(self) == type(other_array)
     assert self.shape == other_array.shape
@@ -178,7 +178,7 @@ class Arr3d(Arr):
   
   # -----------------------------------------------------------------------------
   
-  @widgets
+  @widgets('cmap', 'slice', 'x', 'y', 'z')
   def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
     """
     """

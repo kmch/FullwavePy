@@ -42,75 +42,98 @@ def timer(func):
 # -------------------------------------------------------------------------------
 
 
-def widgets(func):
+def widgets(*widgets_args):
   """
-  Rationale: cannot decorate class methods with @interact due to:
-   > ValueError: cannot find widget or abbreviation for argument: 'self'
+  A wrapper around an actual decorator (see below)
+  to make it take arguments other than function's ones.
+  
+  Notes
+  -----
+  This is apparently a canonical way of passing
+  args to decorators.
   
   """
-  @wraps(func)
-  def wrapper_widgets(*args, **kwargs):
+  def widgets_actual_decorator(func):
     """
-    Notes
-    -----
-    widgets=fixed(True) is passed to func 
-    to force func to create a new figure, 
-    otherwise it's not interactive.
+    Rationale: cannot decorate class methods with @interact due to:
+     > ValueError: cannot find widget or abbreviation for argument: 'self'
     
     """
-    from ipywidgets import (IntSlider, BoundedIntText, Dropdown, 
-                            SelectMultiple, Checkbox,
-                            Layout, TwoByTwoLayout) 
-    widgets = kw('widgets', False, kwargs)
+    print('THIS SHOULD NOT APPEAR ON SCREEN')
     
-    print('wow', args[0])
-    
-    def ifunc(**kwargs): # SKIP *args - THEY WOULD BREAK interact!
-      return func(*args, **kwargs) 
-    
-    interact_kwargs = {
-      #'figsize_x' : IntSlider(value=8, min=1, max=20, step=1, 
-                              #layout=Layout(width='90%')),
-      #'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
-      #'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
-      #'slice'     : Dropdown(options=['y', 'x', 'z']),
-      #'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      #'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      #'z'         : BoundedIntText(value=0, min=0, max=100, step=5),
-      #'true_vp'   : Checkbox(True),
-      #'bathy'     : Checkbox(True),
-      #'freesurf'  : Checkbox(True),
-      #'sources'   : Checkbox(True),
-      #'receivers' : Checkbox(True),
-      'sid'       : Dropdown(options=[4144, 4147]),
-    }
-    
-    
-
-    #app = TwoByTwoLayout(top_left=Dropdown(options=['y']), 
-                         #top_right=Dropdown(options=['y']),
-                         #bottom_left=Dropdown(options=['y']),
-                         #bottom_right=Dropdown(options=['y']))
+    def wrapper_widgets(*args, **kwargs):
+      """
+      Notes
+      -----
+      widgets=fixed(True) is passed to func 
+      to force func to create a new figure, 
+      otherwise it's not interactive.
       
-    if widgets:
-      interact(ifunc, widgets=fixed(True), **interact_kwargs)
-
-    else: 
-      # SET 'STATIC' VALUES FROM WIDGETS' DEFAULTS
-      for key, widget in interact_kwargs.items():
-        #NOTE: WE HAVE TO USE kw TO PASS VALUES FROM WIDGETS
-        # TO INNER FUNCTIONS (LIKE plot_image)
-        if isinstance(widget, (IntSlider, BoundedIntText, Checkbox)):
-          kwargs[key] = kw(key, widget.value, kwargs)
-        elif isinstance(widget, Dropdown):
-          kwargs[key] = kw(key, widget.options[0], kwargs)
-        else:
-          raise ValueError(widget)
+      """
+      from ipywidgets import (IntSlider, BoundedIntText, Dropdown, 
+                              SelectMultiple, Checkbox,
+                              Layout, TwoByTwoLayout) 
+      widgets = kw('widgets', False, kwargs)
       
-      return func(*args, **kwargs) # RETURN ONLY FOR widgets=False
-  
-  return wrapper_widgets
-
+      
+      proj = args[0].proj
+      sids = list(proj.i.s.d.keys())
+      
+      ##print('wow', args[0]) USE THIS TO ACCESS PROJECT METADATA! FIXME
+      
+      # NOTE: WE ARE SKIPPING *args - THEY WOULD BREAK interact!
+      def ifunc(**kwargs): 
+        return func(*args, **kwargs) 
+      
+      interact_kwargs = {
+        'figsize_x' : IntSlider(value=8, min=1, max=20, step=1), #layout=Layout(width='90%')),
+        'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
+        'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
+        'slice'     : Dropdown(options=['y', 'x', 'z']),
+        'x'         : BoundedIntText(value=0, min=0, max=100, step=5),
+        'y'         : BoundedIntText(value=0, min=0, max=100, step=5),
+        'z'         : BoundedIntText(value=0, min=0, max=100, step=5),
+        'true_vp'   : Checkbox(True),
+        'bathy'     : Checkbox(True),
+        'freesurf'  : Checkbox(True),
+        'sources'   : Checkbox(True),
+        'receivers' : Checkbox(True),
+        'sids'      : SelectMultiple(options=sids, value=sids),
+        'run_ids'   : SelectMultiple(options=range(20), value=[0]),
+      }
+      
+      # CHUCK AWAY ALL kwargs THAT ARE NOT LISTED IN widgets_args
+      interact_kwargs = dict({(i, interact_kwargs[i]) for i in interact_kwargs.keys() if i in widgets_args})
+      
+      #print('adfaf', interact_kwargs)
+      #
+      #
+      ##app = TwoByTwoLayout(top_left=Dropdown(options=['y']), 
+      #                     #top_right=Dropdown(options=['y']),
+      #                     #bottom_left=Dropdown(options=['y']),
+      #                     #bottom_right=Dropdown(options=['y']))
+      #  
+      if widgets:
+        interact(ifunc, widgets=fixed(True), **interact_kwargs)
+      
+      else: 
+        ## SET 'STATIC' VALUES FROM WIDGETS' DEFAULTS
+        #for key, widget in interact_kwargs.items():
+        #  #NOTE: WE HAVE TO USE kw TO PASS VALUES FROM WIDGETS
+        #  # TO INNER FUNCTIONS (LIKE plot_image)
+        #  if isinstance(widget, (IntSlider, BoundedIntText, Checkbox)):
+        #    kwargs[key] = kw(key, widget.value, kwargs)
+        #  elif isinstance(widget, Dropdown):
+        #    kwargs[key] = kw(key, widget.options[0], kwargs)
+        #  elif isinstance(widget, SelectMultiple):
+        #    kwargs[key] = kw(key, [widget.options[0]], kwargs)
+        #  else:
+        #    raise ValueError(widget)
+        
+        return func(*args, **kwargs) # RETURN ONLY FOR widgets=False
+    
+    return wrapper_widgets
+  return widgets_actual_decorator
 
 # -------------------------------------------------------------------------------
 
