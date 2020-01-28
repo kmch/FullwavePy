@@ -82,16 +82,28 @@ class BinaryFile(File):
 @logged
 class ArrayFile(File):
   """
-  File storing some data 
-  (model parameter, seismic data, ...) 
-  in an array.
+  File storing data (model, seismograms, etc.) 
+  as a custom Arr3d type of array which is a 
+  wrapper around np.ndarray.
   
   """
   
   # -----------------------------------------------------------------------------    
 
-  def read(self, fname=None, overwrite=False, **kwargs):
+  def read(self, fname=None, overwrite=True, **kwargs):
     """
+  
+    Notes
+    -----
+    Overwrite=True by default because otherwise plots are not 
+    updated even though they are supposed (e.g. you are passing 
+    a different fname). They will be correct (updated) only
+    if you delete self.array variable, e.g. by restarting the 
+    notebook kernel.
+    Disable overwrite only for PERFORMANCE (e.g. interactive plot)
+    when the array remains unchanged unlike other (e.g. plotting)
+    parameters.
+    
     """
     if (not hasattr(self, 'array')) or overwrite:
       from fullwavepy.generic.array import Arr3d
@@ -105,10 +117,12 @@ class ArrayFile(File):
   # -----------------------------------------------------------------------------
 
   def plot(self, **kwargs):
-    if not hasattr(self, 'array'):
-      self.array = self.read(**kwargs)
-    self.array.plot(**kwargs)
+    """
+    We SHOULD self.read everytime, see its docstring for rationale.
     
+    """
+    self.read(**kwargs)
+    self.array.plot(**kwargs)
     
   # -----------------------------------------------------------------------------  
 

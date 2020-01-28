@@ -710,14 +710,14 @@ class Runfile(ParameterFile):
     from fullwavepy.ioapi.generic import read_txt_raw
     
     if self.proj.problem == 'tomography':
-      blocks = kw('blocks', [{'freq': 3.0, 'nits': 20},
-                             {'freq': 3.5, 'nits': 20},
-                             {'freq': 4.0, 'nits': 20},
-                             {'freq': 4.5, 'nits': 20},
-                             {'freq': 5.0, 'nits': 20},
-                             {'freq': 5.5, 'nits': 20},
-                             {'freq': 6.0, 'nits': 20},
-                             {'freq': 6.5, 'nits': 20},
+      blocks = kw('blocks', [{'freq': 3.0, 'nits': 20, 'minoff': 5000},
+                             {'freq': 3.5, 'nits': 20, 'minoff': 5000},
+                             {'freq': 4.0, 'nits': 20, 'minoff': 5000},
+                             {'freq': 4.5, 'nits': 20, 'minoff': 5000},
+                             {'freq': 5.0, 'nits': 20, 'minoff': 5000},
+                             {'freq': 5.5, 'nits': 20, 'minoff': 5000},
+                             {'freq': 6.0, 'nits': 20, 'minoff': 5000},
+                             {'freq': 6.5, 'nits': 20, 'minoff': 5000},
                             ], kwargs)
     elif self.proj.problem == 'synthetic':
       blocks = kw('blocks', [], kwargs)

@@ -36,6 +36,8 @@ class ProjInvSyn(ProjInv):
 
   def __init__(self, name, syn_proj_name, **kwargs):
     """
+    Same as ProjInv + book-keeping of an extra
+    synthetic subproject.
     
     Notes
     -----
@@ -45,8 +47,6 @@ class ProjInvSyn(ProjInv):
     
     """
     super().__init__(name, **kwargs)
-    #del_kw('path', kwargs)
-    
     self.__log.warn('Make sure ProjInvSyn kwargs match syn_proj ones!')
     
     if 'syn_proj_path' in kwargs:
@@ -55,7 +55,7 @@ class ProjInvSyn(ProjInv):
       self.__log.warn('syn_proj_path not provided. Assuming: ' + syn_proj_name)
       syn_proj_path = syn_proj_name
       
-    self.__log.info('\n\nInitializing synthetic project to invert the data from...\n')
+    self.__log.info('\n\nInitializing synthetic sub-project to copy data from\n')
     self.psyn = ProjSyn(syn_proj_name, path=syn_proj_path)
 
   # -----------------------------------------------------------------------------    
@@ -72,7 +72,7 @@ class ProjInvSyn(ProjInv):
     Skeleton.key is essential in creating the Runfile.
     
     """
-    for f_id in ['rawsign', 'sgn', 'rawseis', 'sp', 's', 'r', 'skeleton']:
+    for f_id in ['rawsign', 'sgn', 'sp', 's', 'r', 'skeleton']:
       finv = getattr(self.i, f_id)
       fsyn = getattr(self.psyn.i, f_id)
       finv.prep(dupl=fsyn.fname)
@@ -87,7 +87,11 @@ class ProjInvSyn(ProjInv):
       fsyn = getattr(self.psyn.i.tmpl, f_id) 
       finv.prep(dupl=fsyn.fname)
     
-    self.i.obs.prep(dupl=self.psyn.o.syn.fname)
+    self.i.obs.prep(dupl=self.psyn.o.syn.fname) #FOR 1ST ITER
+    self.i.obs.raw.prep(dupl=self.psyn.o.syn.fname) #NOTE: raw!
+    self.__log.warn(self.i.obs.fname + ' is meant to be a processed version of ' +
+                    self.i.obs.raw.fname + '. Note that if the processing changes ' +
+                    'no. of srcs/recs, SegyPrep has to be re-run!')
     
     try:
       self.i.svp.prep(dupl=self.psyn.i.tvp.bckgnd.fname, file_z0=file_z0)
@@ -98,6 +102,7 @@ class ProjInvSyn(ProjInv):
     
     self.__log.warn('Runfile and PBS script need to be created manually!')
     
+  # -----------------------------------------------------------------------------  
   
   def plot_input(self, **kwargs):
     super().plot_input(**kwargs)

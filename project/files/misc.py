@@ -147,16 +147,14 @@ class JobInfoFile(JobFile, AsciiProjFile):
 
 @traced
 @logged
-class RawSeisFile(AsciiProjFile):
+class RawSeisTxtFile(AsciiProjFile):
   """
   A txt file with paths to 
   data files used by SegyPrep.
   
   Notes
   -----
-  We don't use RawSeis.sgy.
-  By default we let SegyPrep generate 
-  OutSeis.sgy instead.
+  We don't use RawSeis.sgy at the moment.
   
   """ 
 

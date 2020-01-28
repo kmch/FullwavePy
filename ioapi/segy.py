@@ -120,9 +120,27 @@ class SgyFile(object):
 
   def read_header(self, **kwargs):
     import pandas as pd
+    from fullwavepy.ioapi.json import save_json
     
-    header_dict = read_header(self.fname, **kwargs)
-    self.header = pd.DataFrame(header_dict)
+    fname = self.fname
+    nfname = strip(fname) + json_header_suffix
+    
+    if not hasattr(self, 'header'):
+      header_dict = read_header(self.fname, **kwargs)
+      self.header = pd.DataFrame(header_dict)
+      
+      
+      self.__log.debug('Exporting the header of ' + 
+                        fname + ' to ' + nfname)    
+      
+      save_json(nfname, header_dict, **kwargs)
+    elif not exists(nfname):
+      if isinstance(self.header, pd.DataFrame):
+        self.header.to_json(nfname)
+      elif isinstance(self.header, dict):
+        save_json(nfname, header_dict, **kwargs)
+      else:
+        raise TypeError(type(self.header))
     
     return self.header
   

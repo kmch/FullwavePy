@@ -142,7 +142,7 @@ class Functional(object):
     
     srcs = self.proj.i.s.read(**kwargs)
     sids = kw('sids', list(srcs.keys()), kwargs)    
-    kwargs['run_ids'] = kw('run_ids', [0,1], kwargs)
+    kwargs['run_ids'] = kw('run_ids', [0], kwargs)
     misfit = kw('misfit', True, kwargs)
     
     functional = self.read(**dict(kwargs, misfit=misfit))

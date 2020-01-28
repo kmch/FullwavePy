@@ -226,10 +226,13 @@ class DumpCompareFile(DataFileTtr):
     kwargs['scoord'] = None
     self.__log.info('Reading ' + self.fname + '...')
     A = super().read(**kwargs)
-    isep  = int(len(A) / 3)
+    isep  = int(len(A) / 3) # THIS GIVES EQUAL LENGTHS, CHECKED
+    
     Asyn = A[ :isep]
     Aobs = A[isep:-isep]
     Adif = A[-isep: ] # SYN - OBS
+    self.__log.debug('lengths of Asyn, Aobs, Adif', len(Asyn), len(Aobs), len(Adif))
+    
     return Asyn, Aobs, Adif
   
   # -----------------------------------------------------------------------------    

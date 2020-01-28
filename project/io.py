@@ -191,7 +191,7 @@ class ProjInput(ProjThroughput):
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
     from fullwavepy.project.files.geom import SourcesFile, ReceiversFile
-    from fullwavepy.project.files.misc import RawSeisFile, JobInfoFile
+    from fullwavepy.project.files.misc import RawSeisTxtFile, JobInfoFile
     from fullwavepy.project.files.runfiles import SegyPrepFile, Runfile, Skeleton
     from fullwavepy.project.files.submit import BashFile
     from fullwavepy.project.lists.basic import JobFileList 
@@ -203,8 +203,8 @@ class ProjInput(ProjThroughput):
     self.__log.debug('Initializing generic-project input...')
     self.rawsign = RawSignFile(self.proj, self.path, **kwargs)
     self.rsg = self.rawsign # ALIAS
-    self.rawseis = RawSeisFile(self.proj, self.path, **kwargs)
-    self.rse = self.rawseis
+    self.rawseis = RawSeisTxtFile(self.proj, self.path, **kwargs)
+    self.rse = self.rawseis # NOTE: WE DON'T USE RawSeis.sgy, OTHERWISE AMBIGUITY
     self.sp = SegyPrepFile(self.proj, self.path, **kwargs)
      
     #SignatureFile(self.proj, self.path, **kwargs)[io] 

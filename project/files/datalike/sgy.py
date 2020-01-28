@@ -78,12 +78,12 @@ class DataFileSgy(DataFile, SgyFile):
       
       fnames = list(nfnames)
       
-    self.files(**kwargs)
+    #self.files(**kwargs)
  
   # ----------------------------------------------------------------------------- 
 
   @timer
-  def files(self, **kwargs):
+  def files(self, **kwargs): # FIXME
     """
     Create hooks for 
     
@@ -107,7 +107,7 @@ class DataFileSgy(DataFile, SgyFile):
     
     
     this_class = type(self) # CAN BE A CHILD CLASS
-    
+    self.__log.debug('this_class: ' + str(this_class))
     
     if not exists(self.fname):
       self.__log.warn(self.fname + ' not found. Returning.')
@@ -136,24 +136,31 @@ class DataFileSgy(DataFile, SgyFile):
     self.__log.info('Creating instances of ' + str(this_class) + '...')
     for sid in sids:
       suffix = self.suffix + '_' + str(skey) + str(sid)
-      self.gather[sid] = this_class(suffix, self.proj, self.path, 
+      self.gather[sid] = this_class(self.proj, self.path, 
                                     sid=sid, **kwargs)
       self.line[sid] = {}
       for lid in lids:
         suffix = str(self.suffix + '_' + str(skey) + str(sid) + '_' + 
                      str(lkey) + str(lid))
 
-        self.line[sid][lid] = this_class(suffix, self.proj, self.path, 
+        self.line[sid][lid] = this_class(self.proj, self.path, 
                                          sid=sid, lid=lid, **kwargs)
  
   # -----------------------------------------------------------------------------   
   
-  def read(self, suwind_kwargs=None, **kwargs): #NOTE IMPORTANT SUWIND
-    from fullwavepy.ioapi.su import suwind
-    if suwind_kwargs is not None:
+  def read(self, decimate=None, **kwargs):
+    """
+    Use suwind command to decimate the data (optional).
+    
+    """
+    if decimate is None:
+      fname = None
+    
+    else:
+      from fullwavepy.ioapi.su import suwind
       fname_tmp = strip(self.fname) + '_tmp.' + exten(self.fname)
       cmd = 'segyread tape={} | '.format(self.fname)
-      for key, values in suwind_kwargs.items():
+      for key, values in decimate.items():
         cmd += 'suwind key={} max=-10000000 accept='.format(key)
         for val in values:
           cmd += '{},'.format(val)
@@ -161,8 +168,7 @@ class DataFileSgy(DataFile, SgyFile):
       cmd += ' segyhdrs | segywrite tape={}'.format(fname_tmp)
       o, e = bash(cmd)
       fname = fname_tmp
-    else:
-      fname = None
+
     return super().read(fname, **kwargs)
   
   # -----------------------------------------------------------------------------
