@@ -72,6 +72,8 @@ class ProjInvSyn(ProjInv):
     Skeleton.key is essential in creating the Runfile.
     
     """
+    self.__log.info('Duplicating relevant files from ' + self.psyn.name)
+    
     for f_id in ['rawsign', 'sgn', 'sp', 's', 'r', 'skeleton']:
       finv = getattr(self.i, f_id)
       fsyn = getattr(self.psyn.i, f_id)

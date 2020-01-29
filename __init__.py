@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from ipywidgets import (interactive, interact, interact_manual, fixed,
                         IntSlider)
+import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
+pd.set_option('display.max_columns', 50)
 
 from fullwavepy.logging_config import *
 from fullwavepy.generic.system import get_files

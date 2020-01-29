@@ -60,7 +60,7 @@ class ProjFile(object):
     dupl = kw('dupl', None, kwargs)
     
     if dupl is not None:
-      self.__log.info('Using dupl='+dupl)
+      self.__log.debug('Using dupl='+dupl)
       del_kw('dupl', kwargs)
       self.dupl(dupl, *args, **kwargs)
     else:

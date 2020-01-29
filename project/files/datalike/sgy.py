@@ -159,13 +159,18 @@ class DataFileSgy(DataFile, SgyFile):
     else:
       from fullwavepy.ioapi.su import suwind
       fname_tmp = strip(self.fname) + '_tmp.' + exten(self.fname)
-      cmd = 'segyread tape={} | '.format(self.fname)
+      cmd = 'segyread tape={}'.format(self.fname)
       for key, values in decimate.items():
-        cmd += 'suwind key={} max=-10000000 accept='.format(key)
-        for val in values:
-          cmd += '{},'.format(val)
-      cmd = cmd[ :-1] # LAST COMMA
-      cmd += ' segyhdrs | segywrite tape={}'.format(fname_tmp)
+        if isinstance(values, dict):
+          vmin = values['min']
+          vmax = values['max']
+          cmd += ' | suwind key={} min={} max={}'.format(key, vmin, vmax)
+        else:
+          cmd += ' | suwind key={} max=-10000000 accept='.format(key)
+          for val in values:
+            cmd += '{},'.format(val)
+          cmd = cmd[ :-1] # LAST COMMA
+      cmd += ' | segyhdrs | segywrite tape={}'.format(fname_tmp)
       o, e = bash(cmd)
       fname = fname_tmp
 

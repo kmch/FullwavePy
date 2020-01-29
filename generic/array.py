@@ -69,7 +69,7 @@ class Arr(np.ndarray):
      raise TypeError('Arguments need to be either ' + 
                      'file-names or arrays or np.memmap, NOT: %s' %
                      type(source))
-        
+    
     return A
 
   # -----------------------------------------------------------------------------
@@ -253,10 +253,12 @@ class Arr3d(Arr):
     Note, it doesn't need to have @widgets!
     
     """
+    A = Arr3d(modify_array(self, **kwargs)) 
+    
     if nslices == 1:
-      self.plot_slice(*args, **kwargs)
+      A.plot_slice(*args, **kwargs)
     elif nslices == 3:
-      self.plot_3slices(*args, **kwargs)
+      A.plot_3slices(*args, **kwargs)
     else:
       raise ValueError('Wrong value of nslices: %s' %str(nslices))
 

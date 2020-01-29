@@ -254,6 +254,16 @@ class DumpCompareFile(DataFileTtr):
     #compare(Asyn, Aobs, **kwargs)
     #fig = plt.figure(figsize=(14,8))
     Aobs.plot_slice() #(Asyn, fig)
+
+  # -----------------------------------------------------------------------------  
+  
+  def _get_first_breaks(self, *args, **kwargs):
+    """
+    """
+    from fullwavepy.signal.phase import first_breaks    
+    Asyn, Aobs, Adif = self.read(**kwargs)
+    self.fb = np.ravel(first_breaks(Asyn, *args, **kwargs))
+    return self.fb
   
   # -----------------------------------------------------------------------------  
   

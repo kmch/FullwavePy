@@ -46,8 +46,7 @@ def compare_2d(A1, A2, **kwargs):
 @traced
 @logged
 @widgets('cmap')
-def plot_image(image, widgets=False, center_cmap=False, 
-               cbar=True, **kwargs):
+def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   """
   Wrapper around plt.imshow. 
   
@@ -63,9 +62,15 @@ def plot_image(image, widgets=False, center_cmap=False,
   
   ax = kw('ax', plt.gca(), kwargs)
   cmap = kw('cmap', 'twilight_r', kwargs)
+  ncolors = kw('ncolors', None, kwargs)  
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
+  
+  if isinstance(cmap, list):
+    cmap = _combine_2_cmaps(cmap)
+    cmap = plt.cm.get_cmap(cmap, ncolors)  
+  
   
   #if widgets:# or fig is None:
     #fig = new_figure(**kwargs)
@@ -248,7 +253,7 @@ def _center_around_zero(minn, maxx, **kwargs): #NOTE
 
 @traced
 @logged
-def _combine_2_cmaps(cmap1='cmo.turbid', cmap2='cmo.ice_r'):
+def _combine_2_cmaps(cmaps):
   """
   Combine 2 colormaps.
   
@@ -261,6 +266,14 @@ def _combine_2_cmaps(cmap1='cmo.turbid', cmap2='cmo.ice_r'):
   """    
   import cmocean
   from matplotlib.colors import LinearSegmentedColormap
+  
+  if len(cmaps) == 2:
+    cmap1, cmap2 = cmaps
+  elif len(cmaps) == 0:
+   cmap1 = 'cmo.turbid'
+   cmap2 = 'cmo.ice_r'    
+  else:
+    raise ValueError('len(cmaps): %s' % len(cmaps))
   
   cmap1 = plt.cm.get_cmap(cmap1)
   cmap2 = plt.cm.get_cmap(cmap2)
