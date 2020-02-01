@@ -22,15 +22,9 @@ class MetaDataFile(AsciiProjFile):
   """
   def __init__(self, proj, path, **kwargs):
     self.suffix = 'MetaData'
-    self.ext = 'json'
+    self.ext = 'csv'
     self.name = '{}-{}.{}'.format(proj.name, self.suffix, self.ext)
     self.fname = path + self.name
-  def extract_from_segy(self, **kwargs):
-    dframes = []
-    for fname in fnames:
-      dframes.append(pd.read_json(fname))
-    df = pd.concat(dframes)
-    df.reset_index(inplace=True)
 
 # -------------------------------------------------------------------------------
 

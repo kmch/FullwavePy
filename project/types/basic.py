@@ -83,7 +83,7 @@ class Proj(object):
                     str(self.cluster) + ' cluster')
     
     meta = kw('meta', None, kwargs)
-    self.meta = MetaDataFile(self, self.inp.path, **kwargs)
+    self.meta = MetaDataFile(self, self.path, **kwargs)
     
     self.inp = ProjInput(self, **kwargs)
     self.i = self.inp # ALIAS

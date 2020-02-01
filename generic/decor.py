@@ -32,9 +32,8 @@ def timer(func):
     end_time = time.perf_counter()
     
     if timer:
-      print('Function ' + func.__name__ + '() took ' + 
-            str(end_time - start_time) + ' s to run')
-    
+      t = end_time - start_time
+      print('Execution time of {}: {} s'.format(func.__name__, t))    
     return value
   return wrapper_timer
 

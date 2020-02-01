@@ -13,25 +13,6 @@ from autologging import logged, traced
 
 #@traced
 @logged
-def str2float(A, **kwargs): #FIXME
-  """
-  Convert strings to floats 
-  if possible.
-  
-  """
-  try:
-    A = [float(i) for i in A]
-  except ValueError:
-    pass
-  
-  return A
-
-
-# -------------------------------------------------------------------------------
-
-
-#@traced
-@logged
 def exten(fname, **kwargs):
   """
   Extract the extension from the 

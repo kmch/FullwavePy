@@ -182,6 +182,7 @@ def su_taper(fname, taper_front, taper_back, **kwargs):
   
   ntr = get_ntraces(fname, **kwargs)
   
+  # FIXME int_values=False NOT SUPPORTED
   dt_us = (sugethw(fname, 'dt', unique_values=True, int_values=False, **kwargs))[0] # micro sec
   dt_ms = dt_us / 1000  
   su_taper._log.info('dt_ms' + str(dt_ms))
