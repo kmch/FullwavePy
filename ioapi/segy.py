@@ -38,6 +38,10 @@ class SgyFile(object):
   It is meant to have no overlap with other classes 
   to avoid multi-inheritance problems.
   
+  .csv seems the best choice for storing the trace headers 
+  since SEGY files are very structered (so json is an overkill)
+  plus Pandas reads .csv more efficiently (only selected columns).
+  
   """
 
   # -----------------------------------------------------------------------------  
@@ -51,6 +55,9 @@ class SgyFile(object):
     #self.__log.info
     print(e + '\n' + o)
   
+  def read_header(self, **kwargs):
+    import pandas as pd
+    
   # -----------------------------------------------------------------------------  
   
   def suximage(self, **kwargs):
@@ -118,7 +125,7 @@ class SgyFile(object):
     
   # -----------------------------------------------------------------------------
 
-  def read_header(self, **kwargs):
+  def read_header_OLD(self, **kwargs):
     import pandas as pd
     from fullwavepy.ioapi.json import save_json
     
@@ -146,7 +153,7 @@ class SgyFile(object):
   
   # -----------------------------------------------------------------------------
 
-  def resize(self, box, **kwargs): #FIXME
+  def resize(self, box, **kwargs): #FIXME?
     """
     Cut the model to fit the proj.box.
     
@@ -538,7 +545,7 @@ def read_sgy(fname, overwrite=True, **kwargs):
 
 @traced
 @logged
-def read_header(fname, **kwargs):
+def read_header(fname, keys='all', **kwargs):
   """
   SEGY -> SU -> dict.
 
@@ -557,7 +564,44 @@ def read_header(fname, **kwargs):
   It is quite slow.
   
   """
-  from .su import get_keywords, sugethw
+  from fullwavepy.ioapi.su import get_keywords, sugethw
+  
+  if keys == 'all':
+    keys = get_keywords(fname, **kwargs)
+  else:
+    pass
+  header = {}
+  for key in keys:
+    header[key] = sugethw(fname, key, **kwargs)
+  
+  return header
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def read_header_OLD(fname, **kwargs):
+  """
+  SEGY -> SU -> dict.
+
+  Read all trace header values for
+  all non-empty header keywords.
+  
+  Returns
+  -------
+  header : dict
+    Dictionary with keys 
+    corresponding to non-empty 
+    header-words
+  
+  Notes
+  -----
+  It is quite slow.
+  
+  """
+  from fullwavepy.ioapi.su import get_keywords, sugethw
   
   keys = get_keywords(fname, **kwargs)
   header = {}

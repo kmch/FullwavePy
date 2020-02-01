@@ -54,7 +54,7 @@ class Proj(object):
     
     """
     from fullwavepy.project.io import ProjInput, ProjOutput
-    from fullwavepy.project.files.misc import InfoFile
+    from fullwavepy.project.files.misc import InfoFile, MetaDataFile
     from fullwavepy.project.files.runfiles import Runfile
     from fullwavepy.project.files.gridded.surfaces import TopographyFile
     from fullwavepy.project.aux import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
@@ -81,6 +81,9 @@ class Proj(object):
     self.cluster = kw('cluster', 'cx1', kwargs)
     self.__log.info('PBS scripts will be prepared for the ' + 
                     str(self.cluster) + ' cluster')
+    
+    meta = kw('meta', None, kwargs)
+    self.meta = MetaDataFile(self, self.inp.path, **kwargs)
     
     self.inp = ProjInput(self, **kwargs)
     self.i = self.inp # ALIAS

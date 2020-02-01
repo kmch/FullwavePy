@@ -162,6 +162,7 @@ class SourcesFile(SRFile):
     kwargs['markerfacecolor'] = kw('markerfacecolor', 'w', kwargs)
     super().plot_slice(*args, **kwargs)
 
+
 # -------------------------------------------------------------------------------
 
 

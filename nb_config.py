@@ -36,5 +36,5 @@ log_lvl(INFO) # TRACE / DEBUG / INFO / WARNING / ERROR / CRITICAL
 %config IPCompleter.greedy=True 
 
 # automatically reload modules before execution
-%load_ext autoreload
-%autoreload 2
+#%load_ext autoreload
+#%autoreload 2
