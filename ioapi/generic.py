@@ -71,6 +71,20 @@ class AsciiFile(File):
 
 @traced
 @logged
+class CsvFile(AsciiFile):
+  @timer
+  def read(self, **kwargs):
+    from pandas import read_csv
+    usecols = kw('usecols', None, kwargs)
+    df = read_csv(self.fname, usecols=usecols)
+    return df
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class BinaryFile(File):
   pass
   

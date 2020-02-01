@@ -18,8 +18,6 @@ from fullwavepy.plot.oned import colors
 from fullwavepy.plot.twod import plot_image
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
 from fullwavepy.ioapi.fw3d import read_vtr, save_vtr
-from fullwavepy.ioapi.json import save_json
-from fullwavepy.ioapi.segy import header2json
 from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv
 from fullwavepy.project.types.deriv import ProjSynVsObs, ProjInvSyn
 from fullwavepy.project.types.extra import ProjFsQC

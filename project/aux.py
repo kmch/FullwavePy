@@ -361,8 +361,8 @@ class ProjGeometry(object): # FIXME: CLEAN
     
     self._set_discret(**kwargs)
     self._extend_grid(**kwargs)
-    self.__log.warn('Double-check _retain_rreceivers')
-    self._retain_receivers(**kwargs)
+    self.__log.debug('Double-check _retain_rreceivers')
+    #self._retain_receivers(**kwargs)
 
     # PRINT INFO
     box_attrs = ['x1', 'x2', 'y1', 'y2', 'z1', 'z2']
@@ -401,7 +401,7 @@ class ProjGeometry(object): # FIXME: CLEAN
                     {'fname' : 'kwargs', 'params': kwargs}),
                proj.inp.sp, proj.inp.runfile]
     
-    self.__log.info('Searching for grid dimensions in ' +
+    self.__log.debug('Searching for grid dimensions in ' +
                     ', '.join([i.fname for i in sources]))
     
     # SEARCH FOR PARAMS IN VARIOUS PLACES
@@ -562,7 +562,7 @@ class ProjGeometry(object): # FIXME: CLEAN
 
   # -----------------------------------------------------------------------------
     
-  def _retain_receivers(self, receivers_csv=None, **kwargs):
+  def _retain_receivers(self, receivers_csv=None, **kwargs): # FIXME:DEL
     """
     Find the receivers that are contained 
     in the box.

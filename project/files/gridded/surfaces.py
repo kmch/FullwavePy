@@ -43,16 +43,13 @@ class TopographyFile(SurfaceFile):
 
   # -----------------------------------------------------------------------------  
   
-  def __init__(self, proj, path, dupl=None, **kwargs):
+  def __init__(self, proj, path, **kwargs):
     suffix = 'Topography'
     super().__init__(suffix, proj, path, **kwargs)
-    if dupl is not None:
-      from fullwavepy.ioapi.generic import read_arrays
-      self.array = read_arrays(dupl, **kwargs)
   
   # -----------------------------------------------------------------------------  
   
-  def plot(self, bathy=None, **kwargs): #?
+  def plot(self, array=None, **kwargs): #?
     """
     if 'array' in dir(self):
       print('hej')
@@ -60,18 +57,26 @@ class TopographyFile(SurfaceFile):
     else:
       print('boooo')    
     """
-    from fullwavepy.plot.generic import plot
+    #from fullwavepy.plot.generic import plot
+    #from fullwavepy.generic.array import Arr3d
     from fullwavepy.plot.misc import plot_square
     
     kwargs['cbar'] = kw('cbar', True, kwargs)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
     kwargs['shade'] = kw('shade', True, kwargs)
     kwargs['cmap'] = kw('cmap', [], kwargs)
+    kwargs['extent'] = kw('extent', [-8e4, 8e4, 4e4, -4e4], kwargs)
+    pad = kw('pad', 10*self.proj.dx, kwargs)
+    xlim = kw('xlim', (self.proj.box[0]-pad, self.proj.box[1]+pad), kwargs)
+    ylim = kw('ylim', (self.proj.box[2]-pad, self.proj.box[3]+pad), kwargs)
     
-    if bathy is not None:
-      plot(bathy, **kwargs)  
+    if array is not None:
+      array.plot(**kwargs)  
       plt.gca().set_aspect('equal')
+      plt.xlim(xlim)
+      plt.ylim(ylim)
       plt.gca().invert_yaxis()
+      
     
     plot_square(self.proj.box[0], self.proj.box[1], 
                 self.proj.box[2], self.proj.box[3])

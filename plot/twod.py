@@ -36,12 +36,6 @@ def compare_2d(A1, A2, **kwargs):
 
 # -------------------------------------------------------------------------------  
 
-#@traced
-#@logged
-#def superimpose(*args, **kwargs):
-  #for arg in args:
-    #arg.plot(**kwargs)
-
 
 @traced
 @logged
@@ -69,7 +63,8 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
-    cmap = plt.cm.get_cmap(cmap, ncolors)  
+  
+  cmap = plt.cm.get_cmap(cmap, ncolors)  
   
   
   #if widgets:# or fig is None:
@@ -86,7 +81,8 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
                   vmin=vmin, vmax=vmax)
   if cbar:
     colorbar(im, ax)
-  
+
+
 # -------------------------------------------------------------------------------
 
 
@@ -148,71 +144,6 @@ def colorbar(imshow_object, ax, pos='right', size='3%', pad=0.2, **kwargs):
   cax = divider.append_axes(pos, size, pad)
   cbar = plt.colorbar(imshow_object, cax=cax) 
   plt.sca(ax)
-
-
-# ------------------------------------------------------------------------------
-
-
-@traced
-@logged
-def _set_cmap(**kwargs): #NOTE
-  """
-  Perform a few adjustments of the colormap:
-  - combine 2 cmaps into one e.g. bathy & topo)
-  - center around zero (for diverging cmaps)
-  
-  Parameters
-  ----------
-  **kwargs : keyword arguments (optional)
-    Current capabilities: 
-  
-  Returns
-  -------
-  cmap_kwargs : dict
-    Keyword arguments to use in imshow or scatter.
-  
-  Notes
-  -----
-  'twilight_r' is pretty BUT:
-  - it is cyclic -> good for data, not models
-  - opposite extremes have the same color 
-  - probably not perceptually neutral
-  
-  'pink' cmap is kind of a prettier version of 'hot'
-  
-  """  
-  import cmocean
-  cmap = kw('cmap', 'cividis', kwargs)  # 'twilight_r' (SEE NOTES)
-  ncolors = kw('ncolors', None, kwargs)
-  center_cmap = kw('center_cmap', False, kwargs)
-  
-  
-  if center_cmap:
-    _set_cmap._log.warn('center_cmap=True')
-  
-  if type(cmap) == list:
-    if len(cmap) == 2:
-      cmap = _combine_2_cmaps(*cmap)
-    elif len(cmap) == 0:
-      cmap = _combine_2_cmaps()
-  
-  cmap = plt.cm.get_cmap(cmap, ncolors)  
-  if (center_cmap) and ('minn' in kwargs) and ('maxx' in kwargs):
-    minn = kwargs['minn']
-    del_kw('minn', kwargs)
-    maxx = kwargs['maxx']
-    del_kw('maxx', kwargs)
-    vmin, vmax = _center_around_zero(minn, maxx, **kwargs)
-  else:
-    vmin, vmax = None, None
-  
-  cmap_kwargs = {
-    'cmap' : cmap, 
-    'vmin' : vmin, 
-    'vmax' : vmax
-    }
-  
-  return cmap_kwargs
 
 
 # ------------------------------------------------------------------------------

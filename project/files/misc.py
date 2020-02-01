@@ -9,6 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
+from fullwavepy.ioapi.generic import CsvFile
 from fullwavepy.project.files.generic import AsciiProjFile
 
 
@@ -17,14 +18,39 @@ from fullwavepy.project.files.generic import AsciiProjFile
 
 @traced
 @logged
-class MetaDataFile(AsciiProjFile):
+class MetaDataFile(CsvFile, AsciiProjFile):
   """
+  
+  csv is MUCH faster for Panda's read/write than json.
+  Not to mention, we can choose columns.
+  
   """
   def __init__(self, proj, path, **kwargs):
     self.suffix = 'MetaData'
     self.ext = 'csv'
     self.name = '{}-{}.{}'.format(proj.name, self.suffix, self.ext)
     self.fname = path + self.name
+
+  def read(self, overwrite=True, **kwargs):
+    """
+  
+    Notes
+    -----
+    Overwrite=True by default because otherwise plots are not 
+    updated even though they are supposed (e.g. you are passing 
+    a different fname). They will be correct (updated) only
+    if you delete self.array variable, e.g. by restarting the 
+    notebook kernel.
+    Disable overwrite only for PERFORMANCE (e.g. interactive plot)
+    when the array remains unchanged unlike other (e.g. plotting)
+    parameters.
+    
+    """
+    if (not hasattr(self, 'df')) or overwrite:
+      self.__log.warn('{}.df does not exist and will be read.'.format(type(self)))
+      self.df = super().read(**kwargs)
+    return self.df  
+
 
 # -------------------------------------------------------------------------------
 

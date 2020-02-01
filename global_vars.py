@@ -40,5 +40,5 @@ exe = {'fullwave':       '~/PhD/fullwave3D/rev690/bin/fullwave3D.exe',
 # ARRAYS
 # -----------------------------------------------------------------------------
 from fullwavepy.ioapi.generic import read_any
-topo = read_any(topography, shape=(3201,1601,1))
-topo = topo[...,0]
+topo = Arr3d(read_any(topography, shape=(3201,1601,1)))
+#topo = topo[...,0]

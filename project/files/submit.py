@@ -140,11 +140,11 @@ class PbsFile(JobFile, AsciiProjFile):
     
     """
     fname = self.proj.inp.path + 'fullwave3d-verbose-scheduler'
-    self.__log.info('Creating ' + fname)
+    self.__log.debug('Creating ' + fname)
     with open(fname, 'w'):
       pass
     
-    self.__log.info('Creating fullwave3d-verbose-slave-? for each mpiproc')
+    self.__log.debug('Creating fullwave3d-verbose-slave-? for each mpiproc')
     for i in range(1, self.mpiprocs):
       fname = self.proj.inp.path + 'fullwave3d-verbose-slave-' + str(i)
       self.__log.debug('Creating ' + fname)
