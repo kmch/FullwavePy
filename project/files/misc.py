@@ -76,6 +76,29 @@ class JobFile(object):
     self.name = proj.name + '-' + suffix + str(run_id) + '.' + self.exten
     self.fname = path + self.name
   
+  # -----------------------------------------------------------------------------
+
+  def _create_verbosity_triggers(self, **kwargs):
+    """
+    Create empty files for each MPI process. 
+    Their presence makes Fullwave emit verbose 
+    output if relevant env vars are set to yes.
+    
+    """
+    fname = self.proj.inp.path + 'fullwave3d-verbose-scheduler'
+    self.__log.debug('Creating ' + fname)
+    with open(fname, 'w'):
+      pass
+    
+    self.__log.debug('Creating fullwave3d-verbose-slave-? for each mpiproc')
+    for i in range(1, self.mpiprocs):
+      fname = self.proj.inp.path + 'fullwave3d-verbose-slave-' + str(i)
+      self.__log.debug('Creating ' + fname)
+      with open(fname, 'w'):
+        pass    
+
+  # -----------------------------------------------------------------------------  
+  
   
 # -------------------------------------------------------------------------------
 

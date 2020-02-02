@@ -197,7 +197,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     if step is not None:
       step = int(step)
       if step < 0:
-        tsteps = np.arange(abs(step), proj.ns, abs(step))
+        tsteps = np.arange(abs(step), proj.ns+1, abs(step))
         self.__log.info("proj.env.var['SLAVES_WAVEFIELDSVTR']=" + str(step) +
                         ' => wavefield dumped at timesteps: ' + str(tsteps))
       else:
@@ -206,7 +206,9 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     else:
       self.__log.warn('SLAVES_WAVEFIELDSVTR not set - returning empty list...')
       tsteps = []
-      
+    
+    self.__log.debug('tsteps: %s' % str(tsteps))
+    
     return tsteps
 
   # -----------------------------------------------------------------------------

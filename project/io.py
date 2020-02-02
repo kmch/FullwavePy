@@ -390,7 +390,7 @@ class ProjOutput(ProjThroughput):
     self.e = self.err
     self.jobstats = JobStats(self.proj, **kwargs)
     self.jstat = self.jobstats
-    #self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
+    self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
       
     self.__log.debug('Initializing project-type-specific output...')
     self.proj.init_output(**kwargs)

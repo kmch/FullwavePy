@@ -132,27 +132,6 @@ class PbsFile(JobFile, AsciiProjFile):
        
   # -----------------------------------------------------------------------------
 
-  def _create_verbosity_triggers(self, **kwargs):
-    """
-    Create empty files for each MPI process. 
-    Their presence makes Fullwave emit verbose 
-    output if relevant env vars are set to yes.
-    
-    """
-    fname = self.proj.inp.path + 'fullwave3d-verbose-scheduler'
-    self.__log.debug('Creating ' + fname)
-    with open(fname, 'w'):
-      pass
-    
-    self.__log.debug('Creating fullwave3d-verbose-slave-? for each mpiproc')
-    for i in range(1, self.mpiprocs):
-      fname = self.proj.inp.path + 'fullwave3d-verbose-slave-' + str(i)
-      self.__log.debug('Creating ' + fname)
-      with open(fname, 'w'):
-        pass    
-
-  # -----------------------------------------------------------------------------
-
   def _write_head(self, f, **kwargs):
     raise NotImplementedError
 
@@ -167,7 +146,7 @@ class PbsFile(JobFile, AsciiProjFile):
       f.write('#\n') 
       
       f.write('\n# DELETE OUTPUT OF PREVIOUS SYNTH. RUNS, OTHERWISE FULLWAVE WILL TERMINATE\n')
-      f.write('rm $work_dir/' + self.proj.name + '-*.log\n')
+      #f.write('rm $work_dir/' + self.proj.name + '-*.log\n') # WHY WAS IT ON?!
       f.write('rm $work_dir/' + self.proj.name + '-*fw*vtr\n')
       f.write('rm $work_dir/' + self.proj.name + '-Observed-Time.tt?\n')
       f.write('rm $work_dir/' + self.proj.name + '-Synthetic.*\n')
@@ -239,6 +218,16 @@ class BashFile(JobFile, AsciiProjFile):
     exten = 'sh'
     super().__init__(proj, path, suffix, exten, run_id, **kwargs) 
   
+  def _prevent_overwriting(self, **kwargs):
+    """
+    """
+    proj = self.proj
+    
+    for f in [proj.out.out, proj.out.err]:
+      fname = f.no[self.run_id].fname
+      if exists(fname):
+        raise OSError("{} already exists!".format(fname))  
+  
   # -----------------------------------------------------------------------------  
   
   def create(self, **kwargs):
@@ -249,8 +238,8 @@ class BashFile(JobFile, AsciiProjFile):
     path_fullwave = self.proj.exe['fullwave_local']
     path_make = self.proj.exe['fullwave_local'] + '/../../'
     
-    outlog = '../../' + self.proj.out.out.fname
-    errlog = '../../' + self.proj.out.err.fname
+    #outlog = '../../' + self.proj.out.out.no[self.run_id].fname
+    #errlog = '../../' + self.proj.out.err.no[self.run_id].fname
     
     # CREATE EMPY FILES FOR VERBOSE SLAVE OUTPUT
     for i in range(1, ompthreads): # THIS EXCLUDES SCHEDULER
@@ -260,30 +249,59 @@ class BashFile(JobFile, AsciiProjFile):
     with open(self.fname, 'w') as f:
       f.write('#!/bin/bash\n\n')
       
-      f.write('project=' + self.proj.name + '\n')
-      f.write('path_fullwave=' + path_fullwave + '\n')
-      f.write('work_dir=./\n')
+      #f.write('ompthreads=' + str(ompthreads) + '\n\n')
+      
+      #f.write('project=' + self.proj.name + '\n')
+      #f.write('path_fullwave=' + path_fullwave + '\n')
+      #f.write('work_dir=../out/\n')
+      #f.write('ln -s * $work_dir\n')
+      
+      text = """
+      ompthreads={ompthreads}
+      
+      project={pname}
+      path_fullwave={path_fullwave}
+      
+      echo 'current dir: '
+      pwd
+      
+      work_dir={outdir}
+      ln {inpdir}/* $work_dir 
+      cd $work_dir # !!!
+      """.format(ompthreads=ompthreads, pname=self.proj.name, path_fullwave=path_fullwave,
+                 inpdir=self.proj.inp.path, outdir=self.proj.out.path)
+      
+      f.write(text)
+      
       #f.write('path_make=' + path_make + '\n')
-      f.write('outlog=' + outlog + '\n')
-      f.write('errlog=' + errlog + '\n')
-      f.write('ompthreads=' + str(ompthreads) + '\n\n')
+      #f.write('outlog=' + outlog + '\n')
+      #f.write('errlog=' + errlog + '\n')
       
       
       for key, val in sorted(self.proj.env.var.items()): 
         if val is not None:
           f.write('export ' + str(key) + '=' + str(val) + '\n')
       
-      #f.write('make -C ${path_make} -j fullwave3d\n')
-      f.write('\nmpiexec -n $ompthreads ${path_fullwave} ${project} ' +
-              '1>> ${outlog} 2>> ${errlog}\n\n')
-   
-      f.write('for f in fw*iter*vtr\ndo\n  mv $f ${project}-$f\ndone\n\n')
       
-      f.write('mv ' + self.proj.name + '-*Synthetic* ../out/\n')   
-      f.write('mv ' + self.proj.name + '-*Observed-Time* ../out/\n')   
-      f.write('mv ' + self.proj.name + '-*DUMP* ../out/\n')   
-      f.write('mv ' + self.proj.name + '-*iter* ../out/\n')   
-      f.write('mv ' + self.proj.name + '-*CP* ../out/\n')   
+      f.write('rm ' + self.proj.name + '-*fw*vtr\n')
+      f.write('rm ' + self.proj.name + '-Observed-Time.tt?\n')
+      f.write('rm ' + self.proj.name + '-Synthetic.*\n')
+      f.write('rm ' + self.proj.name + '-Observed.*\n')  
+      
+      #f.write('make -C ${path_make} -j fullwave3d\n')
+      cmd = 'mpiexec -n {ompthreads} $path_fullwave {pname} 1> {out} 2> {err}'.format(
+        ompthreads=ompthreads, pname=self.proj.name,
+        out=self.proj.o.o.no[self.run_id].name, err=self.proj.o.e.no[self.run_id].name)
+      
+      f.write('\n\n' + cmd + '\n\n')
+   
+      f.write('for f in fw*iter*vtr bw*iter*vtr\ndo\n  mv $f ${project}-$f\ndone\n\n')
+      
+      #f.write('mv ' + self.proj.name + '-*Synthetic* ../out/\n')   
+      #f.write('mv ' + self.proj.name + '-*Observed-Time* ../out/\n')   
+      #f.write('mv ' + self.proj.name + '-*DUMP* ../out/\n')   
+      #f.write('mv ' + self.proj.name + '-*iter* ../out/\n')   
+      #f.write('mv ' + self.proj.name + '-*CP* ../out/\n')   
    
   # -----------------------------------------------------------------------------      
 
@@ -294,11 +312,13 @@ class BashFile(JobFile, AsciiProjFile):
     Not advised for bigger projects.
     
     """
+    self._prevent_overwriting(**kwargs)
+    
     cat = kw('cat', True, kwargs)
     
     self.__log.info('Running Fullwave3D...')
     
-    o, e = bash('./' + self.fname, path=self.path)
+    o, e = bash('./' + self.fname)
     
     if len(o) != 0 and cat:
       self.__log.info(o)
