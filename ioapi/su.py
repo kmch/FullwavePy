@@ -195,7 +195,6 @@ def suwind(fname, nfname, key, vmin, vmax, **kwargs):
   o, e = bash(cmd)
   #print(o, e)
 
-
 # -------------------------------------------------------------------------------
 
 

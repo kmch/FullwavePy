@@ -52,8 +52,7 @@ class SgyFile(object):
     
     o, e = bash('segyread tape=' + self.fname + ' | ' +
                 'surange', **kwargs)
-    #self.__log.info
-    print(e + '\n' + o)
+    print(e + '\n' + o) # NOT log.info IN ORDER TO BE ALWAYS PRINTED
   
   # -----------------------------------------------------------------------------  
   
@@ -76,8 +75,9 @@ class SgyFile(object):
     Returns
     -------
     hw_values : list
-      List of floats, one per trace
-      in order of traces.
+      List of floats: either one per trace
+      in order of traces (if unique_values=False)
+      or as many as unique values, sorted.
     
     Notes
     -----
@@ -91,8 +91,64 @@ class SgyFile(object):
       values = sorted(list(set(values)))
     
     return values
+  
+  # -----------------------------------------------------------------------------
+  
+  def read_header(self, overwrite=True, **kwargs):
+    """
+    Add reading csv, useful for heavy sgy files.
+    """
+    if (not hasattr(self, 'head')) or overwrite:
+      self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
+    return self.head
 
   # -----------------------------------------------------------------------------
+  
+  def split(self, key, **kwargs):
+    """
+    Split a sgy file into smaller 
+    files, one file for each value of 
+    the key.
+    
+    if no value is provided, it will take 
+    all values present in the file.
+    
+    Returns
+    -------
+    nfnames : list 
+      List of files resulted from 
+      the splitting. Each element
+      can be feed into another splitting.
+    
+    Notes
+    -----
+    Useful for storing shot lines 
+    separately for displaying.
+    
+    """
+    from .su import suwind, sugethw
+    from fullwavepy.generic.parse import extend_fname
+    
+    if not exists(fname):
+      raise FileNotFoundError(fname)  
+    
+    if value is None:
+      values = sugethw(fname, key, unique_values=True, **kwargs)
+    else:
+      values = [value]
+    
+    nfnames = []
+    
+    for value in values:
+      nfname = extend_fname(fname, [[key, value]])
+      nfnames.append(nfname)
+      split_sgy._log.info('Output file: ' + nfname)
+      
+      suwind(fname, nfname, key, value, value, **kwargs)
+    
+    return nfnames 
+  
+  
   
   def _get_sr_coords(self, datafile=None, **kwargs):
     """
