@@ -59,12 +59,12 @@ class CPFileList(SchedFileList):
     super().__init__(proj, **kwargs)
     suffix = lambda file_id, it : 'CP' + str(it).rjust(5, '0') + '-' + file_id
     
-    if hasattr(self, 'it'):
+    if self.init_err is None:
       self.it[0] = file_start
       for it in range(1, self.nits_total + 1):
         self.it[it] = FileClass(suffix(file_id, it), proj, proj.out.path, **kwargs)      
     else:
-      self.__log.warn('self.it is None, unable to initialize the object')
+      self.__log.warn(self.init_err)
       
   # -----------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ class DumpFileList(SlaveFileList):
                                                 '-iter' + str(it).rjust(5,'0')  + 
                                                 'fwd' + str(fwd))
     
-    if hasattr(self, 'it'):
+    if self.init_err is None:
       self.it[0] = None
       for it in range(1, self.nits_total + 1):
         self.it[it] = {}
@@ -131,7 +131,7 @@ class DumpFileList(SlaveFileList):
           self.it[it][sid] = FileClass(suffix(file_id, it, sid, fwd), 
                                        proj, proj.out.path, it=it, sid=sid, **kwargs)
     else:
-      self.__log.warn('self.it is None, unable to initialize the object')
+      self.__log.warn(self.init_err)
     
   # -----------------------------------------------------------------------------    
     
@@ -160,6 +160,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
   
   # ----------------------------------------------------------------------------- 
   
+  @timer
   def __init__(self, proj, FileClass, **kwargs):
     """
     
@@ -171,8 +172,8 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     """
     super().__init__(proj, **kwargs)
     tsteps = self._read_tsteps(**kwargs)
-    
-    if hasattr(self, 'it'):
+
+    if self.init_err is None:
       self.it[0] = None
       for it in range(1, self.nits_total + 1):
         self.it[it] = {}
@@ -184,7 +185,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
             tid = '00001' #'?????'
             self.it[it][sid][ts] = FileClass(proj, ts, sid, it, tid, **kwargs)
     else:
-      self.__log.warn('self.it is None, unable to initialize the object')
+      self.__log.warn(self.init_err)
   
   # ----------------------------------------------------------------------------- 
   

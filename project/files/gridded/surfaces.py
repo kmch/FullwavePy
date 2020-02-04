@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
+from fullwavepy.generic.decor import widgets
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.files.generic import ArrayProjFile
@@ -49,6 +50,7 @@ class TopographyFile(SurfaceFile):
   
   # -----------------------------------------------------------------------------  
   
+  @widgets('cmap')
   def plot(self, array=None, **kwargs): #?
     """
     if 'array' in dir(self):
@@ -67,10 +69,16 @@ class TopographyFile(SurfaceFile):
     kwargs['cmap'] = kw('cmap', [], kwargs)
     kwargs['extent'] = kw('extent', [-8e4, 8e4, 4e4, -4e4], kwargs)
     pad = kw('pad', 10*self.proj.dx, kwargs)
+    full = kw('full', False, kwargs)
     xlim = kw('xlim', (self.proj.box[0]-pad, self.proj.box[1]+pad), kwargs)
     ylim = kw('ylim', (self.proj.box[2]-pad, self.proj.box[3]+pad), kwargs)
+    if full:
+      xlim = None
+      ylim = None
+    
     
     if array is not None:
+      #kwargs[
       array.plot(**kwargs)  
       plt.gca().set_aspect('equal')
       plt.xlim(xlim)

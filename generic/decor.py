@@ -78,7 +78,7 @@ def widgets(*widgets_args):
       from ipywidgets import (IntSlider, BoundedIntText, Dropdown, 
                               SelectMultiple, Checkbox,
                               Layout, TwoByTwoLayout) 
-      widgets = kw('widgets', False, kwargs)
+      widgets = kw('wdg', False, kwargs)
       
       try:
         proj = args[0].proj

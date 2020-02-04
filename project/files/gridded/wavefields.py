@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
+from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip, path_leave
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.files.generic import ArrayProjFile
@@ -29,6 +30,7 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
   
   # -----------------------------------------------------------------------------  
   
+  @timer
   def __init__(self, proj, file_id, ts, sid, it, tid, **kwargs):
     """
     
@@ -55,14 +57,15 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
                  '-iter' + str(it).rjust(5,'0')  + 
                  '-taskid?????.vtr') #+ str(tid).rjust(5,'0'))
     
-    fnames = get_files(path, proj.name + '-' + suffix)
+    fnames = get_files(path, proj.name + '-' + suffix, **kwargs)
     if len(fnames) > 1:
-      raise ValueError('Pattern {} matched by more than one file: {}'.format(suffix, fnames))
+     raise ValueError('Pattern {} matched by more than one file: {}'.format(suffix, fnames))
     elif len(fnames) == 0:
-      self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(suffix))
+     self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(suffix))
     else:
-      suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
-      super().__init__(suffix, proj, path, **kwargs)
+     suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
+    
+    super().__init__(suffix, proj, path, **kwargs)
   
   # -----------------------------------------------------------------------------  
   

@@ -237,10 +237,6 @@ class ProjInput(ProjThroughput):
     
   # -----------------------------------------------------------------------------
   
-  #def init_sp_input(self, **kwargs):
-  
-  # ----------------------------------------------------------------------------- 
-  
   def prepare(self, **kwargs):
     """
     """
@@ -253,13 +249,15 @@ class ProjInput(ProjThroughput):
     
     self.proj.prepare_input(**kwargs)
 
-  # -----------------------------------------------------------------------------    
-    
   def prep(self, **kwargs):
     self.prepare(**kwargs)    
     
   # ----------------------------------------------------------------------------- 
   
+  def plot(self, *args, **kwargs):
+    self.proj.plot_input(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------   
   def check(self, **kwargs):
     self.check_numerics(**kwargs)
     self.check_by_fullwave(**kwargs)
@@ -332,11 +330,6 @@ class ProjInput(ProjThroughput):
     path = self.path
     o, e = bash(exe+ ' -checkinput ' + self.proj.name, path=path)
     print(o, e)
-
-  # ----------------------------------------------------------------------------- 
-
-  def plot(self, *args, **kwargs):
-    self.proj.plot_input(*args, **kwargs)
 
   # ----------------------------------------------------------------------------- 
 
@@ -428,16 +421,6 @@ class ProjOutput(ProjThroughput):
     self.proj.plot_output(*args, **kwargs)
 
   # ----------------------------------------------------------------------------- 
-
-  #def check(self, **kwargs):
-  #  """
-  #  
-  #  """
-  #  self.__log.warn('Implement checks for crucial files')
-  #  
-  #  self.proj.check_output(**kwargs)
-  
-  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------

@@ -98,6 +98,7 @@ class PbsFileCx1(PbsFile):
       mem_max = 124 
    
     elif q == 'multi':
+      raise ValueError('1 Feb 2020 -- multinode class retired -- minimum node count for large class is now reduced')
       select_min = 3
       select_max = 16
       ncpus_min = 12

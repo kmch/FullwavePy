@@ -214,7 +214,7 @@ class ProjSyn(Proj):
     
   # -----------------------------------------------------------------------------
   
-  @widgets
+  @widgets('cmap')
   def plot_input(self, widgets=False, **kwargs):
     """
   
@@ -226,7 +226,7 @@ class ProjSyn(Proj):
     
     """
     from matplotlib.gridspec import GridSpec
-
+    
     self.i.sgn.read(**kwargs)
     self.i.rsg.read(**kwargs)
     self.i.tvp.read(**kwargs)

@@ -168,13 +168,15 @@ def plot_points(scatt, **kwargs):
   -----
   
   """
-  from .twod import _set_cmap
+  from fullwavepy.plot.twod import _center_around_zero
   
   orient = kw('orient', 'h', kwargs)
   label = kw('label', None, kwargs)
   c = kw('scatt_ampl', None, kwargs)
-  kwargs['cmap'] = kw('scatt_cmap', 'viridis', kwargs)
+  cmap = kw('scatt_cmap', 'viridis', kwargs)
   s = kw('scatt_size', 5, kwargs) # CAN BE A LIST!
+  center_cmap = kw('center_cmap', False, kwargs)
+  
   if type(s) == list:
     s = np.array(s)
   s = s ** 2 # SQUARED IS WHAT SCATTER EXPECTS
@@ -191,22 +193,34 @@ def plot_points(scatt, **kwargs):
   else:
     raise ValueError('Wrong orient: ' + orient)
   
-  scatter_kwargs = _set_cmap(**kwargs)
-  scatter_kwargs['vmin'] = vmin
-  scatter_kwargs['vmax'] = vmax
+  #scatter_kwargs = _set_cmap(**kwargs)
+  #scatter_kwargs['vmin'] = vmin
+  #scatter_kwargs['vmax'] = vmax
   
   #print(scatter_kwargs)
+
+  if center_cmap:
+    vmin, vmax = _center_around_zero(vmin, vmax)
   
   im = plt.scatter(scatt_x, scatt_y, label=label, 
-                   s=s, c=c, **scatter_kwargs)
+                   s=s, c=c, vmin=vmin, vmax=vmax, cmap=cmap)
   
-  if cbar: # FIXME: MERGE WITfullwavepy.plot_image's
-    ax = plt.gca()
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    cbar = plt.colorbar(im, cax=cax) 
-    plt.sca(ax) # SET CURRENT AXIS BACK TO THE ACTUAL PLOT
+  if center_cmap:
+    vmin, vmax = _center_around_zero(vmin, vmax)
+  
+  #ax = fig.add_subplot()
+  #im = ax.imshow(image.T, cmap=cmap, extent=extent, 
+                  #vmin=vmin, vmax=vmax)
+  if cbar:
+    colorbar(im, ax)  
+  
+  #if cbar: # FIXME: MERGE WITfullwavepy.plot_image's
+    #ax = plt.gca()
+    #from mpl_toolkits.axes_grid1 import make_axes_locatable
+    #divider = make_axes_locatable(ax)
+    #cax = divider.append_axes("right", size="5%", pad=0.05)
+    #cbar = plt.colorbar(im, cax=cax) 
+    #plt.sca(ax) # SET CURRENT AXIS BACK TO THE ACTUAL PLOT
   
 
 # -------------------------------------------------------------------------------

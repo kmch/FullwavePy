@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
+from fullwavepy.generic.decor import timer
+
 
 # -------------------------------------------------------------------------------
 
@@ -148,6 +150,7 @@ def exists(fname, **kwargs):
 # -------------------------------------------------------------------------------
 
 
+@timer
 @traced
 @logged
 def get_files(path, pattern, **kwargs):
@@ -174,6 +177,9 @@ def get_files(path, pattern, **kwargs):
   Notes
   -----
   Comes in handy in Jupyter notebooks.
+  
+  It gets reaaally slow if a no. of files in the path 
+  is big (>10k)
   
   """
   from os import listdir as ls

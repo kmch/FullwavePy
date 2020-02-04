@@ -30,7 +30,7 @@ class ProjPath(object):
     del_kw('path', kwargs)
     if proj.path[-1] != '/':
       proj.path += '/' 
-    self.__log.info('Project path set to: ' + proj.path)
+    self.__log.debug('Project path set to: ' + proj.path)
 
 
 # -------------------------------------------------------------------------------

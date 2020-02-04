@@ -55,9 +55,6 @@ class SgyFile(object):
     #self.__log.info
     print(e + '\n' + o)
   
-  def read_header(self, **kwargs):
-    import pandas as pd
-    
   # -----------------------------------------------------------------------------  
   
   def suximage(self, **kwargs):
@@ -89,9 +86,11 @@ class SgyFile(object):
     
     """
     from fullwavepy.ioapi.su import sugethw
-    hw_values = sugethw(self.fname, key, unique_values, **kwargs)
+    values = sugethw(self.fname, keys=[key], **kwargs)[key]
+    if unique_values:
+      values = sorted(list(set(values)))
     
-    return hw_values
+    return values
 
   # -----------------------------------------------------------------------------
   
