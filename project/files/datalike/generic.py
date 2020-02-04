@@ -54,6 +54,11 @@ class DataFile(ArrayProjFile):
   
   # -----------------------------------------------------------------------------   
 
+  def split(self, **kwargs):
+    NotImplementedError('To implement!')
+
+
+
   def _read_picks(self, fname, kill_gaps=True, **kwargs):
     """
     fname 

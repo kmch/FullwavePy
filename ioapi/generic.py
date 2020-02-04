@@ -19,8 +19,12 @@ from fullwavepy.generic.system import exists, bash
 @traced
 @logged
 class File(object):
-  def __init__(self, fname, **kwargs):
-    self.fname = fname
+  def __init__(self, name, path, **kwargs):
+    self.name = name
+    self.path = path
+    self.fname = path + '/' + name
+  #def __init__(self, fname, **kwargs):
+  #  self.fname = fname
 
 
 # -------------------------------------------------------------------------------

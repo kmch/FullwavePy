@@ -171,7 +171,35 @@ def sushw(fname, key, value, **kwargs):
 
 @traced
 @logged
-def suwind(fname, nfname, key, vmin, vmax, **kwargs):
+def suwind(fname, nfname, window, **kwargs):
+  """
+  Great!
+  """
+  if not exists(fname): # THIS SHOULD NOT BE NECESSARY 
+    raise FileNotFoundError(fname)   
+  assert isinstance(window, dict)
+  
+  cmd = 'segyread tape={}'.format(fname)
+  
+  for key, values in window.items():
+    if isinstance(values, dict):
+      vmin = values['min'] 
+      vmax = values['max']
+      cmd += ' | suwind key={} min={} max={}'.format(key, vmin, vmax)
+    else:
+      cmd += ' | suwind key={} max=-10000000 accept='.format(key)
+      for val in values:
+        cmd += '{},'.format(val)
+      cmd = cmd[ :-1] # TRIM THE LAST COMMA
+  cmd += ' | segyhdrs | segywrite tape={}'.format(nfname)
+  o, e = bash(cmd) 
+  
+
+# -------------------------------------------------------------------------------
+
+@traced
+@logged
+def suwind_OLD(fname, nfname, key, vmin, vmax, **kwargs):
   """
   
   nfname : str 

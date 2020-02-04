@@ -42,48 +42,8 @@ class DataFileSgy(DataFile, SgyFile):
 
   # -----------------------------------------------------------------------------   
   
-  def split(self, sid=None, lid=None, **kwargs):
-    """
-    Split so that each file corresponds 
-    to a single station and a single shot lines.
-    
-    Parameters
-    ----------
-    tracf - station
-    ep - line
-    
-    Notes
-    -----
-    It collects file names
-    using the list of project 
-    shots and GetFiles().
-    
-    Only sgy.
-    
-    It overwrites all the old files. Otherwise 
-    it would be mistakes-prone if old and new files
-    were mixed.
-    
-    """
-    from fullwavepy.ioapi.segy import split_sgy
-    
-    keys = kw('keys', [self.proj.sgy.hw['sid'],
-                       self.proj.sgy.hw['lid']], kwargs)
-    
-    fnames = [self.fname]
-    
-    for key, value in zip(keys, [sid, lid]):
-      for fname in fnames:
-        nfnames = split_sgy(fname, key, value, **kwargs)
-      
-      fnames = list(nfnames)
-      
-    #self.files(**kwargs)
- 
-  # ----------------------------------------------------------------------------- 
-
   @timer
-  def files(self, **kwargs): # FIXME
+  def files_OLD(self, **kwargs): # FIXME
     """
     Create hooks for 
     
@@ -148,7 +108,7 @@ class DataFileSgy(DataFile, SgyFile):
  
   # -----------------------------------------------------------------------------   
   
-  def read(self, decimate=None, **kwargs):
+  def read_OLD(self, decimate=None, **kwargs):
     """
     Use suwind command to decimate the data (optional).
     
@@ -176,6 +136,46 @@ class DataFileSgy(DataFile, SgyFile):
 
     return super().read(fname, **kwargs)
   
+  # -----------------------------------------------------------------------------
+  
+  def split_OLD(self, sid=None, lid=None, **kwargs):
+    """
+    Split so that each file corresponds 
+    to a single station and a single shot lines.
+    
+    Parameters
+    ----------
+    tracf - station
+    ep - line
+    
+    Notes
+    -----
+    It collects file names
+    using the list of project 
+    shots and GetFiles().
+    
+    Only sgy.
+    
+    It overwrites all the old files. Otherwise 
+    it would be mistakes-prone if old and new files
+    were mixed.
+    
+    """
+    from fullwavepy.ioapi.segy import split_sgy
+    
+    keys = kw('keys', [self.proj.sgy.hw['sid'],
+                       self.proj.sgy.hw['lid']], kwargs)
+    
+    fnames = [self.fname]
+    
+    for key, value in zip(keys, [sid, lid]):
+      for fname in fnames:
+        nfnames = split_sgy(fname, key, value, **kwargs)
+      
+      fnames = list(nfnames)
+      
+    #self.files(**kwargs)
+ 
   # -----------------------------------------------------------------------------
 
 

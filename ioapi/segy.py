@@ -8,8 +8,8 @@ from autologging import logged, traced
 
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, strip, exten
-
+from fullwavepy.generic.parse import kw, strip, exten, path_leave
+from fullwavepy.ioapi.generic import ArrayFile
 
 json_header_suffix = '_HEAD.json'
 filt_suffix = '_filt.sgy'
@@ -23,7 +23,7 @@ filt_mute_suffix = '_filt_mute.sgy'
 
 @traced
 @logged
-class SgyFile(object):
+class SgyFile(ArrayFile):
   """
   SEG-Y file.
   
@@ -43,7 +43,7 @@ class SgyFile(object):
   plus Pandas reads .csv more efficiently (only selected columns).
   
   """
-
+  
   # -----------------------------------------------------------------------------  
   
   def surange(self, **kwargs):
@@ -59,13 +59,50 @@ class SgyFile(object):
   def suximage(self, **kwargs):
     if not exists(self.fname):
       raise FileNotFoundError(self.fname)    
-    
-    self.__log.warn('suximage binaries seem to be broken')
+    #FIXME
+    self.__log.warn('suximage does not work here for some reason but it used to')
     o, e = bash('segyread tape=' + self.fname + ' | ' +
                 'suximage', **kwargs)
     self.__log.info(e + '\n' + o)
   
+  # -----------------------------------------------------------------------------
+  
+  def read_header(self, overwrite=True, **kwargs):
+    """
+    Add reading csv, useful for heavy sgy files.
+    """
+    if (not hasattr(self, 'head')) or overwrite:
+      self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
+    return self.head
+
+  # -----------------------------------------------------------------------------
+  
+  def window(self, window, **kwargs):
+    from fullwavepy.ioapi.su import suwind
+    fname = self.fname
+    nfname = strip(fname) + '_windowed.' + exten(fname)
+    suwind(fname, nfname, window, **kwargs)
+    self.win = self.__class__(path_leave(nfname), self.path)
+
+  # -----------------------------------------------------------------------------
+  
+  def split(self, key, **kwargs):
+    from fullwavepy.ioapi.su import suwind
+    from fullwavepy.generic.parse import extend_fname
+    
+    setattr(self, key, {})
+    selfkey = getattr(self, key)
+    
+    values = self._gethw(key, unique_values=True, **kwargs)
+    
+    for value in values:
+      nfname = extend_fname(self.fname, [[key, value]])
+      suwind(self.fname, nfname, {key: [value]}, **kwargs)
+      selfkey[value] = self.__class__(path_leave(nfname), self.path)
+      #split_sgy._log.info('Output file: ' + nfname)
+
   # -----------------------------------------------------------------------------  
+  
   
   @timer
   def _gethw(self, key, unique_values=False, **kwargs):
@@ -91,64 +128,8 @@ class SgyFile(object):
       values = sorted(list(set(values)))
     
     return values
-  
+    
   # -----------------------------------------------------------------------------
-  
-  def read_header(self, overwrite=True, **kwargs):
-    """
-    Add reading csv, useful for heavy sgy files.
-    """
-    if (not hasattr(self, 'head')) or overwrite:
-      self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
-    return self.head
-
-  # -----------------------------------------------------------------------------
-  
-  def split(self, key, **kwargs):
-    """
-    Split a sgy file into smaller 
-    files, one file for each value of 
-    the key.
-    
-    if no value is provided, it will take 
-    all values present in the file.
-    
-    Returns
-    -------
-    nfnames : list 
-      List of files resulted from 
-      the splitting. Each element
-      can be feed into another splitting.
-    
-    Notes
-    -----
-    Useful for storing shot lines 
-    separately for displaying.
-    
-    """
-    from .su import suwind, sugethw
-    from fullwavepy.generic.parse import extend_fname
-    
-    if not exists(fname):
-      raise FileNotFoundError(fname)  
-    
-    if value is None:
-      values = sugethw(fname, key, unique_values=True, **kwargs)
-    else:
-      values = [value]
-    
-    nfnames = []
-    
-    for value in values:
-      nfname = extend_fname(fname, [[key, value]])
-      nfnames.append(nfname)
-      split_sgy._log.info('Output file: ' + nfname)
-      
-      suwind(fname, nfname, key, value, value, **kwargs)
-    
-    return nfnames 
-  
-  
   
   def _get_sr_coords(self, datafile=None, **kwargs):
     """
@@ -397,6 +378,57 @@ class SgyFile(object):
     #!su_sgyread.sh tmp.sgy | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute2.bin'} | segyhdrs | segywrite tape=out.sgy    
     
   # -----------------------------------------------------------------------------  
+
+
+# -------------------------------------------------------------------------------
+
+
+@timer
+@traced
+@logged
+def split_sgy(fname, key, value=None, **kwargs):
+  """
+  Split a sgy file into smaller 
+  files, one file for each value of 
+  the key.
+  
+  if no value is provided, it will take 
+  all values present in the file.
+  
+  Returns
+  -------
+  nfnames : list 
+    List of files resulted from 
+    the splitting. Each element
+    can be feed into another splitting.
+  
+  Notes
+  -----
+  Useful for storing shot lines 
+  separately for displaying.
+  
+  """
+  from .su import suwind, sugethw
+  from fullwavepy.generic.parse import extend_fname
+  
+  if not exists(fname):
+    raise FileNotFoundError(fname)  
+  
+  if value is None:
+    values = sugethw(fname, key, unique_values=True, **kwargs)
+  else:
+    values = [value]
+  
+  nfnames = []
+
+  for value in values:
+    nfname = extend_fname(fname, [[key, value]])
+    nfnames.append(nfname)
+    split_sgy._log.info('Output file: ' + nfname)
+    
+    suwind(fname, nfname, key, value, value, **kwargs)
+
+  return nfnames 
 
 
 # -------------------------------------------------------------------------------
@@ -662,57 +694,6 @@ def header2json(fname, **kwargs):
   h = read_header(fname, **kwargs)
   save_json(nfname, h, **kwargs)
   return nfname
-
-
-# -------------------------------------------------------------------------------
-
-
-@timer
-@traced
-@logged
-def split_sgy(fname, key, value=None, **kwargs):
-  """
-  Split a sgy file into smaller 
-  files, one file for each value of 
-  the key.
-  
-  if no value is provided, it will take 
-  all values present in the file.
-  
-  Returns
-  -------
-  nfnames : list 
-    List of files resulted from 
-    the splitting. Each element
-    can be feed into another splitting.
-  
-  Notes
-  -----
-  Useful for storing shot lines 
-  separately for displaying.
-  
-  """
-  from .su import suwind, sugethw
-  from fullwavepy.generic.parse import extend_fname
-  
-  if not exists(fname):
-    raise FileNotFoundError(fname)  
-  
-  if value is None:
-    values = sugethw(fname, key, unique_values=True, **kwargs)
-  else:
-    values = [value]
-  
-  nfnames = []
-
-  for value in values:
-    nfname = extend_fname(fname, [[key, value]])
-    nfnames.append(nfname)
-    split_sgy._log.info('Output file: ' + nfname)
-    
-    suwind(fname, nfname, key, value, value, **kwargs)
-
-  return nfnames 
 
 
 # -------------------------------------------------------------------------------
