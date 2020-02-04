@@ -173,6 +173,14 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     super().__init__(proj, **kwargs)
     tsteps = self._read_tsteps(**kwargs)
 
+    nfiles_max = 200
+    o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
+    nfiles = int(o)    
+    if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
+      self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
+                                                                                nfiles, nfiles_max)
+
+
     if self.init_err is None:
       self.it[0] = None
       for it in range(1, self.nits_total + 1):

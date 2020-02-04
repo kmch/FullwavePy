@@ -88,14 +88,7 @@ class IterFileList(ProjFileList):
     else:
       #self.init_err = 'Cannot init {} because self.nits_total not set'.format(self.__class__)
       self.init_err = 'Cannot init {} because self.nits_total not set'.format('')
-    nfiles_max = 200
-    o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
-    nfiles = int(o)    
-    if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
-      #self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
-                                                                                #nfiles, nfiles_max)
-      self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format('', 
-                                                                                nfiles, nfiles_max)
+  
   # -----------------------------------------------------------------------------
       
   def _read_iters(self, **kwargs):

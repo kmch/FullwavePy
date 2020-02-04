@@ -9,7 +9,7 @@ from autologging import logged, traced
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, strip, exten, path_leave
-from fullwavepy.ioapi.generic import ArrayFile
+from fullwavepy.ioapi.generic import ArrayFile#, CsvFile
 
 json_header_suffix = '_HEAD.json'
 filt_suffix = '_filt.sgy'
@@ -99,10 +99,8 @@ class SgyFile(ArrayFile):
       nfname = extend_fname(self.fname, [[key, value]])
       suwind(self.fname, nfname, {key: [value]}, **kwargs)
       selfkey[value] = self.__class__(path_leave(nfname), self.path)
-      #split_sgy._log.info('Output file: ' + nfname)
 
   # -----------------------------------------------------------------------------  
-  
   
   @timer
   def _gethw(self, key, unique_values=False, **kwargs):
@@ -378,6 +376,13 @@ class SgyFile(ArrayFile):
     #!su_sgyread.sh tmp.sgy | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute2.bin'} | segyhdrs | segywrite tape=out.sgy    
     
   # -----------------------------------------------------------------------------  
+
+
+#@traced
+#@logged
+#class SgyHeader(CsvFile):
+  #pass
+
 
 
 # -------------------------------------------------------------------------------
