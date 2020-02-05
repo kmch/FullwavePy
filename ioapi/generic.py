@@ -139,8 +139,8 @@ class ArrayFile(File):
     We SHOULD self.read everytime, see its docstring for rationale.
     
     """
-    self.read(**kwargs)
-    self.array.plot(**kwargs)
+    array = self.read(**kwargs)
+    array.plot(**kwargs)
     
   # -----------------------------------------------------------------------------  
 

@@ -113,7 +113,6 @@ class SgyFile(ArrayFile):
 
   # -----------------------------------------------------------------------------  
   
-  @timer
   def _gethw(self, key, unique_values=False, **kwargs):
     """
     Get header-word values.
@@ -125,23 +124,31 @@ class SgyFile(ArrayFile):
       in order of traces (if unique_values=False)
       or as many as unique values, sorted.
     
-    Notes
-    -----
-    Probably we need a parent class SEGY_File
-    and some multi-inheritance for neatness...
-    
     """
     from fullwavepy.ioapi.su import sugethw
     values = sugethw(self.fname, keys=[key], **kwargs)[key]
     if unique_values:
       values = sorted(list(set(values)))
-    
     return values
     
+  # ----------------------------------------------------------------------------- 
   
-  
-  
-  # -----------------------------------------------------------------------------
+  def read(self, window=None, init_args=None, **kwargs): # AD HOC
+    """
+    To read and plot! windowed data in one line.
+    """
+    if window is not None:
+      self.window(window, init_args, **kwargs)
+      return self.win.read(**kwargs)
+    else:
+      return super().read(**kwargs)
+
+
+
+
+
+    
+  # -----------------------------------------------------------------------------  
   
   def _get_sr_coords(self, datafile=None, **kwargs):
     """
@@ -290,23 +297,24 @@ class SgyFile(ArrayFile):
     Overwrites.
     
     """
-    from fullwavepy.ioapi.su import sushw
-    from ..signal.su import su_filter_full
-    
-    self.__log.info('Using ' + str(pad) + ' samples of padding')
-    self.__log.info('Setting dt in the header of: ' + self.fname)
-    sushw(self.fname, 'dt', (self.proj.dt*1e6), **kwargs)
-    
-    nfname = su_filter_full(self.fname, pad, **kwargs)
-    fname_filt = strip(self.fname) + filt_suffix
-    
-    o, e = bash('mv ' + nfname + ' ' + fname_filt)
-    
-    if overwrite: #THIS IS DANGEROUS (FILTERING MORE THAN ONCE)
-      self.__log.warning('Overwriting ' + self.fname + ' with a filtered one')
-      o, e = bash('mv ' + fname_filt + ' ' + self.fname)
-    
-    return fname_filt
+    print('heej')
+    #from fullwavepy.ioapi.su import sushw
+    #from ..signal.su import su_filter_full
+    #
+    #self.__log.info('Using ' + str(pad) + ' samples of padding')
+    #self.__log.info('Setting dt in the header of: ' + self.fname)
+    #sushw(self.fname, 'dt', (self.proj.dt*1e6), **kwargs)
+    #
+    #nfname = su_filter_full(self.fname, pad, **kwargs)
+    #fname_filt = strip(self.fname) + filt_suffix
+    #
+    #o, e = bash('mv ' + nfname + ' ' + fname_filt)
+    #
+    #if overwrite: #THIS IS DANGEROUS (FILTERING MORE THAN ONCE)
+    #  self.__log.warning('Overwriting ' + self.fname + ' with a filtered one')
+    #  o, e = bash('mv ' + fname_filt + ' ' + self.fname)
+    #
+    #return fname_filt
 
   # -----------------------------------------------------------------------------  
  

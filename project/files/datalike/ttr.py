@@ -34,8 +34,6 @@ class DataFileTtr(DataFile, TtrFile):
     """  
     self.suffix = suffix
     self.ext = 'ttr'
-    #self.name = proj.name + '-' + suffix + '.ttr'
-    #self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
 
   # ----------------------------------------------------------------------------- 
@@ -59,6 +57,7 @@ class DataFileTtr(DataFile, TtrFile):
 @traced
 @logged
 class SynDataFileTtr(DataFileTtr, SynDataFile):
+  
   pass
   
 
@@ -68,8 +67,7 @@ class SynDataFileTtr(DataFileTtr, SynDataFile):
 @traced
 @logged
 class ObsDataFileTtr(DataFileTtr, ObsDataFile):
-  """
-  """
+  
   pass
 
 
@@ -342,6 +340,7 @@ class DumpCompareFile(DataFileTtr):
 
 
 # -------------------------------------------------------------------------------
+
 
 @traced
 @logged
