@@ -376,7 +376,8 @@ class PbsFileCx1(PbsFile):
     f = self._write_env(f, **kwargs)
     
     f.write('# LOAD MODULES\n')
-    f.write('module load mpi\n')
+    f.write('module unload mpi/intel-2019 \n')
+    f.write('module load mpi/intel-2018\n')
     f.write('module load intel-suite\n')
     
     return f 

@@ -184,7 +184,7 @@ class SynDataFile(DataFile):
     
     """
     from fullwavepy.signal.phase import first_breaks
-    A = self.read(scoord=None)
+    A = self.read(**kwargs)
     fb = first_breaks(A, fraction=fraction)
     fb = np.ravel(fb)
     
@@ -298,8 +298,9 @@ class ObsDataFile(DataFile):
     cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin',
                 tmute2_bin='tmute2.bin')
     cmd += 'segyhdrs | segywrite tape={fname_muted}'.format(fname_muted=self.muted.fname)
-              
-    o, e = bash(cmd)
+            
+    print(cmd)
+    #o, e = bash(cmd)
     
 
 # -------------------------------------------------------------------------------

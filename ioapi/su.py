@@ -116,8 +116,8 @@ def sugethw(fname, keys, **kwargs):
   
   if keys == 'all':
     keys = get_keywords(fname, **kwargs)
-  else:
-    assert isinstance(keys, list)
+  elif not isinstance(keys, list):
+    raise TypeError('Keys has to be a list not: ' + str(type(keys)))
   
   sugethw._log.debug('Keys to extract from {}: {}'.format(fname, keys))
   keys_str = ','.join(keys)  

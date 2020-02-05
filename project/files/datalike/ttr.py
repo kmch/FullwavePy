@@ -168,6 +168,9 @@ class DumpCompareFile(DataFileTtr):
     super().__init__(suffix, proj, path, **kwargs)
     self.it = it
     self.sid = sid
+    self.syn = SynDataFileTtr(suffix+'_syn', proj, path)
+    #self.obs = ObsDataFileTtr(suffix+'_obs', proj, path)
+    #self.dif = SynDataFileTtr(suffix+'_dif', proj, path)
     
   # -----------------------------------------------------------------------------      
   
@@ -232,6 +235,9 @@ class DumpCompareFile(DataFileTtr):
     Aobs = A[isep:-isep]
     Adif = A[-isep: ] # SYN - OBS
     self.__log.debug('lengths of Asyn, Aobs, Adif', len(Asyn), len(Aobs), len(Adif))
+    
+    self.syn.array = Asyn
+    #self.obs.array = Aobs
     
     return Asyn, Aobs, Adif
   

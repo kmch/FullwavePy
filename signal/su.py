@@ -183,8 +183,8 @@ def su_taper(fname, taper_front, taper_back, **kwargs):
   ntr = get_ntraces(fname, **kwargs)
   
   # FIXME int_values=False NOT SUPPORTED
-  dt_us = (sugethw(fname, 'dt', unique_values=True, int_values=False, **kwargs))[0] # micro sec
-  dt_ms = dt_us / 1000  
+  dt_us = (sugethw(fname, ['dt'], unique_values=True, **kwargs))['dt'][0] # micro sec
+  dt_ms = dt_us / 1000.  
   su_taper._log.info('dt_ms' + str(dt_ms))
   
   tbeg = taper_front * dt_ms
@@ -230,9 +230,9 @@ def su_pad(fname, pad, trim=False, **kwargs):
     raise IOError(fname + ' not found.')  
 
   # READ NEEDED PARAMS  
-  ns = (sugethw(fname, 'ns', unique_values=True, int_values=True, **kwargs))[0]
-  dt_us = (sugethw(fname, 'dt', unique_values=True, int_values=False, **kwargs))[0] # micro sec
-  dt_ms = dt_us / 1000
+  ns = (sugethw(fname, ['ns'], unique_values=True, **kwargs))['ns'][0]
+  dt_us = (sugethw(fname, ['dt'], unique_values=True, **kwargs))['dt'][0] # micro sec
+  dt_ms = dt_us / 1000.
   
   su_pad._log.debug('No. of samples read from header: ' + str(ns))
   su_pad._log.debug('dt (ms) read from header: ' + str(dt_ms))

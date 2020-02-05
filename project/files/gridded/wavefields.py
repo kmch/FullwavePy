@@ -57,11 +57,12 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
                  '-iter' + str(it).rjust(5,'0')  + 
                  '-taskid?????.vtr') #+ str(tid).rjust(5,'0'))
     
-    fnames = get_files(path, proj.name + '-' + suffix, **kwargs)
+    pattern = proj.name + '-' + suffix
+    fnames = get_files(path, pattern, **kwargs)
     if len(fnames) > 1:
-     raise ValueError('Pattern {} matched by more than one file: {}'.format(suffix, fnames))
+     raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
     elif len(fnames) == 0:
-     self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(suffix))
+     self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(pattern))
     else:
      suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
     
