@@ -52,6 +52,8 @@ class DataFileTtr(DataFile, TtrFile):
 
 
 # -------------------------------------------------------------------------------
+# SPECIFIC FILES (UNIQUE IDs)
+# -------------------------------------------------------------------------------
 
 
 @traced
@@ -76,17 +78,6 @@ class ObsDataFileTtr(DataFileTtr, ObsDataFile):
 
 @traced
 @logged
-class ObsRawDataFileTtr(DataFileTtr):
-  """
-  """
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
 class SignatureFileTtr(DataFileTtr):
   """
   
@@ -99,54 +90,6 @@ class SignatureFileTtr(DataFileTtr):
     super().__init__(suffix, proj, path, **kwargs)
 
   # ----------------------------------------------------------------------------- 
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class DumpDataFile(DataFileTtr): # NOT USED?
-  """
-  DUMPDAT format, i.e.
-    1. wavelets
-    2. observed traces
-    3. modelled traces
-    
-  """
-  
-  # -----------------------------------------------------------------------------
-  
-  def __init__(self, suffix, proj, path, sid, **kwargs):
-    self.sid = sid
-    super().__init__(suffix, proj, path, **kwargs)
-  
-  # -----------------------------------------------------------------------------      
-  
-  def read(self, **kwargs):
-    #from fullwavepy.ioapi.fw3d import read_ttr
-    #A = read_ttr(self.fname)
-    #A = A[:, 0, :]
-    #return A
-    A = super().read(**kwargs)
-    
-    # READ SOURCE IDs
-    #nsrcs = len(self.proj.inp.s.read(unit='m'))
-    #self.__log.info('Ommiting first ' + str(nsrcs) +
-    #                 '  trace(s) as source-wavelet(s)')
-    #A = A[nsrcs: ]
-    self.__log.info('Ommiting first trace (the source wavelet)')
-    A = A[1: ]
-    
-    imid = int(len(A) / 2)
-    self.__log.info('Ommiting next ' + str(imid) +
-                    '  trace(s) as observed data')    
-    Aobs = A[ :imid]
-    Asyn = A[imid: ]
-    
-    return Asyn
-
-  # -----------------------------------------------------------------------------    
 
 
 # -------------------------------------------------------------------------------
@@ -399,4 +342,52 @@ class DumpCompareFile(DataFileTtr):
 
 
 # -------------------------------------------------------------------------------
+
+@traced
+@logged
+class DumpDataFile(DataFileTtr): # NOT USED?
+  """
+  DUMPDAT format, i.e.
+    1. wavelets
+    2. observed traces
+    3. modelled traces
+    
+  """
+  
+  # -----------------------------------------------------------------------------
+  
+  def __init__(self, suffix, proj, path, sid, **kwargs):
+    self.sid = sid
+    super().__init__(suffix, proj, path, **kwargs)
+  
+  # -----------------------------------------------------------------------------      
+  
+  def read(self, **kwargs):
+    #from fullwavepy.ioapi.fw3d import read_ttr
+    #A = read_ttr(self.fname)
+    #A = A[:, 0, :]
+    #return A
+    A = super().read(**kwargs)
+    
+    # READ SOURCE IDs
+    #nsrcs = len(self.proj.inp.s.read(unit='m'))
+    #self.__log.info('Ommiting first ' + str(nsrcs) +
+    #                 '  trace(s) as source-wavelet(s)')
+    #A = A[nsrcs: ]
+    self.__log.info('Ommiting first trace (the source wavelet)')
+    A = A[1: ]
+    
+    imid = int(len(A) / 2)
+    self.__log.info('Ommiting next ' + str(imid) +
+                    '  trace(s) as observed data')    
+    Aobs = A[ :imid]
+    Asyn = A[imid: ]
+    
+    return Asyn
+
+  # -----------------------------------------------------------------------------    
+
+
+# -------------------------------------------------------------------------------
+
 
