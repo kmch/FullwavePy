@@ -13,7 +13,7 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.files.generic import BinaryProjFile, ArrayProjFile
 from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
-from fullwavepy.project.files.datalike.generic import DataFile
+from fullwavepy.project.files.datalike.generic import DataFile, SynDataFile, ObsDataFile
 
 
 # -------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class DataFileTtr(DataFile, TtrFile):
 
 @traced
 @logged
-class SynDataFileTtr(DataFileTtr):
+class SynDataFileTtr(DataFileTtr, SynDataFile):
   pass
   
 
@@ -65,7 +65,7 @@ class SynDataFileTtr(DataFileTtr):
 
 @traced
 @logged
-class ObsDataFileTtr(DataFileTtr):
+class ObsDataFileTtr(DataFileTtr, ObsDataFile):
   """
   """
   pass

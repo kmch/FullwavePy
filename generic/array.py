@@ -187,6 +187,8 @@ class Arr3d(Arr):
     di = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice_at INTO AXIS NO.
     axis = di[slice_at]
     plot_image(np.take(self, indices=node, axis=axis), **kwargs)
+    if slice_at == 'z':
+      plt.gca().invert_yaxis()
   
   # -----------------------------------------------------------------------------
   

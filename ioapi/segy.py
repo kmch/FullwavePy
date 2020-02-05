@@ -77,13 +77,24 @@ class SgyFile(ArrayFile):
 
   # -----------------------------------------------------------------------------
   
-  def window(self, window, **kwargs):
+  def window(self, window, init_args=None, **kwargs):
+    """
+    init_args : list
+      args passed to __init__ of the child class. This is a necessary 
+      work-around to extend as few child classes as possible.
+    
+    """
     from fullwavepy.ioapi.su import suwind
     fname = self.fname
     nfname = strip(fname) + '_windowed.' + exten(fname)
     suwind(fname, nfname, window, **kwargs)
-    self.win = self.__class__(path_leave(nfname), self.path)
 
+    if init_args is None:
+      self.win = self.__class__(path_leave(nfname), self.path)
+    else:
+      self.win = self.__class__(*init_args, **kwargs)
+      self.win.fname = nfname
+      
   # -----------------------------------------------------------------------------
   
   def split(self, key, **kwargs):
