@@ -54,7 +54,7 @@ class Proj(object):
     
     """
     from fullwavepy.project.io import ProjInput, ProjOutput
-    from fullwavepy.project.files.misc import InfoFile, MetaDataFile
+    from fullwavepy.project.files.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.runfiles import Runfile
     from fullwavepy.project.files.gridded.surfaces import TopographyFile
     from fullwavepy.project.aux import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
@@ -83,7 +83,7 @@ class Proj(object):
                     str(self.cluster) + ' cluster')
     
     meta = kw('meta', None, kwargs)
-    self.meta = MetaDataFile(self, self.path, **kwargs)
+    self.meta = MetaDataProjFile(self, self.path, **kwargs)
     
     self.inp = ProjInput(self, **kwargs)
     self.i = self.inp # ALIAS

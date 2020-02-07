@@ -96,7 +96,7 @@ def widgets(*widgets_args):
       interact_kwargs = {
         'figsize_x' : IntSlider(value=8, min=1, max=20, step=1), #layout=Layout(width='90%')),
         'figsize_y' : IntSlider(value=8, min=1, max=20, step=1),
-        'cmap'      : Dropdown(options=['twilight_r','cividis','seismic']+plt.colormaps()),
+        'cmap'      : Dropdown(options=['twilight','cividis','seismic']+plt.colormaps()),
         'slice_at'  : Dropdown(options=['y', 'x', 'z']),
         'node'      : BoundedIntText(value=0, min=0, max=100, step=5),
         'x'         : BoundedIntText(value=0, min=0, max=100, step=5),

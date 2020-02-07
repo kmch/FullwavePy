@@ -57,7 +57,6 @@ class DataFileTtr(DataFile, TtrFile):
 @traced
 @logged
 class SynDataFileTtr(DataFileTtr, SynDataFile):
-  
   pass
   
 
@@ -67,7 +66,6 @@ class SynDataFileTtr(DataFileTtr, SynDataFile):
 @traced
 @logged
 class ObsDataFileTtr(DataFileTtr, ObsDataFile):
-  
   pass
 
 

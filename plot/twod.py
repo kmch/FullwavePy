@@ -55,7 +55,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   from fullwavepy.plot.generic import new_figure
   
   ax = kw('ax', plt.gca(), kwargs)
-  cmap = kw('cmap', 'twilight_r', kwargs)
+  cmap = kw('cmap', 'twilight', kwargs)
   ncolors = kw('ncolors', None, kwargs)  
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)
