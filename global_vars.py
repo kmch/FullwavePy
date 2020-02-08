@@ -13,18 +13,19 @@ from fullwavepy.generic.system import get_files
 path = '/home/kmc3817/heavy_PhD/'
 path_dataobs = path + 'DATA/Santorini_2015/seismic/OBS/segy_local_coords/'
 path_datalan = path + 'DATA/Santorini_2015/seismic/land/Santorini/segy_local_coords/'
-data_obs_hy = get_files(path_dataobs, '*4.sgy')
-data_obs_vz = get_files(path_dataobs, '*1.sgy')
-data_lan_vz = get_files(path_datalan, '*1.sgy')
+dataobs_hy = get_files(path_dataobs, '*4.sgy')
+dataobs_vz = get_files(path_dataobs, '*1.sgy')
+datalan_vz = get_files(path_datalan, '*1.sgy')
 
 metadataobs = path_dataobs + 'metadata.csv'
 metadatalan = path_datalan + 'metadata.csv'
 metadata = path + 'metadata/proteus_metadata.csv' # CONCAT. OF ABOVE
-
+md = pd.read_csv(metadata)
 
 startvp_jm = path + 'start_mods/jm_inversecheck-StartVp.sgy'
-#startvp_bh = path + 'start_mods/'
-#startvp_bm = path + 'start_mods/'
+startvp_bh = path + 'start_mods/Ben_whole_model_18-04-24_sea-clipped.sgy'
+startvp_bm = path + 'start_mods/Brennah_whole_model_19-10-30_sea-clipped.sgy'
+
 rawsign = path + 'wavelets/wavelet_19-09-22.sgy'
 topography = path + 'surfaces/bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr'
 

@@ -31,6 +31,8 @@ class MetaDataProjFile(CsvFile, AsciiProjFile):
     self.name = '{}-{}.{}'.format(proj.name, self.suffix, self.ext)
     self.fname = path + self.name
 
+  # -----------------------------------------------------------------------------
+
   def read(self, overwrite=True, **kwargs):
     """
   
@@ -50,6 +52,28 @@ class MetaDataProjFile(CsvFile, AsciiProjFile):
       self.__log.warn('{}.df does not exist and will be read.'.format(type(self)))
       self.df = super().read(**kwargs)
     return self.df  
+
+  # -----------------------------------------------------------------------------
+  
+  def plotly(self, fig=None, df=None, **kwargs):
+    tracf0 = 4104
+    fldr0 = 9882
+    stride = 10
+    import plotly.graph_objects as go
+    if fig is None:
+      fig = go.Figure() 
+      
+    if df is not None:
+      import plotly.graph_objects as go
+      data = df[df.tracf==tracf0][::stride]
+      fig.add_trace(go.Scatter(x=data['sx'], y=data['sy']))
+      data = df[df.fldr==fldr0]
+      fig.add_trace(go.Scatter(x=data['gx'], y=data['gy'], mode='markers'))
+      #fig.show()
+  
+    return fig
+  
+  # -----------------------------------------------------------------------------  
 
 
 # -------------------------------------------------------------------------------
@@ -268,7 +292,7 @@ class RawSeisTxtFile(AsciiProjFile):
     from fullwavepy.ioapi.segy import json_header_suffix
     from pandas import read_json
     
-    self.__log.info('Selecting the stations contained in the' +
+    self.__log.debug('Selecting the stations contained in the' +
                     ' model box.')
     
     

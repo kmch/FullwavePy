@@ -126,7 +126,7 @@ def sugethw(fname, keys, **kwargs):
                                                                             keys_str=keys_str)
   o, e = bash(cmd)
   o = o.split(None)
-  o = [int(i) for i in o]
+  o = [int(float(i)) for i in o]
   cols = {}
   ncols = len(keys)
   for i, key in enumerate(keys):

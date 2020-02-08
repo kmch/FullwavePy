@@ -172,6 +172,8 @@ class ProjSyn(Proj):
     self.inp.tvp = self.inp.truevp # ALIAS
     self.inp.template = TemplateClass(self, self.inp.path, **kwargs)
     self.i.tmpl = self.i.template
+    
+    
     #self.inp.template_hed = TemplateHedClass(template_suffix, self, self.inp.path, 
                                       #**kwargs)
     

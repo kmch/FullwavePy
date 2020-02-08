@@ -50,8 +50,8 @@ class TopographyFile(SurfaceFile):
   
   # -----------------------------------------------------------------------------  
   
-  @widgets('cmap')
-  def plot(self, array=None, **kwargs): #?
+  #@widgets('cmap')
+  def plotly(self, fig=None, array=None, **kwargs): #?
     """
     if 'array' in dir(self):
       print('hej')
@@ -75,19 +75,38 @@ class TopographyFile(SurfaceFile):
     if full:
       xlim = None
       ylim = None
-    
+
+
+    import plotly.graph_objects as go
+    if fig is None:
+      fig = go.Figure()
     
     if array is not None:
-      #kwargs[
-      array.plot(**kwargs)  
-      plt.gca().set_aspect('equal')
-      plt.xlim(xlim)
-      plt.ylim(ylim)
-      plt.gca().invert_yaxis()
+
+      
+      stride = kw('stride', 10, kwargs)
+      zmin = kw('zmin', -30, kwargs)
+      zmax = kw('zmax', 30, kwargs)
+      ncontours = kw('ncontours', 40, kwargs)
+      fig.add_trace(go.Contour(z=array[::stride, ::stride, 0].T,
+                               colorscale='Earth', ncontours=ncontours,
+                               x0=-8e4, dx=50*stride, y0=-4e4, dy=50*stride, 
+                               zmin=zmin, zmax=zmax))
+    #fig.show()
+      
+    return fig
+  
+      #kwargs['slice_at'] = 'z'
+      
+      #array.plot(**kwargs)  
+      #plt.gca().set_aspect('equal')
+      #plt.xlim(xlim)
+      #plt.ylim(ylim)
+      #plt.gca().invert_yaxis()
       
     
-    plot_square(self.proj.box[0], self.proj.box[1], 
-                self.proj.box[2], self.proj.box[3])
+    #plot_square(self.proj.box[0], self.proj.box[1], 
+                #self.proj.box[2], self.proj.box[3])
     
 
     ## SOURCES AND RECEIVERS NOTE: LOOP OVER S, R
