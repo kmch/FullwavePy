@@ -113,8 +113,7 @@ class Arr(np.ndarray):
   def compare_subplots(self, **kwargs):
     pass
   
-  
-  
+
 # -------------------------------------------------------------------------------
 
 
@@ -295,7 +294,17 @@ class Arr3d(Arr):
     return tracker
     #return tracker.onscroll
 
+# -------------------------------------------------------------------------------
 
+
+@traced
+@logged
+class WigglyData(Arr3d):
+  def plot(self, *args, **kwargs):
+    kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    super().plot(*args, **kwargs)
+  
 
 # -------------------------------------------------------------------------------
 

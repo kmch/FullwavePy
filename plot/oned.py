@@ -168,7 +168,7 @@ def plot_points(scatt, **kwargs):
   -----
   
   """
-  from fullwavepy.plot.twod import _center_around_zero
+  from fullwavepy.plot.twod import _center_around_zero, colorbar
   
   orient = kw('orient', 'h', kwargs)
   label = kw('label', None, kwargs)
@@ -212,6 +212,7 @@ def plot_points(scatt, **kwargs):
   #im = ax.imshow(image.T, cmap=cmap, extent=extent, 
                   #vmin=vmin, vmax=vmax)
   if cbar:
+    ax = plt.gca()
     colorbar(im, ax)  
   
   #if cbar: # FIXME: MERGE WITfullwavepy.plot_image's

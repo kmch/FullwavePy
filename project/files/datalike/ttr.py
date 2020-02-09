@@ -107,7 +107,7 @@ class DumpCompareFile(DataFileTtr):
     super().__init__(suffix, proj, path, **kwargs)
     self.it = it
     self.sid = sid
-    self.syn = SynDataFileTtr(suffix+'_syn', proj, path)
+    #self.syn = SynDataFileTtr(suffix+'_syn', proj, path)
     #self.obs = ObsDataFileTtr(suffix+'_obs', proj, path)
     #self.dif = SynDataFileTtr(suffix+'_dif', proj, path)
     
@@ -165,17 +165,24 @@ class DumpCompareFile(DataFileTtr):
   # -----------------------------------------------------------------------------    
   
   def read(self, **kwargs):
-    kwargs['scoord'] = None
-    self.__log.info('Reading ' + self.fname + '...')
-    A = super().read(**kwargs)
-    isep  = int(len(A) / 3) # THIS GIVES EQUAL LENGTHS, CHECKED
+    """
+    """
+    from fullwavepy.generic.array import WigglyData
     
+    self.__log.info('Reading ' + self.fname + '...')
+    kwargs['scoord'] = None
+    A = super().read(**kwargs)
+    
+    isep  = int(len(A) / 3) # THIS GIVES EQUAL LENGTHS, CHECKED
     Asyn = A[ :isep]
     Aobs = A[isep:-isep]
     Adif = A[-isep: ] # SYN - OBS
-    self.__log.debug('lengths of Asyn, Aobs, Adif', len(Asyn), len(Aobs), len(Adif))
+    self.__log.debug('lengths of Asyn, Aobs, Adif', 
+                     len(Asyn), len(Aobs), len(Adif))
     
-    self.syn.array = Asyn
+    Asyn, Aobs, Adif = [WigglyData(a) for a in [Asyn, Aobs, Adif]]
+    
+    #self.syn.array = Asyn
     #self.obs.array = Aobs
     
     return Asyn, Aobs, Adif
@@ -185,10 +192,30 @@ class DumpCompareFile(DataFileTtr):
   def split(self, **kwargs):
     pass
   
+  # -----------------------------------------------------------------------------
   
-  def plot(self, **kwargs):
-    #from fullwavepy.plot.generic import plot, compare
+  def plot(self, data='syn', **kwargs):
+    """
+    """
     Asyn, Aobs, Adif = self.read(**kwargs)
+    
+    if data == 'syn':
+      Asyn.plot(**kwargs)
+    elif data == 'obs':
+      Aobs.plot(**kwargs)
+    elif data == 'dif':
+      Adif.plot(**kwargs)
+    elif data == 'all':
+      figsize = kw('figsize', (20,8), kwargs)
+      fig = kw('fig', plt.figure(figsize=figsize), kwargs)
+      fig.add_subplot(1,3,1)
+      Asyn.plot(**kwargs)
+      fig.add_subplot(1,3,2)
+      Aobs.plot(**kwargs)
+      fig.add_subplot(1,3,3)
+      Adif.plot(**kwargs)
+    else:
+      raise ValueError('Wrong data: ' + str(data))
     #plt.subplots(1,3, figsize=[15,5])
     #plt.subplot(1,3,1)
     #plot(Asyn)
@@ -198,8 +225,8 @@ class DumpCompareFile(DataFileTtr):
     #plot(Adif)
     #compare(Asyn, Aobs, **kwargs)
     #fig = plt.figure(figsize=(14,8))
-    Aobs.plot_slice() #(Asyn, fig)
-
+    #Aobs.plot_slice() #(Asyn, fig)
+    
   # -----------------------------------------------------------------------------  
   
   def _get_first_breaks(self, *args, **kwargs):
