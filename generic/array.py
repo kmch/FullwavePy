@@ -58,6 +58,7 @@ class Arr(np.ndarray):
         type(source) == Arr1d or
         type(source) == Arr2d or
         type(source) == Arr3d or
+        type(source) == WigglyData or
         type(source) == np.memmap):
       A = source    
 
@@ -81,37 +82,41 @@ class Arr(np.ndarray):
   # -----------------------------------------------------------------------------
   
   #@widgets()
-  def compare(self, other_array, fig, gs=None, widgets=False, **kwargs):
-    assert type(self) == type(other_array)
-    assert self.shape == other_array.shape
-
-    xlim = kw('xlim', None, kwargs)
-    ylim = kw('ylim', None, kwargs)
+  def compare(self, othe, mode='ileave', **kwargs): #fig, gs=None, widgets=False, 
+    if mode == 'ileave':
+      A = self.ileave(othe, **kwargs)
+      A.plot(**kwargs)
+    else:
+      raise ValueError(mode)
     
-    if widgets:
-      figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
-      fig = plt.figure(figsize=figsize)
-      kwargs['widgets'] = False
-
-    if gs is None:
-      gs = fig.add_gridspec(1,2)    
-
-    
-    ax1 = fig.add_subplot(gs[0,0])
-    self.plot(**kwargs)
-    ax2 = fig.add_subplot(gs[0,1])
-    other_array.plot(**kwargs)
-
-    for ax in [ax1, ax2]:
-      ax.set_xlim(xlim)
-      ax.set_ylim(ylim)
-
    # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
   
   def compare_subplots(self, **kwargs):
-    pass
+      assert type(self) == type(othe)
+      assert self.shape == othe.shape
+      
+      xlim = kw('xlim', None, kwargs)
+      ylim = kw('ylim', None, kwargs)
+      
+      if widgets:
+        figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+        fig = plt.figure(figsize=figsize)
+        kwargs['widgets'] = False
+      
+      if gs is None:
+        gs = fig.add_gridspec(1,2)    
+      
+      
+      ax1 = fig.add_subplot(gs[0,0])
+      self.plot(**kwargs)
+      ax2 = fig.add_subplot(gs[0,1])
+      othe.plot(**kwargs)
+      
+      for ax in [ax1, ax2]:
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
   
 
 # -------------------------------------------------------------------------------
@@ -144,22 +149,16 @@ class Arr2d(Arr):
   """
   
   """
+  def ileave(self, othe, **kwargs):
+    self.ileaved = ileave_arrays(self, othe, **kwargs)
+    return self.ileaved
   
   # -----------------------------------------------------------------------------
 
   def plot(self, wiggle=False, **kwargs):
     """
-    
-    Notes
-    -----
-    Function passed to interact must take kwargs only.
-
-    We wrap plt.imshow because interact(plt.imshow, X=fixed(self.T)) 
-    does not work for some reason.
-    
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
-    
     if wiggle:
       plot_wiggl(self, **kwargs)
     else:
@@ -167,6 +166,10 @@ class Arr2d(Arr):
   
   # -----------------------------------------------------------------------------
 
+  #def compare(self, othe, **kwargs):
+    #A = self.ileave(othe, **kwargs)
+    #A.plot(**kwargs)
+    
 
 # -------------------------------------------------------------------------------
 
@@ -178,14 +181,31 @@ class Arr3d(Arr):
   3D array.
   
   """
+  @widgets('slice_at', 'node')
+  def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
+    """
+    """
+    di = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice_at INTO AXIS NO.
+    axis = di[slice_at]
+    return Arr2d(np.take(self, indices=node, axis=axis))
+  
+  # -----------------------------------------------------------------------------
+  
+  #@widgets('chunk_size')
+  def ileave(self, othe, *args, **kwargs):
+    A1 = self.slice(*args, **kwargs)
+    A2 = othe.slice(*args, **kwargs)
+    A = Arr2d(ileave_arrays(A1, A2, **kwargs))
+    return A
 
   # -----------------------------------------------------------------------------
   
   @widgets('cmap', 'slice_at', 'node')
   def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
-    di = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice_at INTO AXIS NO.
-    axis = di[slice_at]
-    plot_image(np.take(self, indices=node, axis=axis), **kwargs)
+    """
+    """
+    arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
+    arr2d.plot(**kwargs)
     if slice_at == 'z':
       plt.gca().invert_yaxis()
   
@@ -294,12 +314,16 @@ class Arr3d(Arr):
     return tracker
     #return tracker.onscroll
 
+
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class WigglyData(Arr3d):
+  def ileave(self, othe, **kwargs):
+    return super().ileave(othe, slice_at='y', node=0, **kwargs)
+  
   def plot(self, *args, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
@@ -325,16 +349,16 @@ class WigglyData(Arr3d):
 
 @traced
 @logged
-def interleave_arrays(A1, A2, **kwargs):
+def ileave_arrays(A1, A2, **kwargs):
   """ 
   Create an array composed of 
-  interleaved arrays Z1 & Z2.
+  ileaved arrays Z1 & Z2.
   
   Parameters
   ----------
   
   A1, A2 : arrays
-    2D arrays to interleave.
+    2D arrays to ileave.
   
   **kwargs : keyword arguments (optional)  
    - chunk_size : int 
@@ -353,6 +377,8 @@ def interleave_arrays(A1, A2, **kwargs):
   """
   chunk_size = kw('chunk_size', 10, kwargs)    
   
+  assert len(A1.shape) == 2
+  
   if A1.shape != A2.shape:
     raise ValueError('Arrays must have same shapes.')
   
@@ -360,7 +386,7 @@ def interleave_arrays(A1, A2, **kwargs):
   ncols = A.shape[0]
   
   if ncols < 2 * chunk_size:
-    interleave_arrays._log.warn('No. of columns=' + str(ncols) + 
+    ileave_arrays._log.warn('No. of columns=' + str(ncols) + 
            ' < 2 * chunk_size! Outputting empty array')
     return []
   

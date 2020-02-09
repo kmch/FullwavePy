@@ -52,9 +52,10 @@ def compare(arg1, arg2, **kwargs):
   e.g. to color-fill the area between them.
   
   """
-  from fullwavepy.ioapi.generic import read_arrays
+  from fullwavepy.generic.array import Arr3d
   
-  A1, A2 = read_arrays(arg1, arg2, **kwargs)
+  A1 = Arr3d(arg1)
+  A2 = Arr3d(arg2)
   
   if A1.shape != A2.shape:
     raise ValueError('Arrays must have identical shapes.')

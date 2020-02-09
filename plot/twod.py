@@ -26,10 +26,12 @@ def compare_2d(A1, A2, **kwargs):
   
   """
   mode = kw('mode', 'interleave', kwargs)
+  
   if mode == 'interleave':
-    from fullwavepy.generic.array import interleave_arrays
-    A = interleave_arrays(A1, A2, **kwargs)
-    plot_2d(images=[A], **kwargs)
+    from fullwavepy.generic.array import interleave_arrays, Arr3d
+    A = Arr3d(interleave_arrays(A1, A2, **kwargs))
+    A.plot(**kwargs)
+    #plot_2d(images=[A], **kwargs)
   else:
     raise ValueError('Unknown mode: ' + mode)
 
