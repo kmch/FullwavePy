@@ -270,6 +270,32 @@ class Arr3d(Arr):
 
   # -----------------------------------------------------------------------------
   
+  def scroll(self, **kwargs):
+    """
+    
+    """
+    import matplotlib.pyplot as plt
+    from fullwavepy.plot.events import IndexTracker
+    
+    A = self.read(scoord=None)
+    
+    fig, ax = plt.subplots(1, 1)
+    tracker = IndexTracker(ax, A, **kwargs)
+    return fig, ax, tracker
+
+  def scrollall(self, fig, **kwargs):
+    """
+    
+    """
+    from fullwavepy.plot.events import IndexTrackerAll
+    
+    A = self.read(scoord=None)
+    
+    tracker = IndexTrackerAll(fig, A, **kwargs)
+    return tracker
+    #return tracker.onscroll
+
+
 
 # -------------------------------------------------------------------------------
 
