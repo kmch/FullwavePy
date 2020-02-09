@@ -337,16 +337,22 @@ class SgyFile(ArrayFile):
       save_txt(file_txt, data)
       o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
     
-    fname_out = strip(self.fname)+'_tmp.sgy'
+    fname_out = strip(self.fname) + '_tmp.sgy'
     # MAYBE IT NEEDS TO BE SPLIT IN TWO BITS WITH tmp.sg IN BETWEEN (AS WAS IN WORKING VERSION)
     cmd =  'segyread tape={} | '.format(self.fname)
-    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin',
-                tmute2_bin='tmute2.bin')
+    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin')
     cmd += 'segyhdrs | segywrite tape={fname_out}'.format(fname_out=fname_out)
-            
     o, e = bash(cmd)
-    self.__log.warn('Overwriting {} with {}'.format(self.fname, fname_out))
-    o, e = bash('mv {} {}'.format(fname_out, self.fname))
+    #print(cmd)
+    
+    cmd =  'segyread tape={} | '.format(fname_out)
+    fname_out = self.fname
+    cmd += 'sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute2.bin')
+    cmd += 'segyhdrs | segywrite tape={fname_out}'.format(fname_out=fname_out)
+    o, e = bash(cmd)
+    #print(cmd)
+    #self.__log.warn('Overwriting {} with {}'.format(self.fname, fname_out))
+    #o, e = bash('mv {} {}'.format(fname_out, self.fname))
  
   def mute2(self, fbreaks, dt, ntaper=100, twin=1, **kwargs):
     from fullwavepy.signal.su import su_mute

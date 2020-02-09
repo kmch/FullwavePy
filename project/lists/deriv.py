@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
-from fullwavepy.generic.decor import timer
+from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.lists.basic import IterFileList, ShotFileList, JobFileList
 
@@ -45,14 +45,25 @@ class SchedFileList(IterFileList):
       plt.close()
   
   # ----------------------------------------------------------------------------- 
+
+  def read(self, **kwargs):
+    for f in self.it[1: ]: # SKIP ITER. 0
+      try:
+        f.read(**kwargs)
+      except FileNotFoundError as err:
+        self.__log.warn(err)    
   
-  def plot(self, imin=0, imax=1, istep=1, **kwargs):
-    """
-    """
-    its = self.it[imin:imax:istep]
-    fnames = [i.fname for i in its]
-    #return fullwavepy.ploti(fnames, **kwargs)
-    raise NotImplementedError('syntax after sed')
+  @widgets('iter')
+  def plot(self, **kwargs):
+    pass
+  
+  #def plot(self, imin=0, imax=1, istep=1, **kwargs):
+  #  """
+  #  """
+  #  its = self.it[imin:imax:istep]
+  #  fnames = [i.fname for i in its]
+  #  #return fullwavepy.ploti(fnames, **kwargs)
+  #  raise NotImplementedError('syntax after sed')
 
   # -----------------------------------------------------------------------------
 
@@ -71,7 +82,25 @@ class SlaveFileList(SchedFileList, ShotFileList):
     super().__init__(proj, **kwargs)
     self.sids = self._read_sids(**kwargs)
 
+  # -----------------------------------------------------------------------------    
 
+  def read(self, **kwargs):
+    for it in self.it[1: ]: # SKIP ITER. 0
+      for f in it.values():
+        try:
+          f.read(**kwargs)
+        except FileNotFoundError as err:
+          self.__log.warn(err)    
+  
+  def plot(self, **kwargs):
+    for it in self.it[1: ]: # SKIP ITER. 0
+      for f in it.values():
+        try:
+          f.plot(**kwargs)
+          plt.figure()
+        except FileNotFoundError as err:
+          self.__log.warn(err)
+  
 # -------------------------------------------------------------------------------
 
 

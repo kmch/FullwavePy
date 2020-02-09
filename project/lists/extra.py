@@ -133,17 +133,6 @@ class DumpFileList(SlaveFileList):
     else:
       self.__log.warn(self.init_err)
     
-  # -----------------------------------------------------------------------------    
-    
-  def plot(self, **kwargs):
-    for it in self.it[1: ]: # SKIP ITER. 0
-      for f in it.values():
-        try:
-          f.plot(**kwargs)
-          plt.figure()
-        except FileNotFoundError as err:
-          self.__log.warn(err)
-
   # -----------------------------------------------------------------------------
 
 

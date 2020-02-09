@@ -178,7 +178,7 @@ class SegyPrepFile(ParameterFile):
     segyprep['unique'] = kw('unique', 'yes', kwargs)
     
     segyprep['minoffset'] = kw('minoffset', 0, kwargs) # IN METRES
-    segyprep['maxoffset'] = kw('maxoffset', 100000, kwargs) # IN METRES
+    segyprep['maxoffset'] = kw('maxoffset', 1e6, kwargs) # IN METRES
     
     
     segyprep['FFID'] = kw('FFID', 'yes', kwargs) 
