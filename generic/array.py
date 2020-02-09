@@ -70,7 +70,7 @@ class Arr(np.ndarray):
      raise TypeError('Arguments need to be either ' + 
                      'file-names or arrays or np.memmap, NOT: %s' %
                      type(source))
-    
+      
     return A
 
   # -----------------------------------------------------------------------------
@@ -159,6 +159,10 @@ class Arr2d(Arr):
     """
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
+    
+    # IT SHOULDN'T BE APPLIED TWICE!
+    self = modify_array(self, **kwargs)
+    
     if wiggle:
       plot_wiggl(self, **kwargs)
     else:
@@ -278,12 +282,10 @@ class Arr3d(Arr):
     Note, it doesn't need to have @widgets!
     
     """
-    A = Arr3d(modify_array(self, **kwargs)) 
-    
     if nslices == 1:
-      A.plot_slice(*args, **kwargs)
+      self.plot_slice(*args, **kwargs)
     elif nslices == 3:
-      A.plot_3slices(*args, **kwargs)
+      self.plot_3slices(*args, **kwargs)
     else:
       raise ValueError('Wrong value of nslices: %s' %str(nslices))
 
@@ -323,6 +325,11 @@ class Arr3d(Arr):
 class WigglyData(Arr3d):
   def ileave(self, othe, **kwargs):
     return super().ileave(othe, slice_at='y', node=0, **kwargs)
+
+  def compare(self, *args, **kwargs):
+    kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    super().compare(*args, **kwargs)
   
   def plot(self, *args, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
