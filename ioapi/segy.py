@@ -727,7 +727,7 @@ def read_sgy(fname, overwrite=True, **kwargs):
 @timer
 @traced
 @logged
-def header2csv(fname, keys='all', suffix='_HEAD', **kwargs):
+def header2csv(fname, keys='all', suffix='_HEAD', overwrite=True, **kwargs):
   """
   SEGY -> SU -> dict.
 
@@ -753,7 +753,6 @@ def header2csv(fname, keys='all', suffix='_HEAD', **kwargs):
   header.to_csv(nfname, index=False)
   
   return header
-
 
 
 # -------------------------------------------------------------------------------

@@ -107,6 +107,7 @@ class DumpCompareFile(DataFileTtr):
     super().__init__(suffix, proj, path, **kwargs)
     self.it = it
     self.sid = sid
+    self.phase = {}
     #self.syn = SynDataFileTtr(suffix+'_syn', proj, path)
     #self.obs = ObsDataFileTtr(suffix+'_obs', proj, path)
     #self.dif = SynDataFileTtr(suffix+'_dif', proj, path)
@@ -171,12 +172,14 @@ class DumpCompareFile(DataFileTtr):
     
     self.__log.info('Reading ' + self.fname + '...')
     kwargs['scoord'] = None
-    A = super().read(**kwargs)
+    self.array = super().read(**kwargs)
     
-    isep  = int(len(A) / 3) # THIS GIVES EQUAL LENGTHS, CHECKED
-    Asyn = A[ :isep]
-    Aobs = A[isep:-isep]
-    Adif = A[-isep: ] # SYN - OBS
+    # SEPARATOR TO SPLIT ARRAY INTO 3 CHUNKS OF THE SAME LEN, CHECKED
+    isep  = int(len(self.array) / 3) 
+    
+    Asyn = self.array[ :isep]
+    Aobs = self.array[isep:-isep]
+    Adif = self.array[-isep: ] # SYN - OBS
     self.__log.debug('lengths of Asyn, Aobs, Adif', 
                      len(Asyn), len(Aobs), len(Adif))
     
@@ -186,6 +189,16 @@ class DumpCompareFile(DataFileTtr):
     #self.obs.array = Aobs
     
     return Asyn, Aobs, Adif
+
+  # -----------------------------------------------------------------------------
+  
+  def read_header(self, overwrite=True, **kwargs):
+    """
+    Add reading csv, useful for heavy sgy files.
+    """
+    if (not hasattr(self, 'head')) or overwrite:
+      #self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
+    return self.head  
   
   # -----------------------------------------------------------------------------    
   
@@ -193,6 +206,57 @@ class DumpCompareFile(DataFileTtr):
     pass
   
   # -----------------------------------------------------------------------------
+  
+  def _get_first_breaks(self, *args, **kwargs):
+    """
+    Note: it is hard to merge with SynDataFile one.
+    
+    """
+    from fullwavepy.signal.phase import first_breaks    
+    Asyn, Aobs, Adif = self.read(**kwargs)
+    self.fb = np.ravel(first_breaks(Asyn, *args, **kwargs))
+    return self.fb
+  
+  # -----------------------------------------------------------------------------  
+  
+  def _get_phase(self, freq, **kwargs):
+    """
+    
+    Notes
+    -----
+    First breaks must be extracted from START-MOD
+    synthetic data in all cases!
+    Noise in observed.
+
+    # I CHANGED BACK AFTER JO SAID THE ORIGINAL VERSION WAS OK
+    # WE TAKE SYNTHETICS FROM THE START MOD FOR ALL ITERATIONS!
+    #Bsyn, Bobs, Bdif = self.proj.out.dumpcomp.it[1][self.sid].read(**kwargs)
+    #picks = first_breaks(Bsyn, **kwargs)
+    
+    Actually we should assume (ntraces, 1, nsamps) shape...
+    
+    """
+    from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
+    from fullwavepy.generic.math import rms    
+    self.__log.info('Getting phase info from ' + self.fname)
+    
+    Asyn, Aobs, Adif = self.read(**kwargs)
+    
+    picks = first_breaks(Asyn, **kwargs)
+    ph_syn = extract_phase(Asyn, picks, self.proj.dt, freq, **kwargs)
+    ph_obs = extract_phase(Aobs, picks, self.proj.dt, freq, **kwargs)
+    ph_dif = ph_syn - ph_obs
+    ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
+    
+    self.rms_value = rms(ph_dif)
+    self.__log.info('RMS of wrapped phase-differences: ' + 
+                    str(self.rms_value))
+    
+    self.phase[freq] = [ph_syn, ph_obs, ph_dif]
+    
+    return ph_syn, ph_obs, ph_dif
+    
+  # -----------------------------------------------------------------------------   
   
   def plot(self, data='syn', **kwargs):
     """
@@ -228,58 +292,6 @@ class DumpCompareFile(DataFileTtr):
     #Aobs.plot_slice() #(Asyn, fig)
     
   # -----------------------------------------------------------------------------  
-  
-  def _get_first_breaks(self, *args, **kwargs):
-    """
-    """
-    from fullwavepy.signal.phase import first_breaks    
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    self.fb = np.ravel(first_breaks(Asyn, *args, **kwargs))
-    return self.fb
-  
-  # -----------------------------------------------------------------------------  
-  
-  def _get_phase(self, freq, **kwargs):
-    """
-    
-    Notes
-    -----
-    First breaks must be extracted from START-MOD
-    synthetic data in all cases!
-    Noise in observed.
-    
-    Actually we should assume (ntraces, 1, nsamps) shape...
-    
-    """
-    from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
-    from fullwavepy.generic.math import rms
-    
-    self.__log.info('Getting phase info from ' + self.fname)
-    
-    kwargs['scoord'] = None # DON'T SLICE
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    
-    # I CHANGED BACK AFTER JO SAID THE ORIGINAL VERSION WAS OK
-    # WE TAKE SYNTHETICS FROM THE START MOD FOR ALL ITERATIONS!
-    #Bsyn, Bobs, Bdif = self.proj.out.dumpcomp.it[1][self.sid].read(**kwargs)
-    #picks = first_breaks(Bsyn, **kwargs)
-    
-    picks = first_breaks(Asyn, **kwargs) # NOTE
-    ph_syn = extract_phase(Asyn, picks, self.proj.dt, freq, **kwargs)
-    ph_obs = extract_phase(Aobs, picks, self.proj.dt, freq, **kwargs)
-    ph_dif = ph_syn - ph_obs
-    ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
-    
-    self.rms_value = rms(ph_dif)
-    self.__log.info('RMS of wrapped phase-differences: ' + 
-                    str(self.rms_value))
-    
-    self.phase = {}
-    self.phase[freq] = [ph_syn, ph_obs, ph_dif]
-    
-    return ph_syn, ph_obs, ph_dif
-    
-  # -----------------------------------------------------------------------------   
   
   @timer
   def plot_phase(self, freq, **kwargs):
