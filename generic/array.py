@@ -403,7 +403,7 @@ def ileave_arrays(A1, A2, **kwargs):
     i_start = i * chunk_size
     for j in range(nchunks):
       i1 = i_start + j * 2 * chunk_size
-      i2 = i_start + j * 2 * chunk_size + (chunk_size - 1) 
+      i2 = i_start + j * 2 * chunk_size + (chunk_size) # IT USED TO BE WRONG (-1)
       A[i1 : i2] = Ai[i1 : i2]
 
   A = np.array(A)

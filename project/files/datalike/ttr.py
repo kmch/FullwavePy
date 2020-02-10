@@ -114,57 +114,6 @@ class DumpCompareFile(DataFileTtr):
     
   # -----------------------------------------------------------------------------      
   
-  def _get_rids(self, **kwargs): # FIXME: MERGE WITH BELOW
-    from fullwavepy.ioapi.generic import read_txt
- 
-    srcs = self.proj.inp.s.read()
-    recs = self.proj.inp.r.read()
-    try:
-      c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
-    except FileNotFoundError as err:
-      self.__log.warn('Searching for Template.hed because: {}'.format(err))
-      c = read_txt(self.proj.inp.path + self.proj.name + '-Template.hed')
-    c = c[2: ]
-    rids = []
-    for l in c:
-      if int(l[1]) == self.sid:
-        rids.append(int(l[2]))
-    return rids
-  
-  def _get_sr_coords(self, **kwargs):
-    """
-    Get HORIZONTAL (x,y) coordinates of sources and 
-    receivers.
-    
-    """
-    from fullwavepy.generic.parse import strip
-    from fullwavepy.ioapi.generic import read_txt
-    
-    srcs = self.proj.inp.s.read()
-    recs = self.proj.inp.r.read()
-    
-    try:
-      c = read_txt(self.proj.inp.path + self.proj.name + '-Observed.hed')
-    except FileNotFoundError as err:
-      self.__log.warn('Searching for Template.hed because: {}'.format(err))
-      c = read_txt(self.proj.inp.path + self.proj.name + '-Template.hed')
-    c = c[2: ]
-    hed = {} # IT'S A BIT REDUNDANT SINCE THERE'S ONLY ONE SOURCE PER FILE
-    for sid in sorted(srcs.keys()):
-      hed[sid] = []
-      for l in c:
-        if int(l[1]) == sid:
-          rid = int(l[2])
-          hed[sid].append(recs[rid])
-    
-    srcs = [srcs[self.sid]]
-    recs = hed[self.sid] ## AS ABOVE
-    #self.__log.info('Assuming that file ' + self.fname + ' contains all receivers')
-
-    return srcs, recs
- 
-  # -----------------------------------------------------------------------------    
-  
   def read(self, **kwargs):
     """
     isep: 
@@ -173,12 +122,16 @@ class DumpCompareFile(DataFileTtr):
     from fullwavepy.generic.array import WigglyData    
     self.__log.info('Reading ' + self.fname + '...')
     self.array = super().read(**kwargs)
+    self.read_header(**kwargs)
     
     isep  = int(len(self.array) / 3) 
     di = {'syn': WigglyData(self.array[      :isep]),
           'obs': WigglyData(self.array[+isep:-isep]),
           'dif': WigglyData(self.array[-isep:     ]),
          }
+    
+    for key in di.keys():
+      setattr(self, key, di[key])
     
     return di
 
@@ -210,18 +163,18 @@ class DumpCompareFile(DataFileTtr):
   # -----------------------------------------------------------------------------    
   
   def split(self, **kwargs):
-    head = self.read_header(**kwargs)
+    self.read(**kwargs)
+    self.read_header(**kwargs)
+    
     # LINE IDs
     lid_hw = self.proj.sgy.hw['lid'] # IT SHOULD BE ep FOR PROTEUS
-    lids = head[lid_hw].unique()
+    lids = self.head[lid_hw].unique()
     
     for obj in [self.syn, self.obs, self.dif]:
-      setattr(obj, lid_hw, {})
+      obj.lid = {}
       for lid in lids:
-        subhead = head[:][head[lid_hw] == lid]
-        di = getattr(obj, lid_hw)
-        di[lid] = np.take(obj, indices=subhead.index, axis=0)
-    
+        subhead = self.head[:][self.head[lid_hw] == lid]
+        obj.lid[lid] = np.take(obj, indices=subhead.index, axis=0)
   
   # -----------------------------------------------------------------------------
   
@@ -237,7 +190,7 @@ class DumpCompareFile(DataFileTtr):
   
   # -----------------------------------------------------------------------------  
   
-  def _get_phase(self, freq, **kwargs):
+  def _get_phase(self, freq, overwrite=True, **kwargs):
     """
     
     Notes
@@ -254,73 +207,65 @@ class DumpCompareFile(DataFileTtr):
     Actually we should assume (ntraces, 1, nsamps) shape...
     
     """
-    from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
-    from fullwavepy.generic.math import rms    
-    self.__log.info('Getting phase info from ' + self.fname)
-    
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    
-    picks = first_breaks(Asyn, **kwargs)
-    ph_syn = extract_phase(Asyn, picks, self.proj.dt, freq, **kwargs)
-    ph_obs = extract_phase(Aobs, picks, self.proj.dt, freq, **kwargs)
-    ph_dif = ph_syn - ph_obs
-    ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
-    
-    ph_syn, ph_obs, ph_dif = [np.ravel(i) for i in [ph_syn, ph_obs, ph_dif]]
-    
-    self.rms_value = rms(ph_dif)
-    self.__log.info('RMS of wrapped phase-differences: ' + 
-                    str(self.rms_value))
-    
-    self.phase[freq] = {'syn': ph_syn, 
-                        'obs': ph_obs,
-                        'dif': ph_dif}
-    
-    return ph_syn, ph_obs, ph_dif
-    
+    if (not freq in self.phase) or overwrite:
+      from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
+      from fullwavepy.generic.math import rms    
+      self.__log.info('Getting phase info from ' + self.fname)
+      
+      #if min < freq > self.it[freq].max then warn #FIXME
+      
+      self.read(**kwargs)
+      self.read_header(**kwargs)
+      
+      if not hasattr(self, 'fbreaks'):
+        self.fbreaks = first_breaks(self.syn, **kwargs)
+      
+      ph_syn = extract_phase(self.syn, self.fbreaks, self.proj.dt, freq, **kwargs)
+      ph_obs = extract_phase(self.obs, self.fbreaks, self.proj.dt, freq, **kwargs)
+      ph_dif = ph_syn - ph_obs
+      
+      ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
+      ph_syn, ph_obs, ph_dif = [np.ravel(i) for i in [ph_syn, ph_obs, ph_dif]]
+      
+      self.rms_value = rms(ph_dif)
+      self.__log.info('RMS of wrapped phase-differences: ' + 
+                      str(self.rms_value))
+      
+      self.head['phase syn (%s Hz)' % freq] = ph_syn
+      self.head['phase obs (%s Hz)' % freq] = ph_obs
+      self.head['phase dif (%s Hz)' % freq] = ph_dif
+      
+      self.phase[freq] = {'syn': ph_syn,
+                          'obs': ph_obs,
+                          'dif': ph_dif}
+    return self.phase[freq]
+      
   # -----------------------------------------------------------------------------   
   
-  def plot(self, data='syn', **kwargs):
-    """
-    """
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    
-    if data == 'syn':
-      Asyn.plot(**kwargs)
-    elif data == 'obs':
-      Aobs.plot(**kwargs)
-    elif data == 'dif':
-      Adif.plot(**kwargs)
-    elif data == 'all':
-      figsize = kw('figsize', (20,8), kwargs)
-      fig = kw('fig', plt.figure(figsize=figsize), kwargs)
-      fig.add_subplot(1,3,1)
-      Asyn.plot(**kwargs)
-      fig.add_subplot(1,3,2)
-      Aobs.plot(**kwargs)
-      fig.add_subplot(1,3,3)
-      Adif.plot(**kwargs)
-    else:
-      raise ValueError('Wrong data: ' + str(data))
-    #plt.subplots(1,3, figsize=[15,5])
-    #plt.subplot(1,3,1)
-    #plot(Asyn)
-    #plt.subplot(1,3,2)
-    #plot(Aobs)
-    #plt.subplot(1,3,3)
-    #plot(Adif)
-    #compare(Asyn, Aobs, **kwargs)
-    #fig = plt.figure(figsize=(14,8))
-    #Aobs.plot_slice() #(Asyn, fig)
-
-  # -----------------------------------------------------------------------------
+  def exclude_bad_data(self, max_ph_dif, **kwargs):
+    pass
   
-  def compare(self, **kwargs):
-    from fullwavepy.plot.generic import compare
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    compare(Asyn, Aobs)   
+  # -----------------------------------------------------------------------------  
+  
+  #def compare(self, **kwargs):
+    #from fullwavepy.plot.generic import compare
+    #Asyn, Aobs, Adif = self.read(**kwargs)
+    #compare(Asyn, Aobs)   
     
   # -----------------------------------------------------------------------------  
+
+  def px_phase(self, freq, phase='dif', **kwargs):
+    """
+    Quick interactive plot. Can't do subplots with plotly :(
+    
+    """
+    import plotly.express as px
+    self._get_phase(freq, **kwargs)
+    fig = px.scatter(self.head, x='sx', y='sy', color='phase %s (%s Hz)' % (phase, freq), 
+                     color_continuous_scale='jet')
+    return fig
+  
+  # -----------------------------------------------------------------------------   
   
   def plot_phase(self, freq, **kwargs):
     """
@@ -333,144 +278,26 @@ class DumpCompareFile(DataFileTtr):
     smoother colorscale (fewer colors) does better job...
     
     """
-    from fullwavepy.plot.oned import plot_1d, slice_points
-    from fullwavepy.signal.phase import wrap_phase 
+    cmap = kw('cmap', 'jet', kwargs)
+    cbar = kw('cbar', True, kwargs)
     
-    kwargs['scatt_cmap'] = kw('scatt_cmap', 'jet', kwargs)
-    kwargs['scatt_cbar'] = kw('scatt_cbar', True, kwargs)
-
-    try:
-      ph_syn, ph_obs, ph_dif = self.phase[freq]
-    except (AttributeError, KeyError):
-      ph_syn, ph_obs, ph_dif = self._get_phase(freq, **kwargs)
+    self._get_phase(freq, **kwargs)
     
-    srcs, recs = self._get_sr_coords(**kwargs)
-
+    fig, ax = plt.subplots(1,3, figsize=[20,8])
+    fig.suptitle('Rms ' + str(self.rms_value))
     
-    if self.proj.dim.lower() == '2d':
-      scoord = 'y'
-    elif self.proj.dim.lower() == '3d':
-      scoord = 'z'
-    else:
-      raise ValueError('proj.dim: ' + self.proj.dim)
-    
-    srcs = slice_points(srcs, scoord)
-    recs = slice_points(recs, scoord)
-    
-    kwargs['scatt_vmin'] = -np.pi
-    kwargs['scatt_vmax'] = np.pi
-    
-    
-    plt.subplots(1,3, figsize=[20,8])
-    
-    #title = str('sid_' + str(self.sid) + '_it_' + str(self.it).rjust(3,'0') + 
-                #'_freq_' + str(freq))
-    plt.suptitle('Rms ' + str(self.rms_value))
-    
-    plt.subplot(1,3,1)
-    plt.title('syn')
-    plot_1d(scatts=[recs], scatt_ampl=[ph_syn.ravel()], **kwargs)
-    plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    plt.xlabel('in-line node')
-    plt.ylabel('cross-line node')
-    #plt.gca().set_aspect('equal')
-    #plt.gca().invert_yaxis() # IT IS ALREADY CORRECT
-    
-    plt.subplot(1,3,2)
-    plt.title('obs')
-    plot_1d(scatts=[recs], scatt_ampl=[ph_obs.ravel()], **kwargs)
-    plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    #plt.gca().set_aspect('equal')
-    #plt.gca().invert_yaxis() 
-    plt.xlabel('in-line node')
-    plt.ylabel('cross-line node')    
-    
-    plt.subplot(1,3,3)
-    plt.title('syn-obs (wrapped)')
-    plot_1d(scatts=[recs], scatt_ampl=[ph_dif.ravel()], **kwargs)
-    plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    #plt.gca().set_aspect('equal')
-    #plt.gca().invert_yaxis()
-    plt.xlabel('in-line node')
-    plt.ylabel('cross-line node')   
-
+    for i, ph_type in enumerate(['syn', 'obs', 'dif']):
+      ax = plt.subplot(1,3,i+1)
+      ax.set_title(ph_type)
+      ax.scatter(self.head.sx, self.head.sy, vmin=-np.pi, vmax=+np.pi, cmap=cmap,
+                 c=self.head['phase %s (%s Hz)' % (ph_type, freq)])
+      ax.scatter(self.head.gx[0], self.head.gy[0], s=20**2, 
+                  marker='*', c='w', edgecolors='k')
+      ax.set_xlabel('x, metres')
+      ax.set_ylabel('y, metres')
+      ax.set_aspect('equal')
+         
   # -----------------------------------------------------------------------------
-
-  def iplot_phase(self, freq, **kwargs):
-    """
-    subtract : DataFile object
-    
-    Notes
-    -----
-    Cyclic colormaps ('hsv', 'twilight_shifted') would be preferred
-    because so is the phase (periodic). But apparently jet, with 
-    smoother colorscale (fewer colors) does better job...
-    
-    """
-    #from fullwavepy.plot.oned import plot_1d, slice_points
-    from fullwavepy.signal.phase import wrap_phase 
-    
-    #kwargs['scatt_cmap'] = kw('scatt_cmap', 'jet', kwargs)
-    #kwargs['scatt_cbar'] = kw('scatt_cbar', True, kwargs)
-
-    try:
-      ph_syn, ph_obs, ph_dif = self.phase[freq]
-    except (AttributeError, KeyError):
-      ph_syn, ph_obs, ph_dif = self._get_phase(freq, **kwargs)
-    
-    df = self.read_header(**kwargs)
-    
-    #srcs, recs = self._get_sr_coords(**kwargs)
-    #
-    #
-    #if self.proj.dim.lower() == '2d':
-    #  scoord = 'y'
-    #elif self.proj.dim.lower() == '3d':
-    #  scoord = 'z'
-    #else:
-    #  raise ValueError('proj.dim: ' + self.proj.dim)
-    #
-    #srcs = slice_points(srcs, scoord)
-    #recs = slice_points(recs, scoord)
-    #
-    #kwargs['scatt_vmin'] = -np.pi
-    #kwargs['scatt_vmax'] = np.pi
-    #
-    #
-    #plt.subplots(1,3, figsize=[20,8])
-    #
-    ##title = str('sid_' + str(self.sid) + '_it_' + str(self.it).rjust(3,'0') + 
-    #            #'_freq_' + str(freq))
-    #plt.suptitle('Rms ' + str(self.rms_value))
-    #
-    #plt.subplot(1,3,1)
-    #plt.title('syn')
-    #plot_1d(scatts=[recs], scatt_ampl=[ph_syn.ravel()], **kwargs)
-    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    #plt.xlabel('in-line node')
-    #plt.ylabel('cross-line node')
-    ##plt.gca().set_aspect('equal')
-    ##plt.gca().invert_yaxis() # IT IS ALREADY CORRECT
-    #
-    #plt.subplot(1,3,2)
-    #plt.title('obs')
-    #plot_1d(scatts=[recs], scatt_ampl=[ph_obs.ravel()], **kwargs)
-    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    ##plt.gca().set_aspect('equal')
-    ##plt.gca().invert_yaxis() 
-    #plt.xlabel('in-line node')
-    #plt.ylabel('cross-line node')    
-    #
-    #plt.subplot(1,3,3)
-    #plt.title('syn-obs (wrapped)')
-    #plot_1d(scatts=[recs], scatt_ampl=[ph_dif.ravel()], **kwargs)
-    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
-    ##plt.gca().set_aspect('equal')
-    ##plt.gca().invert_yaxis()
-    #plt.xlabel('in-line node')
-    #plt.ylabel('cross-line node')
-
-  # -----------------------------------------------------------------------------   
   
 
 # -------------------------------------------------------------------------------
