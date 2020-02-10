@@ -141,6 +141,9 @@ class DumpCompareFile(DataFileTtr):
     """
     Add reading csv, useful for heavy sgy files.
     
+    Offset is measured by Fullwave3D in 3D, not 2D like SegyPrep!
+    This was the source of bugs but is now fixed.
+    
     """
     if (not hasattr(self, 'head')) or overwrite:
       df = self.proj.i.obs.read_header(overwrite, **kwargs)
@@ -154,27 +157,41 @@ class DumpCompareFile(DataFileTtr):
       
       # CALCULATE THE OFFSET
       self.__log.warn('Taking -gelev as this is positive for OBS PROTEUS, double-check land stations!')
-      df['offset3d'] = np.sqrt((df['sx'] - df['gx'])**2 + (df['sy'] - df['gy'])**2 + (df['selev'] + df['gelev'])**2)
+      df['offset3d'] = np.sqrt((df['sx'] - df['gx'])**2 + 
+                               (df['sy'] - df['gy'])**2 + 
+                               (df['selev'] + df['gelev'])**2)
+      
+      
+      # SELECT THE OFFSET RANGE AS IN ITERATION INFO
+      minoff = kw('minoff', 0, self.proj.i.rnf.iters[self.it])
+      maxoff = kw('maxoff', 1e9, self.proj.i.rnf.iters[self.it])
+      self.__log.debug('minoff, maxoff for this iteration: {}, {}'.format(minoff, maxoff))
+      df = df[(df.offset3d >= minoff) & (df.offset3d <= maxoff)]
       
       self.head = df
       
     return self.head  
   
-  # -----------------------------------------------------------------------------    
-  
-  def split(self, **kwargs):
+  # -----------------------------------------------------------------------------
+
+  def split(self, overwrite=False, **kwargs):
+    kwargs['overwrite'] = overwrite
     self.read(**kwargs)
     self.read_header(**kwargs)
+    # RESET INDEX, OTHERWISE ONLY THEFIRST SHOT IN DF WOULD BE POSSIBLE TO SPLIT
+    self.head.reset_index(drop=True, inplace=True) 
     
-    # LINE IDs
-    lid_hw = self.proj.sgy.hw['lid'] # IT SHOULD BE ep FOR PROTEUS
-    lids = self.head[lid_hw].unique()
     
-    for obj in [self.syn, self.obs, self.dif]:
-      obj.lid = {}
-      for lid in lids:
-        subhead = self.head[:][self.head[lid_hw] == lid]
-        obj.lid[lid] = np.take(obj, indices=subhead.index, axis=0)
+    if not (hasattr(self.syn, 'lid')) or overwrite:
+      # LINE IDs
+      lid_hw = self.proj.sgy.hw['lid'] # IT SHOULD BE ep FOR PROTEUS
+      lids = self.head[lid_hw].unique()
+      
+      for obj in [self.syn, self.obs, self.dif]:
+        obj.lid = {}
+        for lid in lids:
+          subhead = self.head[:][self.head[lid_hw] == lid]
+          obj.lid[lid] = np.take(obj, indices=subhead.index, axis=0)
   
   # -----------------------------------------------------------------------------
   
@@ -207,12 +224,15 @@ class DumpCompareFile(DataFileTtr):
     Actually we should assume (ntraces, 1, nsamps) shape...
     
     """
+    freq_max = self.proj.i.rnf.iters[self.it]['freq']
+    if freq > freq_max:
+      raise ValueError('You should not extract the phase at the freq. ' +
+                       'above the iteration-block high-cut freq.: %s' % freq_max)
+    
     if (not freq in self.phase) or overwrite:
       from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
       from fullwavepy.generic.math import rms    
       self.__log.info('Getting phase info from ' + self.fname)
-      
-      #if min < freq > self.it[freq].max then warn #FIXME
       
       self.read(**kwargs)
       self.read_header(**kwargs)
@@ -247,27 +267,54 @@ class DumpCompareFile(DataFileTtr):
   
   # -----------------------------------------------------------------------------  
   
+  def plot(self, **kwargs):
+    self.__log.info('Plotting whole content (syn, obs, dif) of ' + self.fname)
+    self.read(**kwargs)
+    kwargs['cmap'] = kw('cmap', 'seismic', kwargs)
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    self.array.plot(**kwargs)
+   
+  # -----------------------------------------------------------------------------
+  
+  #def plot_line(self, **kwargs):
+    #self.split(**kwargs)
+    
+   
+  # -----------------------------------------------------------------------------
+  
   #def compare(self, **kwargs):
     #from fullwavepy.plot.generic import compare
     #Asyn, Aobs, Adif = self.read(**kwargs)
     #compare(Asyn, Aobs)   
     
   # -----------------------------------------------------------------------------  
+  
+  def px_head(self, data_col, cmap='jet', **kwargs):
+    import plotly.express as px
+    fig = px.scatter(self.head, x='sx', y='sy', color=data_col, 
+                     color_continuous_scale=cmap)
+    return fig    
 
+  # -----------------------------------------------------------------------------   
+  
   def px_phase(self, freq, phase='dif', **kwargs):
     """
     Quick interactive plot. Can't do subplots with plotly :(
     
+    Syntactic sugar: just a special case of px_head
+    
     """
     import plotly.express as px
+    
     self._get_phase(freq, **kwargs)
-    fig = px.scatter(self.head, x='sx', y='sy', color='phase %s (%s Hz)' % (phase, freq), 
-                     color_continuous_scale='jet')
+    
+    data_col = 'phase %s (%s Hz)' % (phase, freq)
+    fig = self.px_head(data_col, **kwargs)
     return fig
-  
+    
   # -----------------------------------------------------------------------------   
   
-  def plot_phase(self, freq, **kwargs):
+  def plot_phase(self, freq, annotate=False, **kwargs):
     """
     subtract : DataFile object
     
@@ -296,7 +343,7 @@ class DumpCompareFile(DataFileTtr):
       ax.set_xlabel('x, metres')
       ax.set_ylabel('y, metres')
       ax.set_aspect('equal')
-         
+      
   # -----------------------------------------------------------------------------
   
 

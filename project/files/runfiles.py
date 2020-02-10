@@ -98,6 +98,8 @@ class ParameterFile(AsciiProjFile):
       f.write(nline)
       
     for key, value in kwargs.items():
+      if key in ['cat', 'blocks']:
+        continue
       key = key.lower()
       if isinstance(value, str): value = value.lower()      
       if key not in found_keys:
@@ -719,10 +721,13 @@ class Runfile(ParameterFile):
                              {'freq': 6.0, 'nits': 20, 'minoff': 5000},
                              {'freq': 6.5, 'nits': 20, 'minoff': 5000},
                             ], kwargs)
+      self.blocks= blocks # TO BE USED BY DUMPCOMPARE.read
     elif self.proj.problem == 'synthetic':
       blocks = kw('blocks', [], kwargs)
     else:
       raise ValueError('Unknown problem type: %s' %str(self.proj.problem))
+    
+    self.blocks2single_iters(**kwargs)
     
     fname = self.fname
     content = read_txt_raw(fname)
@@ -753,7 +758,19 @@ class Runfile(ParameterFile):
         f.write('\n')
         
   # -----------------------------------------------------------------------------
+  
+  def blocks2single_iters(self, **kwargs):
+    """
+    Prepare a list of all iterations, each
+    having info about the block to which it belongs
+    """
+    self.iters =  [None]    
+    for b in self.blocks:
+      for i_b in range(b['nits']):
+        self.iters.append(b)
 
+  # -----------------------------------------------------------------------------
+  
 
 # -------------------------------------------------------------------------------
 

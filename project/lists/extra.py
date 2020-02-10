@@ -134,7 +134,27 @@ class DumpFileList(SlaveFileList):
       self.__log.warn(self.init_err)
     
   # -----------------------------------------------------------------------------
-
+  
+  @timer
+  def load(self, **kwargs):
+    """
+    Load all the data for fast plotting
+    
+    """
+    its = range(1, len(self.it))
+    sids = sorted(self.it[1].keys())
+    lids = sorted(self.proj.i.obs.read_header(overwrite=1)[self.proj.sgy.hw['lid']].unique())
+    
+    blocks = self.proj.i.rnf.blocks
+    
+    #freqs =[i['freq'] for i in self.proj.i.rnf.blocks]
+    
+    
+    print(its)
+    print(sids)
+    print(lids)
+    #print(freqs)
+  
 
 # -------------------------------------------------------------------------------
 

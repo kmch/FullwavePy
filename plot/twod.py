@@ -31,6 +31,7 @@ def compare_2d(A1, A2, **kwargs):
     from fullwavepy.generic.array import interleave_arrays, Arr3d
     A = Arr3d(interleave_arrays(A1, A2, **kwargs))
     A.plot(**kwargs)
+    #plt.grid(color='black', linestyle='-.', linewidth=0.7)
     #plot_2d(images=[A], **kwargs)
   else:
     raise ValueError('Unknown mode: ' + mode)
