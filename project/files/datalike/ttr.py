@@ -167,6 +167,8 @@ class DumpCompareFile(DataFileTtr):
       maxoff = kw('maxoff', 1e9, self.proj.i.rnf.iters[self.it])
       self.__log.debug('minoff, maxoff for this iteration: {}, {}'.format(minoff, maxoff))
       df = df[(df.offset3d >= minoff) & (df.offset3d <= maxoff)]
+      # RESET INDEX, OTHERWISE BUGGY split() ETC.
+      df.reset_index(drop=True, inplace=True)       
       
       self.head = df
       
@@ -178,9 +180,6 @@ class DumpCompareFile(DataFileTtr):
     kwargs['overwrite'] = overwrite
     self.read(**kwargs)
     self.read_header(**kwargs)
-    # RESET INDEX, OTHERWISE ONLY THEFIRST SHOT IN DF WOULD BE POSSIBLE TO SPLIT
-    self.head.reset_index(drop=True, inplace=True) 
-    
     
     if not (hasattr(self.syn, 'lid')) or overwrite:
       # LINE IDs
