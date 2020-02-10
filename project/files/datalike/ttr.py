@@ -167,43 +167,61 @@ class DumpCompareFile(DataFileTtr):
   
   def read(self, **kwargs):
     """
+    isep: 
+    # SEPARATOR TO SPLIT ARRAY INTO 3 CHUNKS OF THE SAME LEN, CHECKED
     """
-    from fullwavepy.generic.array import WigglyData
-    
+    from fullwavepy.generic.array import WigglyData    
     self.__log.info('Reading ' + self.fname + '...')
-    kwargs['scoord'] = None
     self.array = super().read(**kwargs)
     
-    # SEPARATOR TO SPLIT ARRAY INTO 3 CHUNKS OF THE SAME LEN, CHECKED
     isep  = int(len(self.array) / 3) 
+    di = {'syn': WigglyData(self.array[      :isep]),
+          'obs': WigglyData(self.array[+isep:-isep]),
+          'dif': WigglyData(self.array[-isep:     ]),
+         }
     
-    Asyn = self.array[ :isep]
-    Aobs = self.array[isep:-isep]
-    Adif = self.array[-isep: ] # SYN - OBS
-    self.__log.debug('lengths of Asyn, Aobs, Adif', 
-                     len(Asyn), len(Aobs), len(Adif))
-    
-    Asyn, Aobs, Adif = [WigglyData(a) for a in [Asyn, Aobs, Adif]]
-    
-    #self.syn.array = Asyn
-    #self.obs.array = Aobs
-    
-    return Asyn, Aobs, Adif
+    return di
 
   # -----------------------------------------------------------------------------
   
-  def read_header(self, overwrite=True, **kwargs):
+  def read_header(self, overwrite=False, **kwargs):
     """
     Add reading csv, useful for heavy sgy files.
+    
     """
     if (not hasattr(self, 'head')) or overwrite:
-      #self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
+      df = self.proj.i.obs.read_header(overwrite, **kwargs)
+      
+      # SELECT THE CORRECT SHOT
+      recipr = bool(self.proj.i.sp.read()['reciprocity'])
+      if recipr:
+        df = df[df.tracf == self.sid]
+      else:
+        df = df[df.fldr == self.sid]
+      
+      # CALCULATE THE OFFSET
+      self.__log.warn('Taking -gelev as this is positive for OBS PROTEUS, double-check land stations!')
+      df['offset3d'] = np.sqrt((df['sx'] - df['gx'])**2 + (df['sy'] - df['gy'])**2 + (df['selev'] + df['gelev'])**2)
+      
+      self.head = df
+      
     return self.head  
   
   # -----------------------------------------------------------------------------    
   
   def split(self, **kwargs):
-    pass
+    head = self.read_header(**kwargs)
+    # LINE IDs
+    lid_hw = self.proj.sgy.hw['lid'] # IT SHOULD BE ep FOR PROTEUS
+    lids = head[lid_hw].unique()
+    
+    for obj in [self.syn, self.obs, self.dif]:
+      setattr(obj, lid_hw, {})
+      for lid in lids:
+        subhead = head[:][head[lid_hw] == lid]
+        di = getattr(obj, lid_hw)
+        di[lid] = np.take(obj, indices=subhead.index, axis=0)
+    
   
   # -----------------------------------------------------------------------------
   
@@ -248,11 +266,15 @@ class DumpCompareFile(DataFileTtr):
     ph_dif = ph_syn - ph_obs
     ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
     
+    ph_syn, ph_obs, ph_dif = [np.ravel(i) for i in [ph_syn, ph_obs, ph_dif]]
+    
     self.rms_value = rms(ph_dif)
     self.__log.info('RMS of wrapped phase-differences: ' + 
                     str(self.rms_value))
     
-    self.phase[freq] = [ph_syn, ph_obs, ph_dif]
+    self.phase[freq] = {'syn': ph_syn, 
+                        'obs': ph_obs,
+                        'dif': ph_dif}
     
     return ph_syn, ph_obs, ph_dif
     
@@ -290,10 +312,16 @@ class DumpCompareFile(DataFileTtr):
     #compare(Asyn, Aobs, **kwargs)
     #fig = plt.figure(figsize=(14,8))
     #Aobs.plot_slice() #(Asyn, fig)
+
+  # -----------------------------------------------------------------------------
+  
+  def compare(self, **kwargs):
+    from fullwavepy.plot.generic import compare
+    Asyn, Aobs, Adif = self.read(**kwargs)
+    compare(Asyn, Aobs)   
     
   # -----------------------------------------------------------------------------  
   
-  @timer
   def plot_phase(self, freq, **kwargs):
     """
     subtract : DataFile object
@@ -366,15 +394,84 @@ class DumpCompareFile(DataFileTtr):
     plt.xlabel('in-line node')
     plt.ylabel('cross-line node')   
 
-  # -----------------------------------------------------------------------------   
-  
-  def compare(self, **kwargs):
-    from fullwavepy.plot.generic import compare
-    Asyn, Aobs, Adif = self.read(**kwargs)
-    compare(Asyn, Aobs)   
-  
   # -----------------------------------------------------------------------------
 
+  def iplot_phase(self, freq, **kwargs):
+    """
+    subtract : DataFile object
+    
+    Notes
+    -----
+    Cyclic colormaps ('hsv', 'twilight_shifted') would be preferred
+    because so is the phase (periodic). But apparently jet, with 
+    smoother colorscale (fewer colors) does better job...
+    
+    """
+    #from fullwavepy.plot.oned import plot_1d, slice_points
+    from fullwavepy.signal.phase import wrap_phase 
+    
+    #kwargs['scatt_cmap'] = kw('scatt_cmap', 'jet', kwargs)
+    #kwargs['scatt_cbar'] = kw('scatt_cbar', True, kwargs)
+
+    try:
+      ph_syn, ph_obs, ph_dif = self.phase[freq]
+    except (AttributeError, KeyError):
+      ph_syn, ph_obs, ph_dif = self._get_phase(freq, **kwargs)
+    
+    df = self.read_header(**kwargs)
+    
+    #srcs, recs = self._get_sr_coords(**kwargs)
+    #
+    #
+    #if self.proj.dim.lower() == '2d':
+    #  scoord = 'y'
+    #elif self.proj.dim.lower() == '3d':
+    #  scoord = 'z'
+    #else:
+    #  raise ValueError('proj.dim: ' + self.proj.dim)
+    #
+    #srcs = slice_points(srcs, scoord)
+    #recs = slice_points(recs, scoord)
+    #
+    #kwargs['scatt_vmin'] = -np.pi
+    #kwargs['scatt_vmax'] = np.pi
+    #
+    #
+    #plt.subplots(1,3, figsize=[20,8])
+    #
+    ##title = str('sid_' + str(self.sid) + '_it_' + str(self.it).rjust(3,'0') + 
+    #            #'_freq_' + str(freq))
+    #plt.suptitle('Rms ' + str(self.rms_value))
+    #
+    #plt.subplot(1,3,1)
+    #plt.title('syn')
+    #plot_1d(scatts=[recs], scatt_ampl=[ph_syn.ravel()], **kwargs)
+    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
+    #plt.xlabel('in-line node')
+    #plt.ylabel('cross-line node')
+    ##plt.gca().set_aspect('equal')
+    ##plt.gca().invert_yaxis() # IT IS ALREADY CORRECT
+    #
+    #plt.subplot(1,3,2)
+    #plt.title('obs')
+    #plot_1d(scatts=[recs], scatt_ampl=[ph_obs.ravel()], **kwargs)
+    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
+    ##plt.gca().set_aspect('equal')
+    ##plt.gca().invert_yaxis() 
+    #plt.xlabel('in-line node')
+    #plt.ylabel('cross-line node')    
+    #
+    #plt.subplot(1,3,3)
+    #plt.title('syn-obs (wrapped)')
+    #plot_1d(scatts=[recs], scatt_ampl=[ph_dif.ravel()], **kwargs)
+    #plt.scatter(*srcs[0], s=20**2, marker='*', c='w', edgecolors='k')
+    ##plt.gca().set_aspect('equal')
+    ##plt.gca().invert_yaxis()
+    #plt.xlabel('in-line node')
+    #plt.ylabel('cross-line node')
+
+  # -----------------------------------------------------------------------------   
+  
 
 # -------------------------------------------------------------------------------
 

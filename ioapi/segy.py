@@ -729,10 +729,12 @@ def read_sgy(fname, overwrite=True, **kwargs):
 @logged
 def header2csv(fname, keys='all', suffix='_HEAD', overwrite=True, **kwargs):
   """
-  SEGY -> SU -> dict.
-
-  Read all trace header values for
-  all non-empty header keywords.
+  Read trace-header values.
+  
+  Parameters
+  ----------
+  fname : str
+    Name of the SEGY file.
   
   Returns
   -------
@@ -740,17 +742,21 @@ def header2csv(fname, keys='all', suffix='_HEAD', overwrite=True, **kwargs):
   
   Notes
   -----
-  It is quite slow.
+  SEGY -> SU -> dict. It is quite slow.
   
   """
-  from pandas import DataFrame
+  from pandas import DataFrame, read_csv
   from fullwavepy.ioapi.su import sugethw
   
-  header = DataFrame(sugethw(fname, keys, **kwargs))
-  #header = DataFrame(cols)
-  
   nfname = strip(fname) + suffix + '.csv'
-  header.to_csv(nfname, index=False)
+  
+  if (not exists(fname)) or overwrite:
+    header = DataFrame(sugethw(fname, keys, **kwargs))
+    header2csv._log.debug('Overwriting %s' % nfname)
+    header.to_csv(nfname, index=False)
+  else:
+    header2csv._log.debug('Reading %s' % nfname)
+    header = read_csv(nfname)
   
   return header
 

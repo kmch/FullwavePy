@@ -346,12 +346,12 @@ class ProjGeometry(object): # FIXME: CLEAN
 
   # -----------------------------------------------------------------------------  
   
-  def __init__(self, proj, **kwargs):  
+  def __init__(self, proj, reciprocity=True, **kwargs):  
     """
     
     """
     self.proj = proj
-
+    
     for f in [proj.inp.sp, proj.inp.runfile]:
       if exists(f.fname):
         # THIS SHOULD CREATE f.params DICTIONARY
