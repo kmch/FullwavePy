@@ -153,11 +153,11 @@ class SgyFile(ArrayFile):
     To read and plot! windowed data in one line.
     """
     win = kw('win', None, kwargs)
-    
-    if (win != getattr(self, 'win', None)) and (overwrite == False):
+    selfwin = getattr(self, 'win', None)
+
+    if (win != selfwin) and (overwrite == False):
       overwrite = True
-      self.__log.warn('Changed overwrite to {} because provided win {} is different ' +
-                      'from the previous {}'.format(overwrite, win ,self.win))
+      self.__log.warn('Changed overwrite to {} because provided win {} is different from the previous {}'.format(overwrite, win ,selfwin))
     
     if (not hasattr(self, 'array')) or overwrite:
       if win is None:
