@@ -50,6 +50,14 @@ class TopographyFile(SurfaceFile):
   
   # -----------------------------------------------------------------------------  
   
+  def plot(self, array=None, **kwargs):
+    from fullwavepy.plot.misc import plot_square 
+    
+    plot_square(self.proj.box[0], self.proj.box[1], 
+                self.proj.box[2], self.proj.box[3]) 
+
+  # -----------------------------------------------------------------------------
+    
   #@widgets('cmap')
   def plotly(self, fig=None, array=None, **kwargs): #?
     """
@@ -93,6 +101,8 @@ class TopographyFile(SurfaceFile):
                                x0=-8e4, dx=50*stride, y0=-4e4, dy=50*stride, 
                                zmin=zmin, zmax=zmax))
     #fig.show()
+     
+      
       
     return fig
   

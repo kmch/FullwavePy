@@ -58,7 +58,7 @@ class Proj(object):
     from fullwavepy.project.files.runfiles import Runfile
     from fullwavepy.project.files.gridded.surfaces import TopographyFile
     from fullwavepy.project.aux import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
-                                        ProjEnv, ProjSegyMapp)    
+                                        ProjEnv, ProjSegyMapp, ProjBox)    
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
     
@@ -90,6 +90,7 @@ class Proj(object):
     self.inp.init(**kwargs)
 
     self.geom = ProjGeometry(self, **kwargs) # OUTPUT USES IT
+    self.pbox = ProjBox(self, **kwargs)
     
     self.out = ProjOutput(self, **kwargs)
     self.o = self.out # ALIAS

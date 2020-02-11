@@ -83,6 +83,7 @@ def widgets(*widgets_args):
       try:
         proj = args[0].proj
         sids = list(proj.i.s.d.keys())
+        #it_max = proj.i.rnf.nits_total
       except AttributeError as err:
         wrapper_widgets._log.warn('Setting sids to [] because of %s' % str(err))
         sids = []
@@ -109,7 +110,7 @@ def widgets(*widgets_args):
         'receivers' : Checkbox(True),
         'sids'      : SelectMultiple(options=sids, value=sids),
         'run_ids'   : SelectMultiple(options=range(20), value=[0]),
-        'it'        : IntSlider(value=1, min=0, max=20, step=1)
+        'it'        : BoundedIntText(value=1, min=0, max=500, step=5)
       }
       
       # CHUCK AWAY ALL kwargs THAT ARE NOT LISTED IN widgets_args

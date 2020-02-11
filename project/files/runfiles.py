@@ -436,6 +436,7 @@ class Runfile(ParameterFile):
       if len(line) > 0 and line[0] == 'nits':
         nits_total += int(line[2])
       
+    self.nits_total = nits_total
     return nits_total
 
   # -----------------------------------------------------------------------------  

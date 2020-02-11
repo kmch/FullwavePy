@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
-from fullwavepy.generic.decor import timer
+from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.parse import kw
 from fullwavepy.project.lists.basic import TimestepFileList
@@ -67,14 +67,12 @@ class CPFileList(SchedFileList):
       self.__log.warn(self.init_err)
       
   # -----------------------------------------------------------------------------
-
-  def plot(self, **kwargs):
-    for f in self.it[1: ]: # SKIP ITER. 0
-      try:
-        f.plot(**kwargs)
-      except FileNotFoundError as err:
-        self.__log.warn(err)
   
+  @widgets('it', 'slice_at', 'node', 'cmap')
+  def plot(self, wdg=False, **kwargs):
+    it = kw('it', 1, kwargs)
+    self.it[it].plot(**kwargs)
+    
   # -----------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------  

@@ -18,6 +18,40 @@ from fullwavepy.generic.system import bash, exists
 
 @traced
 @logged
+class ProjObj(object):
+  def __init__(self, proj, **kwargs):
+    self.proj = proj
+  
+  
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjBox(ProjObj):
+  def __init__(self, proj, **kwargs):
+    self.proj = proj
+    self.x1, self.x2, self.y1, self.y2, self.z1, self.z2 = proj.box
+  
+  def plot(self, **kwargs):
+    from fullwavepy.plot.misc import plot_square
+    plot_square(self.proj.box[0], self.proj.box[1], 
+                self.proj.box[2], self.proj.box[3])     
+  
+  def plotly(self, fig=None, **kwargs):
+    if fig is None:
+      fig = go.Figure()    
+    kwargs = {'line': dict(color='red', width=2, dash=None)}
+    fig.add_trace(go.Scatter(x=X, y=[y1]*len(X), **kwargs))
+    fig.add_trace(go.Scatter(x=X, y=[y2]*len(X), **kwargs))
+    fig.add_trace(go.Scatter(x=[x1]*len(Y), y=Y, **kwargs))
+    fig.add_trace(go.Scatter(x=[x2]*len(Y), y=Y, **kwargs))    
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class ProjPath(object):
   def __init__(self, proj, **kwargs):
     """
@@ -316,13 +350,13 @@ class ProjSegyMapp(object):
   def __init__(self, proj, **kwargs):
     """
     """
-    sgy_hw = kw('sgy_hw', {}, kwargs)
+    sgy_hw = kw('sgy_hw', None, kwargs)
     self.__log.info("Setting SEG-Y header mapping to Fullwave's default")
     
     hw = {}
     hw['sid'] = kw('sid', 'fldr', sgy_hw)
     hw['rid'] = kw('rid', 'tracf', sgy_hw)
-    hw['lid'] = kw('lid', None, sgy_hw) #'ep'
+    hw['lid'] = kw('lid', 'ep', sgy_hw)
     hw['xmod'] = kw('xmod', 'sx', sgy_hw)
     hw['ymod'] = kw('ymod', 'sy', sgy_hw)
     
