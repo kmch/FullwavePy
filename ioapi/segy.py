@@ -77,25 +77,39 @@ class SgyFile(ArrayFile):
 
   # -----------------------------------------------------------------------------
   
-  def window(self, window, init_args=None, **kwargs):
+  def window(self, win, **kwargs): #, init_args=None, **kwargs):
     """
-    init_args : list
-      args passed to __init__ of the child class. This is a necessary 
-      work-around to extend as few child classes as possible.
-    
+    win : dict
+      Each value may have 1 of 2 formats:
+      (1) key: {'min': 10, 'max': 40} # subdict!
+      OR
+      (2) key: [value1,value2,...] # list also for singles [value1]
+       
     """
     from fullwavepy.ioapi.su import suwind
+    
+    self.win = win
+    
     fname = self.fname
     nfname = strip(fname) + '_windowed.' + exten(fname)
-    suwind(fname, nfname, window, **kwargs)
-
-    if init_args is None:
-      self.win = self.__class__(path_leave(nfname), self.path)
-    else:
-      self.win = self.__class__(*init_args, **kwargs)
-      self.win.fname = nfname
-      self.win.name = path_leave(nfname)
-
+    nname = path_leave(nfname)
+    
+    suwind(fname, nfname, win, **kwargs)
+    
+    obj = ArrayFile(nname, self.path)
+    self.array = obj.read(**kwargs)
+    
+    return self.array
+    
+    #if init_args is None:
+    #  self.win = self.__class__(path_leave(nfname), self.path)
+    #else:
+    #  self.win = self.__class__(*init_args, **kwargs)
+    #  self.win.fname = nfname
+    #  self.win.name = path_leave(nfname)
+    
+    #return self.win.read(**kwargs)
+    
   # -----------------------------------------------------------------------------
   
   def split(self, key, **kwargs):
@@ -134,21 +148,25 @@ class SgyFile(ArrayFile):
     
   # ----------------------------------------------------------------------------- 
   
-  def read(self, window=None, init_args=None, **kwargs): # AD HOC
+  def read(self, overwrite=True, **kwargs): # AD HOC
     """
     To read and plot! windowed data in one line.
     """
-    if window is not None:
-      self.window(window, init_args, **kwargs)
-      self.array = self.win.read(**kwargs)
-      return self.array
-    else:
-      return super().read(**kwargs)
-
-
-
-
-
+    win = kw('win', None, kwargs)
+    
+    if (win != getattr(self, 'win', None)) and (overwrite == False):
+      overwrite = True
+      self.__log.warn('Changed overwrite to {} because provided win {} is different ' +
+                      'from the previous {}'.format(overwrite, win ,self.win))
+    
+    if (not hasattr(self, 'array')) or overwrite:
+      if win is None:
+        self.array = super().read(**kwargs)
+      else:
+        kwargs['win'] = win # OTHERWISE MULTIPLE VALUES
+        self.array = self.window(**kwargs)
+      
+    return self.array
     
   # -----------------------------------------------------------------------------  
   
