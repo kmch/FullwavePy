@@ -29,23 +29,42 @@ class ProjObj(object):
 @traced
 @logged
 class ProjBox(ProjObj):
+  """
+  """
   def __init__(self, proj, **kwargs):
     self.proj = proj
     self.x1, self.x2, self.y1, self.y2, self.z1, self.z2 = proj.box
+
+  # -----------------------------------------------------------------------------
   
   def plot(self, **kwargs):
     from fullwavepy.plot.misc import plot_square
     plot_square(self.proj.box[0], self.proj.box[1], 
                 self.proj.box[2], self.proj.box[3])     
+    
+  # -----------------------------------------------------------------------------  
   
   def plotly(self, fig=None, **kwargs):
+    import plotly.graph_objects as go
+    kwargs = {'line': dict(color=kw('color', 'red', kwargs), width=2, dash=None),
+              'showlegend': False, 'name': self.proj.name # WILL APPEAR ON HOVER
+             }
+    
+    X = np.arange(self.x1, self.x2+1)
+    Y = np.arange(self.y1, self.y2+1)
+    
     if fig is None:
       fig = go.Figure()    
-    kwargs = {'line': dict(color='red', width=2, dash=None)}
-    fig.add_trace(go.Scatter(x=X, y=[y1]*len(X), **kwargs))
-    fig.add_trace(go.Scatter(x=X, y=[y2]*len(X), **kwargs))
-    fig.add_trace(go.Scatter(x=[x1]*len(Y), y=Y, **kwargs))
-    fig.add_trace(go.Scatter(x=[x2]*len(Y), y=Y, **kwargs))    
+    
+    fig.add_trace(go.Scatter(x=X, y=[self.y1]*len(X), **kwargs))
+    fig.add_trace(go.Scatter(x=X, y=[self.y2]*len(X), **kwargs))
+    fig.add_trace(go.Scatter(x=[self.x1]*len(Y), y=Y, **kwargs))
+    fig.add_trace(go.Scatter(x=[self.x2]*len(Y), y=Y, **kwargs))    
+    
+    return fig
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -350,7 +369,7 @@ class ProjSegyMapp(object):
   def __init__(self, proj, **kwargs):
     """
     """
-    sgy_hw = kw('sgy_hw', None, kwargs)
+    sgy_hw = kw('sgy_hw', {}, kwargs)
     self.__log.info("Setting SEG-Y header mapping to Fullwave's default")
     
     hw = {}

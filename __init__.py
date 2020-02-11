@@ -7,8 +7,10 @@ from matplotlib.gridspec import GridSpec
 
 import plotly.express as px
 import plotly.graph_objects as go
-from ipywidgets import interactive, interact, interact_manual, fixed
-
+from ipywidgets import (interactive, interact, interact_manual, fixed,
+                        IntSlider, BoundedIntText, Dropdown, 
+                        SelectMultiple, Checkbox,
+                        Layout, TwoByTwoLayout)
 
 
 from fullwavepy.logging_config import *

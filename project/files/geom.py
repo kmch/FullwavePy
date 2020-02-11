@@ -27,9 +27,6 @@ class SRFile(AsciiProjFile):
   like an overkill.
   
   """  
-
-  # -----------------------------------------------------------------------------
-  
   def create(self, dictio, **kwargs):
     """
     dictio : dictionary
@@ -127,6 +124,26 @@ class SRFile(AsciiProjFile):
     self.plot_3slices(fig, **kwargs)
     
   # ----------------------------------------------------------------------------- 
+  
+  def plotly(self, fig=None, **kwargs):
+    """
+    """
+    import plotly.graph_objects as go    
+    color = kw('color', 'black', kwargs)
+    mode = kw('mode', 'markers', kwargs)
+    size = kw('size', 2, kwargs)
+    
+    di = self.read(unit='m')
+
+    if fig is None:
+      fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[i[0] for i in di.values()], 
+                             y=[i[1] for i in di.values()], 
+                             text=list(di.keys()), mode=mode,
+                             marker=dict(color=color, size=size),
+                             line=dict(color=color), showlegend=False))
+    
+    return fig
 
 
 # -------------------------------------------------------------------------------
@@ -138,9 +155,6 @@ class SourcesFile(SRFile):
   """
 
   """  
-  
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     """
     
@@ -162,6 +176,16 @@ class SourcesFile(SRFile):
     kwargs['markerfacecolor'] = kw('markerfacecolor', 'w', kwargs)
     super().plot_slice(*args, **kwargs)
 
+  # -----------------------------------------------------------------------------
+
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'black', kwargs)
+    kwargs['size'] = kw('size', 2, kwargs)
+    super().plotly(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -172,9 +196,6 @@ class ReceiversFile(SRFile):
   """
 
   """  
-  
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     """
     
@@ -208,6 +229,14 @@ class ReceiversFile(SRFile):
     super().plot(**kwargs)
   
   # -----------------------------------------------------------------------------  
+
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'grey', kwargs)
+    kwargs['size'] = kw('size', 1, kwargs)
+    super().plotly(*args, **kwargs)
+
+  # ----------------------------------------------------------------------------- 
 
 
 # -------------------------------------------------------------------------------

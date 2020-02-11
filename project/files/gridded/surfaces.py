@@ -53,24 +53,6 @@ class TopographyFile(SurfaceFile):
   def plot(self, array=None, **kwargs):
     from fullwavepy.plot.misc import plot_square 
     
-    plot_square(self.proj.box[0], self.proj.box[1], 
-                self.proj.box[2], self.proj.box[3]) 
-
-  # -----------------------------------------------------------------------------
-    
-  #@widgets('cmap')
-  def plotly(self, fig=None, array=None, **kwargs): #?
-    """
-    if 'array' in dir(self):
-      print('hej')
-      #super().plot(array)
-    else:
-      print('boooo')    
-    """
-    #from fullwavepy.plot.generic import plot
-    #from fullwavepy.generic.array import Arr3d
-    from fullwavepy.plot.misc import plot_square
-    
     kwargs['cbar'] = kw('cbar', True, kwargs)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
     kwargs['shade'] = kw('shade', True, kwargs)
@@ -83,29 +65,9 @@ class TopographyFile(SurfaceFile):
     if full:
       xlim = None
       ylim = None
-
-
-    import plotly.graph_objects as go
-    if fig is None:
-      fig = go.Figure()
     
-    if array is not None:
-
-      
-      stride = kw('stride', 10, kwargs)
-      zmin = kw('zmin', -30, kwargs)
-      zmax = kw('zmax', 30, kwargs)
-      ncontours = kw('ncontours', 40, kwargs)
-      fig.add_trace(go.Contour(z=array[::stride, ::stride, 0].T,
-                               colorscale='Earth', ncontours=ncontours,
-                               x0=-8e4, dx=50*stride, y0=-4e4, dy=50*stride, 
-                               zmin=zmin, zmax=zmax))
-    #fig.show()
-     
-      
-      
-    return fig
-  
+    plot_square(self.proj.box[0], self.proj.box[1], 
+                self.proj.box[2], self.proj.box[3]) 
       #kwargs['slice_at'] = 'z'
       
       #array.plot(**kwargs)  
@@ -146,7 +108,48 @@ class TopographyFile(SurfaceFile):
     #
     #plt.xlim(xlim)
     #plt.ylim(ylim)    
-      
+    return None
+
+  # -----------------------------------------------------------------------------
+    
+  def plotly(self, array=None, fig=None, **kwargs):
+    """
+    x0 etc. are now hardwired for Santorini bathymetry.
+    """
+    import plotly.graph_objects as go
+    
+    stride = kw('stride', 20, kwargs)
+    zmin = kw('zmin', -30, kwargs)
+    zmax = kw('zmax', 30, kwargs)
+    ncontours = kw('ncontours', 40, kwargs)
+    cmap = kw('cmap', 'Earth', kwargs)
+    box = kw('box', True, kwargs)
+    srcs = kw('scrs', True, kwargs)
+    recs = kw('recs', True, kwargs)
+    
+    
+    if array is None:
+      array = self.read(**kwargs)
+    
+    if fig is None:
+      fig = go.Figure()
+
+    fig.add_trace(go.Contour(z=array[::stride, ::stride, 0].T,
+                             zmin=zmin, zmax=zmax,
+                             colorscale=cmap, ncontours=ncontours,
+                             x0=-8e4, dx=50*stride, 
+                             y0=-4e4, dy=50*stride, 
+                             ))
+    if box:
+      self.proj.pbox.plotly(fig, color='red')
+    if recs:
+      self.proj.i.r.plotly(fig, size=3, **kwargs)
+    if srcs:
+      self.proj.i.s.plotly(fig, size=5, **kwargs)
+    
+    return fig
+  
+
   # -----------------------------------------------------------------------------
 
 

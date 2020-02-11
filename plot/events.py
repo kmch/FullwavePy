@@ -177,3 +177,101 @@ class IndexTrackerAll(object):
 # ------------------------------------------------------------------------------
         
     
+@traced
+@logged
+class IterationScroller(object):
+  """
+  Scroll through subsequent iterations.
+  
+  """
+  def __init__(self): # fig, iterfile_list, istep=1, **kwargs):
+    """
+    """
+    from matplotlib.gridspec import GridSpec
+    print('eee')
+   #self.fig = fig
+   #self.A = A
+   #self.istep = istep
+   #
+   #self.i = kw('scoords', np.array(A.shape) // 2, kwargs)
+   #self.imax = A.shape
+   #
+   #self.imshow_kwargs = {'cmap': kw('cmap', 'twilight', kwargs),
+   #                      'vmin': 1500, 'vmax': 6500}    
+   #self.line_kwargs = {'lw': 1, 'ls': '--', 'c': 'k'}
+   #gs = GridSpec(3, 1) #, left=0.05, right=0.48, wspace=0.05)
+   #
+   #self.ax = list(np.zeros(3))
+   #self.im = list(np.zeros(3))
+   #
+   #
+   #for j in range(len(self.ax)):
+   #  self.ax[j] = self.fig.add_subplot(gs[j, :])
+   #  a = self.A.take(indices=self.i[j], axis=j)
+   #  self.im[j] = self.ax[j].imshow(a.T, **self.imshow_kwargs)
+   #  
+   #  from mpl_toolkits.axes_grid1 import make_axes_locatable
+   #  divider = make_axes_locatable(self.ax[j])
+   #  cax = divider.append_axes("right", size="5%", pad=0.05)      
+   #  self.ax[j].figure.colorbar(self.im[j], cax=cax)
+   #  
+   #  self.ax[j].set_title('slice %s' % self.i[j])
+   #  if j == 0:
+   #    self.ax[j].set_xlabel('cross-line node')
+   #    self.ax[j].set_ylabel('depth node')
+   #  elif j == 1:
+   #    self.ax[j].set_xlabel('in-line node')
+   #    self.ax[j].set_ylabel('depth node')
+   #  elif j == 2:
+   #    self.ax[j].set_xlabel('in-line node')
+   #    self.ax[j].set_ylabel('cross-line node')        
+   #    self.ax[j].invert_yaxis()
+   #
+   #  self.ax[j].set_aspect('equal')
+
+  # -----------------------------------------------------------------------------
+
+  def onscroll(self, event):
+    for j in range(len(self.i)):
+      if event.button == 'up':
+        self.i[j] = (self.i[j] + self.istep) % self.imax[j]
+      else:
+        self.i[j] = (self.i[j] - self.istep) % self.imax[j]
+    self.update(event=event)
+
+  # -----------------------------------------------------------------------------
+
+  def update(self, **kwargs):
+    event = kw('event', None, kwargs)
+    
+    for j in range(len(self.im)):
+      if event.inaxes == self.im[j].axes:
+        a = self.A.take(indices=self.i[j], axis=j)
+        self.im[j].set_data(a.T)
+
+        self.ax[j].set_title('slice %s' % self.i[j])
+        self.im[j].axes.figure.canvas.draw()     
+     
+        #if j == 2:
+          #lines = 0
+        #else:
+          #lines = 1
+        
+        # CHANGE LINES AT REMAINING AXES
+        #remaning_axes = [0,1,2]
+        #remaning_axes.remove(j)
+        #for axes_index in remaning_axes:
+        #  xy = [0,1,2]
+        #  xy.remove(axes_index)
+        #  #x1 = range(self.imax[xy[0]])
+        #  #y1 = np.ones(len(x1)) * self.i[xy[1]]
+        #  #self.ax[axes_index].lines[2].set_data(x1, y1)
+        #  x2 = range(self.imax[xy[1]])
+        #  y2 = np.ones(len(x2)) * self.i[xy[0]]
+        #  self.ax[axes_index].lines[1].set_data(y2, x2)
+        #break
+
+
+# ------------------------------------------------------------------------------
+        
+    
