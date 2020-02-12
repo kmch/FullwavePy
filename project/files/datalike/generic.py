@@ -72,9 +72,6 @@ class DataFile(ArrayProjFile):
   to the whole 'lump' (file before splitting).
   
   """
-  
-  # -----------------------------------------------------------------------------     
-  
   def __init__(self, proj, path, **kwargs):
     """
     
@@ -103,9 +100,6 @@ class SynDataFile(DataFile):
   Synthetic data.
   
   """
-  
-  # -----------------------------------------------------------------------------  
-  
   def get_fbreaks(self, fraction=0.01, overwrite=True, **kwargs):
     """
     
@@ -118,8 +112,7 @@ class SynDataFile(DataFile):
       A = self.read(**kwargs)
       self.fb = first_breaks(A, fraction=fraction)
       self.fb = np.ravel(self.fb)
-      
-      
+
       with open(fb_fname, 'w') as f:
         for pick in self.fb:
           f.write(str(pick) + '\n')
@@ -145,11 +138,11 @@ class ObsDataFile(DataFile):
   Observed data.
   
   """
-
   def __init__(self, proj, path, create=True, raw=True, filt=True, mute=True, **kwargs):
     """
     Creates subobjects of the same type but after some processing 
-    (raw, filtering, muting).
+    (raw, filtering, muting). THIS IS NOT NECESSARY ACTUALLY, DELETE 
+    AFTER YOU ARCHIVE THIS APPROACH FOR FUTURE USE
     
     """
     super().__init__(proj, path, **kwargs)
@@ -177,52 +170,36 @@ class ObsDataFile(DataFile):
  
   # -----------------------------------------------------------------------------  
   
-  #def filt(self, *args, **kwargs):
-    #self.raw.dupl(self.fname)
-    #self.__log.info('{} backuped as {}'.format(self.fname, self.raw.fname))
-    #fname_fil = super().filt(*args, **kwargs)
-    #self.__log.warn('Overwriting {} with {}'.format(fname_fil, fname_out))
-    #o, e = bash('mv ' + fname_fil + ' ' + self.fname)
-    #super().filt(*args, **kwargs)
-    
-    
-    #kwargs['overwrite'] = kw('overwrite', True, kwargs)
-    #try:
-    #  self.filtered.dupl(self.raw.fname)
-    #  self.filtered.filt(**kwargs)
-    #  self.dupl(self.filtered.fname)
-    #except AttributeError: # RECURSION
-    #  super().filt(**kwargs)
-  
-  # -----------------------------------------------------------------------------  
-  
-  #def mute(self, **kwargs):
-
-  # -----------------------------------------------------------------------------  
-  
   def get_fbreaks(self, syn_file, **kwargs):
     """
-    
+    First breaks are found for corresponding synthetics.
     """
-    #if self.sid is None and self.lid is None:
-    #  syn_file = self.proj.out.syn
-    #elif self.lid is None:
-    #  syn_file = self.proj.out.syn.gather[self.sid]
-    #else:
-    #  syn_file = self.proj.out.syn.line[self.sid][self.lid]
-
+    self.__log.info('Getting first breaks from {}...'.format(syn_file.fname))
     self.fb = syn_file.get_fbreaks(**kwargs)
     return self.fb  
 
   # -----------------------------------------------------------------------------
-    
-  def read_first_breaks(self, fname, **kwargs):
-    self.fb = read_txt(fname)
-    self.fb = [float(i[0]) for i in self.fb]  
-    return self.fb
+  
+  def filt(self, **kwargs):
+    self.__log.info('Filtering {}...'.format(self.fname))
+    super().filt(**kwargs)
+    self.fil.dupl(self.fname) 
 
   # -----------------------------------------------------------------------------
   
+  def mute(self, syn_file, **kwargs):
+    fbreaks = self.get_fbreaks(syn_file, **kwargs)
+    self.__log.info('Muting {}...'.format(self.fname))
+    super().mute(fbreaks, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def process(self, filt_kwargs, mute_kwargs, **kwargs):
+    self.__log.info('Processing {}...'.format(self.fname))
+    self.filt(**filt_kwargs, **kwargs)
+    self.mute(**mute_kwargs, **kwargs)
+
+  # -----------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------
 

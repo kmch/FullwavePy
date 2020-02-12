@@ -29,7 +29,7 @@ from fullwavepy.plot.twod import plot_image
 from fullwavepy.plot.misc import time_freq
 
 from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv
-from fullwavepy.project.types.deriv import ProjSynVsObs, ProjInvSyn
+from fullwavepy.project.types.deriv import ProjInvSyn
 from fullwavepy.project.types.extra import ProjFsQC
 
 from fullwavepy.signal.su import su_filter

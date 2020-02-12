@@ -765,10 +765,11 @@ class Runfile(ParameterFile):
     Prepare a list of all iterations, each
     having info about the block to which it belongs
     """
-    self.iters =  [None]    
-    for b in self.blocks:
-      for i_b in range(b['nits']):
-        self.iters.append(b)
+    if not self.proj.problem.lower() == 'synthetic':
+      self.iters =  [None]    
+      for b in self.blocks:
+        for i_b in range(b['nits']):
+          self.iters.append(b)
 
   # -----------------------------------------------------------------------------
   

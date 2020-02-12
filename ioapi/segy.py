@@ -148,7 +148,7 @@ class SgyFile(ArrayFile):
     
   # ----------------------------------------------------------------------------- 
   
-  def read(self, overwrite=True, **kwargs): # AD HOC
+  def read(self, overwrite=True, **kwargs):
     """
     To read and plot! windowed data in one line.
     """
@@ -170,64 +170,6 @@ class SgyFile(ArrayFile):
     
   # -----------------------------------------------------------------------------  
   
-  def _get_sr_coords(self, datafile=None, **kwargs):
-    """
-    Get HORIZONTAL (x,y) coordinates of sources and 
-    receivers.
-    
-    datafile : DataFile 
-      Different sgy file to 
-      parse a header from.
-    
-    """
-    self.__log.debug('Getting sx,sy,gx,gy from header')
-    if datafile is None:
-      datafile = self
-      
-    sx = datafile._gethw('sx', **kwargs)
-    sy = datafile._gethw('sy', **kwargs)
-    gx = datafile._gethw('gx', **kwargs)
-    gy = datafile._gethw('gy', **kwargs)
-    
-    #plt.plot(sx, sy, '.')
-    #plt.plot(gx, gy, '.')
-    s = list(zip(sx, sy))
-    r = list(zip(gx, gy))
-    self.s = s
-    self.r = r
-    
-    return s, r
-    
-  # -----------------------------------------------------------------------------
-
-  def read_header_OLD(self, **kwargs):
-    import pandas as pd
-    from fullwavepy.ioapi.json import save_json
-    
-    fname = self.fname
-    nfname = strip(fname) + json_header_suffix
-    
-    if not hasattr(self, 'header'):
-      header_dict = read_header(self.fname, **kwargs)
-      self.header = pd.DataFrame(header_dict)
-      
-      
-      self.__log.debug('Exporting the header of ' + 
-                        fname + ' to ' + nfname)    
-      
-      save_json(nfname, header_dict, **kwargs)
-    elif not exists(nfname):
-      if isinstance(self.header, pd.DataFrame):
-        self.header.to_json(nfname)
-      elif isinstance(self.header, dict):
-        save_json(nfname, header_dict, **kwargs)
-      else:
-        raise TypeError(type(self.header))
-    
-    return self.header
-  
-  # -----------------------------------------------------------------------------
-
   def resize(self, box, **kwargs): #FIXME?
     """
     Cut the model to fit the proj.box.
@@ -362,125 +304,48 @@ class SgyFile(ArrayFile):
       save_txt(file_txt, data)
       o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
     
+    fname_out = strip(self.fname) + '_tmp' + exten(self.fname)
+    
     cmd =  'segyread tape={} | '.format(self.fname)
     cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin}'.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin', tmute2_bin='tmute2.bin')
-    cmd += ' | segyhdrs | segywrite tape={}'.format(self.fname+'tmp')
-    
-    print(cmd)
-    
- 
-  def mute2(self, fbreaks, dt, ntaper=100, twin=1, **kwargs):
-    from fullwavepy.signal.su import su_mute
-    from fullwavepy.ioapi.generic import save_txt
-    
-    fbreaks = np.array(fbreaks)
-    picks = fbreaks * dt
-    bpicks = picks + twin
-    nmute = len(picks)
-    xmute = range(1, nmute + 1)
-    tmute = picks
-    tmute2 = bpicks
-    
-    xmute = [str(i) for i in xmute]
-    tmute = [str(i) for i in tmute]
-    tmute2 = [str(i) for i in tmute2]
-    
-    for data, prefix in zip([xmute, tmute, tmute2], ['xmute', 'tmute', 'tmute2']):
-      file_txt = prefix + '.txt'
-      file_bin = prefix + '.bin'
-      save_txt(file_txt, data)
-      o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
-      
-    # MAYBE IT NEEDS TO BE SPLIT IN TWO BITS WITH tmp.sg IN BETWEEN (AS WAS IN WORKING VERSION)
-    cmd =  'segyread tape={} | '.format(self.fname)
-    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin',
-                tmute2_bin='tmute2.bin')
-    cmd += 'segyhdrs | segywrite tape={fname_muted}'.format(fname_muted='muted.sgy')
-            
-    print(cmd)
-    o, e = bash(cmd)
-    
-  def mute_old(self, first_breaks, ntaper=100, twin=1, overwrite=False, **kwargs):
-    """
-    Apply top+bottom mute based on picked first breaks.
-    
-    Parameters
-    ----------
-    first_breaks : list 
-      Or 1D array with picks [in samples]
-      Usually generated from Synthetic file 
-      (in synthetic project)
-    ntaper : int 
-      Samples
-    twin : float
-      Seconds.
-    
-    Notes
-    -----
-    split to allow for top/bottom only.
-    
-    """
-    raise NotImplementedError('This would work only for limited length of picks')
-    from fullwavepy.signal.su import su_mute
-    from fullwavepy.ioapi.generic import save_txt, read_txt
-    
-    proj = self.proj
-    
-    if isinstance(first_breaks, str):
-      first_breaks = [float(i[0]) for i in read_txt(first_breaks)]
-    
-    picks = np.array(first_breaks) * proj.dt
-    bpicks = np.array(first_breaks) * proj.dt + twin # NOTE
-    nmute = len(picks)
-    xmute = range(1, nmute + 1)
-    tmute = picks
-    tmute2 = bpicks
-    
-    for data, prefix in zip([xmute, tmute, tmute2], 
-                            ['xmute', 'tmute', 'tmute2']):
-      
-      data = [str(i) for i in data]
-      fname = proj.inp.path + prefix + '.txt'
-      save_txt(fname, data)
-      
-      fname_bin = strip(fname) + '.bin'
-      cmd = 'a2b < ' + fname + ' n1=1 > ' + fname_bin
-      print('cmddd', cmd)
-      o, e = bash(cmd)
-    
-    #filt = strip(self.fname)+'_filt.'+exten(self.fname)
-    #filt_mute = strip(self.fname)+'_filt_mute.'+exten(self.fname)
-    xfile = proj.inp.path + 'xmute.bin'
-    tfile = proj.inp.path + 'tmute.bin'
-    cmd = str('segyread tape='+self.fname+
-              ' | sumute key=tracr nmute='+str(nmute)+
-              ' mode=0 ntaper='+str(ntaper)+
-              ' xfile='+xfile+' tfile='+tfile+
-              ' | segyhdrs' +
-              ' | segywrite tape=tmp.sgy')
+    cmd += ' | segyhdrs | segywrite tape={}'.format(fname_out)
     
     o, e = bash(cmd)
-    if len(e) > 0:
-      self.__log.warn(e)
-      
-    tfile = proj.inp.path + 'tmute2.bin'
-    cmd = str('segyread tape=tmp.sgy'+
-              ' | sumute key=tracr nmute='+str(nmute)+
-              ' mode=1 ntaper='+str(ntaper)+
-              ' xfile='+xfile+' tfile='+tfile+
-              ' | segyhdrs' +
-              ' | segywrite tape='+self.fname)
-    
-    o, e = bash(cmd)
-    if len(e) > 0:
-      self.__log.warn(e)              
-    
-    #!su_sgyread.sh './p12//inp/p12-Observed_filt.sgy' | sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute.bin'} | segyhdrs | segywrite tape=tmp.sgy
-    
-    #!su_sgyread.sh tmp.sgy | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={proj.inp.path+'xmute.bin'} tfile={proj.inp.path+'tmute2.bin'} | segyhdrs | segywrite tape=out.sgy    
+    o, e = bash('mv ' + fname_out + ' ' + self.fname)
     
   # -----------------------------------------------------------------------------  
 
+
+
+  def _get_sr_coords(self, datafile=None, **kwargs):
+    """
+    Get HORIZONTAL (x,y) coordinates of sources and 
+    receivers.
+    
+    datafile : DataFile 
+      Different sgy file to 
+      parse a header from.
+    
+    """
+    self.__log.debug('Getting sx,sy,gx,gy from header')
+    if datafile is None:
+      datafile = self
+      
+    sx = datafile._gethw('sx', **kwargs)
+    sy = datafile._gethw('sy', **kwargs)
+    gx = datafile._gethw('gx', **kwargs)
+    gy = datafile._gethw('gy', **kwargs)
+    
+    #plt.plot(sx, sy, '.')
+    #plt.plot(gx, gy, '.')
+    s = list(zip(sx, sy))
+    r = list(zip(gx, gy))
+    self.s = s
+    self.r = r
+    
+    return s, r
+    
+  # -----------------------------------------------------------------------------
 
 #@traced
 #@logged

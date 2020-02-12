@@ -16,6 +16,7 @@ from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 from fullwavepy.project.files.gridded.models import ModelFileVtr
 
+
 # -------------------------------------------------------------------------------
 
 
@@ -149,7 +150,6 @@ class TopographyFile(SurfaceFile):
     
     return fig
   
-
   # -----------------------------------------------------------------------------
 
 

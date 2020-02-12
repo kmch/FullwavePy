@@ -237,20 +237,11 @@ class ProjInput(ProjThroughput):
     
   # -----------------------------------------------------------------------------
   
-  def prepare(self, **kwargs):
-    """
-    """
-    #for f in self.sp:
-      #f.prepare(**kwargs)
-    
-    #self.sp.run(jupyter=True)
-    #for f in self.other_input:
-      #f.prepare(**kwargs)
-    
-    self.proj.prepare_input(**kwargs)
+  def prepare(self, *args, **kwargs):
+    self.proj.prepare_input(*args, **kwargs)
 
-  def prep(self, **kwargs):
-    self.prepare(**kwargs)    
+  def prep(self, *args, **kwargs):
+    self.prepare(*args, **kwargs)    
     
   # ----------------------------------------------------------------------------- 
   
@@ -258,6 +249,7 @@ class ProjInput(ProjThroughput):
     self.proj.plot_input(*args, **kwargs)
 
   # -----------------------------------------------------------------------------   
+  
   def check(self, **kwargs):
     self.check_numerics(**kwargs)
     self.check_by_fullwave(**kwargs)
@@ -402,7 +394,7 @@ class ProjOutput(ProjThroughput):
 
   # -----------------------------------------------------------------------------     
 
-  def prepare(self, **kwargs):
+  def prepare(self, *args, **kwargs):
     """
     Actions to take once the job finished running.
     
@@ -410,10 +402,10 @@ class ProjOutput(ProjThroughput):
     for f in [self.out, self.err, self.jobout, self.joberr]:
       f.prepare(**kwargs)
     
-    self.proj.prepare_output(**kwargs)
+    self.proj.prepare_output(*args, **kwargs)
     
-  def prep(self, **kwargs):
-    self.prepare(**kwargs)
+  def prep(self, *args, **kwargs):
+    self.prepare(*args, **kwargs)
     
   # -----------------------------------------------------------------------------
 

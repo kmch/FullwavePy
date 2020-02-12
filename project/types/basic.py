@@ -153,24 +153,27 @@ class ProjSyn(Proj):
     We don't probably need template idx.
     """
     from fullwavepy.project.files.gridded.models import ModelFileSgy, ModelFileVtr
-    from fullwavepy.project.files.templates import (TemplateFileSgy, TemplateFileTtr,
-                                                    HedFile)
+    from fullwavepy.project.files.datalike.sgy import DataFileSgy
+    from fullwavepy.project.files.templates import TemplateFileSgy, TemplateFileTtr
     
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
+      ObsDataClass = DataFileSgy
       TemplateClass = TemplateFileSgy
-      #TemplateHedClass = HedFile # THIS IS REDUNDANT IF WE CAN READ BINARY TEMPLATES 
-      # (BUT WE'VE ALREADY BEEN USING HED FILES...)
-      #TemplateIndexClass = IndexFile
       
     elif self.io == 'fw3d':
       ModelClass = ModelFileVtr
+      ObsDataClass = DataFileSgy # OutSeis FOR ioapi IS STILL .sgy!
       TemplateClass = TemplateFileTtr
     else:
       raise ValueError('Unknown io: ' + self.io)
     
     self.inp.truevp = ModelClass('TrueVp', self, self.inp.path, **kwargs)
-    self.inp.tvp = self.inp.truevp # ALIAS
+    self.i.tvp = self.inp.truevp # ALIAS
+    
+    self.inp.outseis = ObsDataClass('OutSeis', self, self.inp.path, **kwargs)
+    self.i.ose = self.inp.outseis
+    
     self.inp.template = TemplateClass(self, self.inp.path, **kwargs)
     self.i.tmpl = self.i.template
     
@@ -261,56 +264,6 @@ class ProjSyn(Proj):
       #self.i.s.plot_3slices(**kwargs)
     
   # -----------------------------------------------------------------------------
-  
-  def plot_input_old(self, figsize, layers, **kwargs):
-    """
-    """
-    from matplotlib.gridspec import GridSpec
-
-    lays = []
-    if 'tvp' in layers:
-      lays.append(self.i.tvp)
-    if 's' in layers:
-      lays.append(self.i.s)
-    if 'r' in layers:
-      lays.append(self.i.r)
-
-    fig = plt.figure(figsize=figsize)
-
-    def annotate_2d():
-      plt.gca().text(0.5, 0.5, "not available in 2D", va="center", ha="center")
-
-    gs = GridSpec(4, 2, height_ratios=[.5, 1, 1, 1])
-#                  left=0, right=1, hspace=.1, wspace=.4) # width_ratios=[1, 2], )
-    
-    ax1 = fig.add_subplot(gs[0, 0])
-    self.i.rsg.plot()
-    
-    ax2 = fig.add_subplot(gs[0:2, 1])
-    self.i.signature.plot()
-    
-    ax3 = fig.add_subplot(gs[1:3, 0])
-    for a in lays:    
-      if self.dim == '3d':
-        a.plot(scoord='z')
-        plt.gca().set_aspect('equal')
-      else:
-        annotate_2d()
-
-    ax4 = fig.add_subplot(gs[2, 1])
-    for a in lays:     
-      if self.dim == '3d':
-        a.plot(scoord='x')
-        plt.gca().set_aspect('equal')
-      else:
-        annotate_2d()
-    
-    ax5 = fig.add_subplot(gs[3, :])
-    for a in lays:    
-      a.plot(scoord='y')
-      plt.gca().set_aspect('equal')
-   
-  # ----------------------------------------------------------------------------- 
   
   def plot_output(self, figsize, layers, **kwargs):
     """
@@ -469,23 +422,36 @@ class ProjInv(Proj):
 
   # -----------------------------------------------------------------------------
   
-  def prepare_input(self, **kwargs):
+  def prepare_input(self, syn_proj, run=True, process=True, **kwargs):
     """
+    Prepere inversion input based on the synthetic project from which 
+    first breaks will be extracted.
     
     """
+    if process:
+      assert 'filt_kwargs' in kwargs
+      assert 'mute_kwargs' in kwargs    
     
-    #dupl = 'p04'
-    #proj.inp.obser.prepare(source=dupl+'/out/'+dupl+'-Synthetic.sgy')
-    #proj.inp.rawsign.prepare(source=dupl+'/inp/'+dupl+'-RawSign.sgy')
-    #proj.inp.startvp.prepare(vel=vp_true+4000)
-    #proj.inp.sp.prepare(**sp04, cat=0)
-    #proj.inp.sp.run(cat=0)
-    #proj.inp.runfile.prepare(**runfile04, cat=0, 
-                             #blocks=[{'freq': 3.0, 'nits': 1}])
-    #proj.inp.bash.prepare(ompthreads=8, cat=0)
-    #!cd {proj.inp.path}; cp {proj.name}-Template.idx {proj.name}-Observed.idx
-    #!cd {proj.inp.path}; cp {proj.name}-Template.hed {proj.name}-Observed.hed
-    pass
+    self.i.rsg.dupl(syn_proj.i.rsg.fname)
+    self.i.svp.dupl(syn_proj.i.tvp.fname)
+    self.i.obs.dupl(syn_proj.i.ose.fname)
+    self.i.obs.raw.dupl(syn_proj.i.ose.fname)
+    self.i.rse.prep(fnames=[self.i.obs.raw.name])
+    self.i.sp.prep(reciprocity=bool(syn_proj.i.sp.read()['reciprocity']))
+    if run:
+      self.i.sp.run()
+      self.i.rnf.prep(**kwargs)
+    else:
+      self.__log.warn('You need to i.sp.run and i.rnf.prep!')
+      
+    if process:
+      
+      self.i.obs.process(filt_kwargs=kwargs['filt_kwargs'], 
+                         mute_kwargs=dict(**kwargs['mute_kwargs'], 
+                                          syn_file=syn_proj.o.syn))
+    else:
+      self.__log.warn('You need to i.obs.process!')
+                      
 
   # -----------------------------------------------------------------------------
   

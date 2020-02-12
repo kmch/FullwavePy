@@ -118,7 +118,7 @@ class ModelFileSgy(ModelFile, SgyFile):
 
   # -----------------------------------------------------------------------------  
 
-  def resize(self, file_z0, **kwargs):
+  def resize(self, file_z0=None, **kwargs):
     """
     Cut the model to fit the proj.box.
     
@@ -148,58 +148,59 @@ class ModelFileSgy(ModelFile, SgyFile):
     because suwind tmin=... takes values in microseconds!
     
     """    
-    self.__log.info('Assuming integer box coords, as required by SEGY')
-    box = [int(i) for i in self.proj.box]
-    x1, x2, y1, y2, z1, z2 = box
-    
-    self.__log.warn('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
-    #z1 -= file_z0
-    #z2 -= file_z0
-    
-    self.__log.debug('z1={}, z2={}'.format(z1, z2))
-    
-    dt = int(self._gethw('dt', unique_values=True, timer=True, **kwargs)[0])
-    self.__log.debug('Converting z1,z2 into microsec as required by suwind')
-    if dt > 1000:
-      self.__log.info('Header dt > 1000. Assuming miliseconds or milimetres')
-      z1 /= 1e3
-      z2 /= 1e3
-    elif dt <= 1000:
-      self.__log.info('Header dt <= 1000. Assuming seconds or metres')
-      z1 /= 1e6
-      z2 /= 1e6
-
-    self.__log.debug('z1={}, z2={}'.format(z1, z2))
-    
-    scalco = int(self._gethw('scalco', unique_values=True, timer=True, **kwargs)[0])
-    if scalco < 0: 
-      scalco = abs(scalco)
-    elif scalco == 0:
-      scalco = 1
-    else: # scalco > 0 MEANS IT IS USED AS A MULTIPLIER NOT A DIVISOR IN THE HEADER
-      scalco = 1 / abs(scalco) # WE NEED TO DO THE OPPOSITE THING TO OUR BOX
-      
-    self.__log.debug('scalco' + str(scalco))
-    x1, x2, y1, y2 = np.array([x1, x2, y1, y2]) * scalco
-    
-    key_x = self.proj.sgy.hw['xmod']
-    key_y = self.proj.sgy.hw['ymod'] 
-    
-    tmp_fname = 'tmp.sgy'
-    cmd = str('segyread tape=' + self.fname + ' | ' +
-              'suwind key=' + key_x + 
-              ' min=' + str(x1) + 
-              ' max=' + str(x2) + ' | ' + 
-              'suwind key=' + key_y + 
-              ' min=' + str(y1) + 
-              ' max=' + str(y2) + ' | ' +  
-              'suwind tmin=' + str(z1) + ' tmax=' + str(z2) + ' | ' + 
-              'segyhdrs | ' +
-              'segywrite tape=' + tmp_fname)
-    
-    self.__log.debug(cmd)
-    o, e = bash(cmd)
-    o, e = bash('mv ' + tmp_fname + ' ' + self.fname) 
+    self.__log.warn('Resize disabled until debugged')
+    #self.__log.info('Assuming integer box coords, as required by SEGY')
+    #box = [int(i) for i in self.proj.box]
+    #x1, x2, y1, y2, z1, z2 = box
+    #
+    #self.__log.warn('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
+    ##z1 -= file_z0
+    ##z2 -= file_z0
+    #
+    #self.__log.debug('z1={}, z2={}'.format(z1, z2))
+    #
+    #dt = int(self._gethw('dt', unique_values=True, timer=True, **kwargs)[0])
+    #self.__log.debug('Converting z1,z2 into microsec as required by suwind')
+    #if dt > 1000:
+    #  self.__log.info('Header dt > 1000. Assuming miliseconds or milimetres')
+    #  z1 /= 1e3
+    #  z2 /= 1e3
+    #elif dt <= 1000:
+    #  self.__log.info('Header dt <= 1000. Assuming seconds or metres')
+    #  z1 /= 1e6
+    #  z2 /= 1e6
+    #
+    #self.__log.debug('z1={}, z2={}'.format(z1, z2))
+    #
+    #scalco = int(self._gethw('scalco', unique_values=True, timer=True, **kwargs)[0])
+    #if scalco < 0: 
+    #  scalco = abs(scalco)
+    #elif scalco == 0:
+    #  scalco = 1
+    #else: # scalco > 0 MEANS IT IS USED AS A MULTIPLIER NOT A DIVISOR IN THE HEADER
+    #  scalco = 1 / abs(scalco) # WE NEED TO DO THE OPPOSITE THING TO OUR BOX
+    #  
+    #self.__log.debug('scalco' + str(scalco))
+    #x1, x2, y1, y2 = np.array([x1, x2, y1, y2]) * scalco
+    #
+    #key_x = self.proj.sgy.hw['xmod']
+    #key_y = self.proj.sgy.hw['ymod'] 
+    #
+    #tmp_fname = 'tmp.sgy'
+    #cmd = str('segyread tape=' + self.fname + ' | ' +
+    #          'suwind key=' + key_x + 
+    #          ' min=' + str(x1) + 
+    #          ' max=' + str(x2) + ' | ' + 
+    #          'suwind key=' + key_y + 
+    #          ' min=' + str(y1) + 
+    #          ' max=' + str(y2) + ' | ' +  
+    #          'suwind tmin=' + str(z1) + ' tmax=' + str(z2) + ' | ' + 
+    #          'segyhdrs | ' +
+    #          'segywrite tape=' + tmp_fname)
+    #
+    #self.__log.debug(cmd)
+    #o, e = bash(cmd)
+    #o, e = bash('mv ' + tmp_fname + ' ' + self.fname) 
       
   # ----------------------------------------------------------------------------- 
   
