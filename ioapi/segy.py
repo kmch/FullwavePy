@@ -345,6 +345,13 @@ class SgyFile(ArrayFile):
     tmute = picks
     tmute2 = bpicks
     
+    # THIS LOOP ENSURES WE MUTE THE WHOLE TRACE 
+    # IF THE FIRST ARRIVAL IS LATER THEN TOTALTIME (AS INDICATE BY pick==0)
+    # WITHOUT THIS, IT WAS BUGGY!
+    for i, pick in enumerate(picks):
+      if pick == 0:
+        bpicks[i] = 0    
+    
     xmute = [str(i) for i in xmute]
     tmute = [str(i) for i in tmute]
     tmute2 = [str(i) for i in tmute2]
@@ -355,22 +362,12 @@ class SgyFile(ArrayFile):
       save_txt(file_txt, data)
       o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
     
-    fname_out = strip(self.fname) + '_tmp.sgy'
-    # MAYBE IT NEEDS TO BE SPLIT IN TWO BITS WITH tmp.sg IN BETWEEN (AS WAS IN WORKING VERSION)
     cmd =  'segyread tape={} | '.format(self.fname)
-    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin')
-    cmd += 'segyhdrs | segywrite tape={fname_out}'.format(fname_out=fname_out)
-    o, e = bash(cmd)
-    #print(cmd)
+    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin}'.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin', tmute2_bin='tmute2.bin')
+    cmd += ' | segyhdrs | segywrite tape={}'.format(self.fname+'tmp')
     
-    cmd =  'segyread tape={} | '.format(fname_out)
-    fname_out = self.fname
-    cmd += 'sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | '.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute2.bin')
-    cmd += 'segyhdrs | segywrite tape={fname_out}'.format(fname_out=fname_out)
-    o, e = bash(cmd)
-    #print(cmd)
-    #self.__log.warn('Overwriting {} with {}'.format(self.fname, fname_out))
-    #o, e = bash('mv {} {}'.format(fname_out, self.fname))
+    print(cmd)
+    
  
   def mute2(self, fbreaks, dt, ntaper=100, twin=1, **kwargs):
     from fullwavepy.signal.su import su_mute
@@ -933,3 +930,5 @@ def read_header_OLD(fname, **kwargs):
     header[key] = sugethw(fname, key, **kwargs)
   
   return header
+
+

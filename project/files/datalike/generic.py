@@ -106,19 +106,29 @@ class SynDataFile(DataFile):
   
   # -----------------------------------------------------------------------------  
   
-  def get_fbreaks(self, fraction=0.01, from_file=None, **kwargs):
+  def get_fbreaks(self, fraction=0.01, overwrite=True, **kwargs):
     """
     
     """
     from fullwavepy.signal.phase import first_breaks
-    A = self.read(**kwargs)
-    self.fb = first_breaks(A, fraction=fraction)
-    self.fb = np.ravel(self.fb)
     
-    fname = strip(self.fname) + '_firstbreaks.txt'
-    with open(fname, 'w') as f:
-      for pick in self.fb:
-        f.write(str(pick) + '\n')
+    fb_fname = strip(self.fname) + '_firstbreaks.txt'
+    
+    if (not exists(fb_fname)) or overwrite:
+      A = self.read(**kwargs)
+      self.fb = first_breaks(A, fraction=fraction)
+      self.fb = np.ravel(self.fb)
+      
+      
+      with open(fb_fname, 'w') as f:
+        for pick in self.fb:
+          f.write(str(pick) + '\n')
+
+    else:
+      self.fb = []
+      with open(fb_fname, 'r') as f:
+        for line in f:
+          self.fb.append(float(line))
     
     return self.fb
 

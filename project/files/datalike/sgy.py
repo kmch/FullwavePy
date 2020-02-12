@@ -42,11 +42,6 @@ class DataFileSgy(DataFile, SgyFile):
 
   # -----------------------------------------------------------------------------   
   
-  def window(self, window, **kwargs):
-    super().window(window, [self.proj, self.path], **kwargs)
-  
-  # -----------------------------------------------------------------------------  
-  
   @timer
   def files_OLD(self, **kwargs): # FIXME
     """
