@@ -227,7 +227,7 @@ class Arr3d(Arr):
     s = [s0, s1, s2]
     # CONVERT THE LABELS INTO ARRAY DIMENSIONS (AXES)
     convert_s2a = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice TO axis
-
+ 
     #if widgets: #FIXME BOILERPLATE
       #figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
       #fig = plt.figure(figsize=figsize)
