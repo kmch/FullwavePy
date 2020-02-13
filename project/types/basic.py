@@ -245,7 +245,17 @@ class ProjSyn(Proj):
 
   # -----------------------------------------------------------------------------
   
-  @widgets('cmap')
+  #@widgets('cmap', 'x', 'y', 'z')
+  #def plot_input(self, widgets=False, **kwargs):
+    #self.i.sgn.read(**kwargs)
+    #self.i.rsg.read(**kwargs)
+    #self.i.tvp.read(**kwargs)
+    #if self.dim == '3d':
+      #plot_input_3d(**kwargs)
+    #else:
+      #plot_input_2d(**kwargs)
+      
+  @widgets('cmap', 'x', 'y', 'z')  
   def plot_input(self, widgets=False, **kwargs):
     """
   
@@ -258,34 +268,31 @@ class ProjSyn(Proj):
     """
     from matplotlib.gridspec import GridSpec
     
-    self.i.sgn.read(**kwargs)
-    self.i.rsg.read(**kwargs)
-    self.i.tvp.read(**kwargs)
+
     
-    #FIXME BOILERPLATE
-    gs = GridSpec(4,2, width_ratios=[3,1], height_ratios=[1,1,1,1])
-    figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+    gs = GridSpec(3,2, width_ratios=[3,1], height_ratios=[1,1,1])
+    figsize = (kw('figsize_x', 15, kwargs), kw('figsize_y', 10, kwargs))
     fig = plt.figure(figsize=figsize)    
     
     # SIGNATURES OF ALL SOURCES
     fig.add_subplot(gs[0,0])
-    self.i.sgn.plot(**kwargs)
+    self.i.sgn.plot()
     
     # RAW SIGNATURE
     fig.add_subplot(gs[0,1])
     self.i.rsg.plot(**kwargs)
     
     # BATHY      
-    fig.add_subplot(gs[1,:])
+    #fig.add_subplot(gs[1,:])
     
     # MODEL SUBGRIDSPEC
-    gs_tvp = gs[2:, :].subgridspec(2,2)
+    gs_tvp = gs[1:, :].subgridspec(2,2)
     kwargs['fig'] = fig
     kwargs['gs'] = gs_tvp
     self.i.tvp.plot_3slices(**kwargs) 
     
-    if kwargs['sources']:
-      print('sources on')
+    #if kwargs['sources']:
+      #print('sources on')
       #self.i.s.plot_3slices(**kwargs)
     
   # -----------------------------------------------------------------------------

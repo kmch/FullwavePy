@@ -73,6 +73,7 @@ def widgets(*widgets_args):
       widgets=fixed(True) is passed to func 
       to force func to create a new figure, 
       otherwise it's not interactive.
+      Default values are set in the functions themselves.
       
       """
       from ipywidgets import (IntSlider, BoundedIntText, Dropdown, 
@@ -116,31 +117,10 @@ def widgets(*widgets_args):
       # CHUCK AWAY ALL kwargs THAT ARE NOT LISTED IN widgets_args
       interact_kwargs = dict({(i, interact_kwargs[i]) for i in interact_kwargs.keys() if i in widgets_args})
       
-      #print('adfaf', interact_kwargs)
-      #
-      #
-      ##app = TwoByTwoLayout(top_left=Dropdown(options=['y']), 
-      #                     #top_right=Dropdown(options=['y']),
-      #                     #bottom_left=Dropdown(options=['y']),
-      #                     #bottom_right=Dropdown(options=['y']))
-      #  
       if widgets:
         interact(ifunc, widgets=fixed(True), **interact_kwargs)
       
-      else: #NOTE: NOW IT'S DONE IN THE INNER FUNCTION (I THINK IT'S BETTER)
-        ## SET 'STATIC' VALUES FROM WIDGETS' DEFAULTS
-        #for key, widget in interact_kwargs.items():
-        #  #NOTE: WE HAVE TO USE kw TO PASS VALUES FROM WIDGETS
-        #  # TO INNER FUNCTIONS (LIKE plot_image)
-        #  if isinstance(widget, (IntSlider, BoundedIntText, Checkbox)):
-        #    kwargs[key] = kw(key, widget.value, kwargs)
-        #  elif isinstance(widget, Dropdown):
-        #    kwargs[key] = kw(key, widget.options[0], kwargs)
-        #  elif isinstance(widget, SelectMultiple):
-        #    kwargs[key] = kw(key, [widget.options[0]], kwargs)
-        #  else:
-        #    raise ValueError(widget)
-        
+      else: 
         return func(*args, **kwargs) # RETURN ONLY FOR widgets=False
     
     return wrapper_widgets

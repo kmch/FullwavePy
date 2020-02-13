@@ -43,7 +43,7 @@ class DataFileSgy(DataFile, SgyFile):
   # -----------------------------------------------------------------------------   
   
   @timer
-  def files_OLD(self, **kwargs): # FIXME
+  def files_OLD(self, **kwargs):
     """
     Create hooks for 
     
@@ -107,36 +107,6 @@ class DataFileSgy(DataFile, SgyFile):
                                          sid=sid, lid=lid, **kwargs)
  
   # -----------------------------------------------------------------------------   
-  
-  def read_OLD(self, decimate=None, **kwargs):
-    """
-    Use suwind command to decimate the data (optional).
-    
-    """
-    if decimate is None:
-      fname = None
-    
-    else:
-      from fullwavepy.ioapi.su import suwind
-      fname_tmp = strip(self.fname) + '_tmp.' + exten(self.fname)
-      cmd = 'segyread tape={}'.format(self.fname)
-      for key, values in decimate.items():
-        if isinstance(values, dict):
-          vmin = values['min']
-          vmax = values['max']
-          cmd += ' | suwind key={} min={} max={}'.format(key, vmin, vmax)
-        else:
-          cmd += ' | suwind key={} max=-10000000 accept='.format(key)
-          for val in values:
-            cmd += '{},'.format(val)
-          cmd = cmd[ :-1] # LAST COMMA
-      cmd += ' | segyhdrs | segywrite tape={}'.format(fname_tmp)
-      o, e = bash(cmd)
-      fname = fname_tmp
-
-    return super().read(fname, **kwargs)
-  
-  # -----------------------------------------------------------------------------
   
   def split_OLD(self, sid=None, lid=None, **kwargs):
     """
