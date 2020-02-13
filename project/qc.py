@@ -139,6 +139,8 @@ class Functional(object):
     alpha = kw('alpha', 0.4, kwargs)
     ls = kw('ls', '.-', kwargs)
     lw = kw('lw', 3, kwargs)
+    xlim = kw('xlim', None, kwargs)
+    ylim = kw('ylim', (0,100), kwargs)
     
     srcs = self.proj.i.s.read(**kwargs)
     sids = kw('sids', list(srcs.keys()), kwargs)    
@@ -160,11 +162,15 @@ class Functional(object):
       plt.plot(list(range(1, len(fit) + 1)), fit, ls, lw=lw, label=sid, c=next(clrs), 
                alpha=alpha)
     
-    plt.gca().set_xlabel('Iteration')
+    ax = plt.gca()
+    ax.set_xlabel('Iteration')
     if misfit:
-      plt.gca().set_ylabel('Trace misfit [%]')
+      ax.set_ylabel('Trace misfit [%]')
     else:
-      plt.gca().set_ylabel('Trace fit [%]')
+      ax.set_ylabel('Trace fit [%]')
+    
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
     
     if len(functional) < 50:
       plt.legend(prop={'size': 6})

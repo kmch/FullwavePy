@@ -98,7 +98,7 @@ class ParameterFile(AsciiProjFile):
       f.write(nline)
       
     for key, value in kwargs.items():
-      if key in ['cat', 'blocks']:
+      if key in ['cat', 'blocks', 'timer']:
         continue
       key = key.lower()
       if isinstance(value, str): value = value.lower()      

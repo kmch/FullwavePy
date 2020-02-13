@@ -180,7 +180,15 @@ class PbsFileCx1(PbsFile):
     
     
     if self.q == 'debug':
-      time = '00:10:00'
+      minutes = kw('minutes', 1, kwargs)
+      assert isinstance(minutes, int) 
+      assert minutes <= 30
+      assert minutes >= 1
+      if minutes < 10:
+        minutes = '0' + str(minutes)
+      else:
+        minutes = str(minutes)
+      time = '00:' + minutes + ':00'
   
     self.time = time
 

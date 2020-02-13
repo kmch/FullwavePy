@@ -220,6 +220,31 @@ class ProjSyn(Proj):
     
   # -----------------------------------------------------------------------------
   
+  def prepare_input(self, pold, run=False, **kwargs):
+    """
+    Prepare the input based on another syn project.
+    
+    run is False by default because SP will operate on
+    full receiver gathers => slow.
+    
+    """
+    # THESE ARE ASSUMED TO BE IDENTICAL
+    for a in ['rsg', 'tvp', 'rse']:
+      sobj = getattr(self.i, a)
+      oobj = getattr(pold.i, a)
+      sobj.dupl(oobj.fname)
+
+    # THIS CAN HAVE CHANGES, E.G. TOTALTIME
+    self.i.sp.prep(reciprocity=bool(pold.i.sp.read()['reciprocity']))
+    
+    if run:
+      self.i.sp.run()
+      self.i.rnf.prep(**kwargs)
+    else:
+      self.__log.warn('You need to i.sp.run and i.rnf.prep!')
+
+  # -----------------------------------------------------------------------------
+  
   @widgets('cmap')
   def plot_input(self, widgets=False, **kwargs):
     """
@@ -452,7 +477,6 @@ class ProjInv(Proj):
     else:
       self.__log.warn('You need to i.obs.process!')
                       
-
   # -----------------------------------------------------------------------------
   
   def prepare_output(self, **kwargs):

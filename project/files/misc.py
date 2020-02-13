@@ -304,6 +304,7 @@ class RawSeisTxtFile(AsciiProjFile):
     for fname in fnames:
       bad = False
       for bid in bad_IDs:
+        bid = str(bid) + '_' # OTHERWISE SKIPS ALL
         if bid in fname:
           self.__log.info('Skipping bad-data file: ' + fname)
           bad = True

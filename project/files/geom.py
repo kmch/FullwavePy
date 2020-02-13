@@ -145,6 +145,8 @@ class SRFile(AsciiProjFile):
     
     return fig
 
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -182,7 +184,7 @@ class SourcesFile(SRFile):
     kwargs['mode'] = kw('mode', 'markers', kwargs)
     kwargs['color'] = kw('color', 'black', kwargs)
     kwargs['size'] = kw('size', 2, kwargs)
-    super().plotly(*args, **kwargs)
+    return super().plotly(*args, **kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -234,7 +236,7 @@ class ReceiversFile(SRFile):
     kwargs['mode'] = kw('mode', 'markers', kwargs)
     kwargs['color'] = kw('color', 'grey', kwargs)
     kwargs['size'] = kw('size', 1, kwargs)
-    super().plotly(*args, **kwargs)
+    return super().plotly(*args, **kwargs)
 
   # ----------------------------------------------------------------------------- 
 
