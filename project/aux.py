@@ -416,7 +416,10 @@ class ProjGeometry(object): # FIXME: CLEAN
     self._extend_grid(**kwargs)
     self.__log.debug('Double-check _retain_rreceivers')
     #self._retain_receivers(**kwargs)
-
+    
+    if self.proj.dims[1] == 1:
+      self.proj.dim = '2d'
+    
     # PRINT INFO
     box_attrs = ['x1', 'x2', 'y1', 'y2', 'z1', 'z2']
     box_values = self.proj.box
