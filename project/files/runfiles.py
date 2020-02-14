@@ -592,6 +592,8 @@ class Runfile(ParameterFile):
     
      
     ! D. BOUNDARY CONDITIONS
+     ibfs          : 0
+    
      btop          : 0
      bbot          : 2
      bleft         : 2

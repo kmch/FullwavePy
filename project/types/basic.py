@@ -244,16 +244,6 @@ class ProjSyn(Proj):
       self.__log.warn('You need to i.sp.run and i.rnf.prep!')
 
   # -----------------------------------------------------------------------------
-  
-  #@widgets('cmap', 'x', 'y', 'z')
-  #def plot_input(self, widgets=False, **kwargs):
-    #self.i.sgn.read(**kwargs)
-    #self.i.rsg.read(**kwargs)
-    #self.i.tvp.read(**kwargs)
-    #if self.dim == '3d':
-      #plot_input_3d(**kwargs)
-    #else:
-      #plot_input_2d(**kwargs)
       
   @widgets('cmap', 'x', 'y', 'z')  
   def plot_input(self, widgets=False, **kwargs):
