@@ -315,6 +315,8 @@ def read_dict(fname, **kwargs):
   .
   .
   .
+  Lines that not adhere to this format will not be read!
+  
   
   Parameters
   ----------

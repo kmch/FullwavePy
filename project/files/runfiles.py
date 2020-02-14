@@ -312,7 +312,9 @@ class Runfile(ParameterFile):
     self.name = proj.name + '-' + suffix + '.key'
     self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
-
+    
+    self.blocks = self.read_blocks(**kwargs)
+    
   # -----------------------------------------------------------------------------  
 
   def set_proj_params(self, **kwargs):  
@@ -415,7 +417,38 @@ class Runfile(ParameterFile):
       self.__log.warn('Description of boundaries in the Runfile is not complete: ' + str(err))
 
   # -----------------------------------------------------------------------------
+  
+  def read_blocks(self, **kwargs):
+    """
+    Read iteration blocks.
+    
+    Notes
+    -----
+    It assumes that each block starts with a line setting a 'nits' parameter.
+    
+    If no blocks are present (like for synthetic projects), empty list 
+    is naturally returned.
+    
+    """
+    from fullwavepy.ioapi.generic import read_txt
+    content = read_txt(self.fname)
+    
+    blocks = []
+    for line in content:
+      if len(line) == 0:
+        continue
+      
+      if line[0] == 'nits':
+        blocks.append({})
+        block = blocks[-1] 
+      
+      if len(blocks) > 0: 
+        block[line[0]] = line[2]
+      
+    return blocks
 
+  # ----------------------------------------------------------------------------- 
+ 
   def read_nits(self, **kwargs):
     """
     Read total no. of iterations. 
