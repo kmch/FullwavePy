@@ -172,7 +172,9 @@ class FsFile(SurfaceFile):
     cmd = self.proj.exe['fsprep'] + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
 
-   
+  def create(self, **kwargs):
+    pass
+  
   
 # -------------------------------------------------------------------------------  
 

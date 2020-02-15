@@ -82,9 +82,9 @@ class Arr(np.ndarray):
   # -----------------------------------------------------------------------------
   
   #@widgets()
-  def compare(self, othe, mode='ileave', **kwargs): #fig, gs=None, widgets=False, 
-    if mode == 'ileave':
-      A = self.ileave(othe, **kwargs)
+  def compare(self, othe, mode='interleave', **kwargs): #fig, gs=None, widgets=False, 
+    if mode == 'interleave':
+      A = self.interleave(othe, **kwargs)
       A.plot(**kwargs)
     else:
       raise ValueError(mode)
@@ -149,9 +149,9 @@ class Arr2d(Arr):
   """
   
   """
-  def ileave(self, othe, **kwargs):
-    self.ileaved = ileave_arrays(self, othe, **kwargs)
-    return self.ileaved
+  def interleave(self, othe, **kwargs):
+    self.interleaved = interleave_arrays(self, othe, **kwargs)
+    return self.interleaved
   
   # -----------------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ class Arr2d(Arr):
   # -----------------------------------------------------------------------------
 
   #def compare(self, othe, **kwargs):
-    #A = self.ileave(othe, **kwargs)
+    #A = self.interleave(othe, **kwargs)
     #A.plot(**kwargs)
     
 
@@ -196,10 +196,10 @@ class Arr3d(Arr):
   # -----------------------------------------------------------------------------
   
   #@widgets('chunk_size')
-  def ileave(self, othe, *args, **kwargs):
+  def interleave(self, othe, *args, **kwargs):
     A1 = self.slice(*args, **kwargs)
     A2 = othe.slice(*args, **kwargs)
-    A = Arr2d(ileave_arrays(A1, A2, **kwargs))
+    A = Arr2d(interleave_arrays(A1, A2, **kwargs))
     return A
 
   # -----------------------------------------------------------------------------
@@ -323,8 +323,8 @@ class Arr3d(Arr):
 @traced
 @logged
 class WigglyData(Arr3d):
-  def ileave(self, othe, **kwargs):
-    return super().ileave(othe, slice_at='y', node=0, **kwargs)
+  def interleave(self, othe, **kwargs):
+    return super().interleave(othe, slice_at='y', node=0, **kwargs)
 
   def compare(self, *args, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
@@ -356,16 +356,16 @@ class WigglyData(Arr3d):
 
 @traced
 @logged
-def ileave_arrays(A1, A2, **kwargs):
+def interleave_arrays(A1, A2, **kwargs):
   """ 
   Create an array composed of 
-  ileaved arrays Z1 & Z2.
+  interleaved arrays Z1 & Z2.
   
   Parameters
   ----------
   
   A1, A2 : arrays
-    2D arrays to ileave.
+    2D arrays to interleave.
   
   **kwargs : keyword arguments (optional)  
    - chunk_size : int 
@@ -393,7 +393,7 @@ def ileave_arrays(A1, A2, **kwargs):
   ncols = A.shape[0]
   
   if ncols < 2 * chunk_size:
-    ileave_arrays._log.warn('No. of columns=' + str(ncols) + 
+    interleave_arrays._log.warn('No. of columns=' + str(ncols) + 
            ' < 2 * chunk_size! Outputting empty array')
     return []
   

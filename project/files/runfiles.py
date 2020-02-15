@@ -313,7 +313,9 @@ class Runfile(ParameterFile):
     self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
     
-    self.blocks = self.read_blocks(**kwargs)
+    if suffix == 'Runfile' and exists(self.fname): # NOT SKELETON
+      self.blocks = self.read_blocks(**kwargs)
+      self.blocks2iters(**kwargs)
     
   # -----------------------------------------------------------------------------  
 
@@ -417,62 +419,6 @@ class Runfile(ParameterFile):
       self.__log.warn('Description of boundaries in the Runfile is not complete: ' + str(err))
 
   # -----------------------------------------------------------------------------
-  
-  def read_blocks(self, **kwargs):
-    """
-    Read iteration blocks.
-    
-    Notes
-    -----
-    It assumes that each block starts with a line setting a 'nits' parameter.
-    
-    If no blocks are present (like for synthetic projects), empty list 
-    is naturally returned.
-    
-    """
-    from fullwavepy.ioapi.generic import read_txt
-    content = read_txt(self.fname)
-    
-    blocks = []
-    for line in content:
-      if len(line) == 0:
-        continue
-      
-      if line[0] == 'nits':
-        blocks.append({})
-        block = blocks[-1] 
-      
-      if len(blocks) > 0: 
-        block[line[0]] = line[2]
-      
-    return blocks
-
-  # ----------------------------------------------------------------------------- 
- 
-  def read_nits(self, **kwargs):
-    """
-    Read total no. of iterations. 
-
-    Notes
-    -----
-    We don't parse keys with spaces.
-    That's why 'nits' is OK, but 'no of iterations' is not.
-    
-    """
-    from fullwavepy.ioapi.generic import read_txt
-    
-    content = read_txt(self.fname)
-    
-    nits_total = 0
-    
-    for line in content:
-      if len(line) > 0 and line[0] == 'nits':
-        nits_total += int(line[2])
-      
-    self.nits_total = nits_total
-    return nits_total
-
-  # -----------------------------------------------------------------------------  
 
   def prepare(self, **kwargs):
     """
@@ -748,14 +694,16 @@ class Runfile(ParameterFile):
     from fullwavepy.ioapi.generic import read_txt_raw
     
     if self.proj.problem == 'tomography':
-      blocks = kw('blocks', [{'freq': 3.0, 'nits': 20, 'minoff': 5000},
-                             {'freq': 3.5, 'nits': 20, 'minoff': 5000},
-                             {'freq': 4.0, 'nits': 20, 'minoff': 5000},
-                             {'freq': 4.5, 'nits': 20, 'minoff': 5000},
-                             {'freq': 5.0, 'nits': 20, 'minoff': 5000},
-                             {'freq': 5.5, 'nits': 20, 'minoff': 5000},
-                             {'freq': 6.0, 'nits': 20, 'minoff': 5000},
-                             {'freq': 6.5, 'nits': 20, 'minoff': 5000},
+      nits = kw('nits_per_block', 20, kwargs)
+      minoff = kw('minoff', 5000, kwargs)
+      blocks = kw('blocks', [{'freq': 3.0, 'nits': nits, 'minoff': minoff},
+                             {'freq': 3.5, 'nits': nits, 'minoff': minoff},
+                             {'freq': 4.0, 'nits': nits, 'minoff': minoff},
+                             {'freq': 4.5, 'nits': nits, 'minoff': minoff},
+                             {'freq': 5.0, 'nits': nits, 'minoff': minoff},
+                             {'freq': 5.5, 'nits': nits, 'minoff': minoff},
+                             {'freq': 6.0, 'nits': nits, 'minoff': minoff},
+                             {'freq': 6.5, 'nits': nits, 'minoff': minoff},
                             ], kwargs)
       self.blocks= blocks # TO BE USED BY DUMPCOMPARE.read
     elif self.proj.problem == 'synthetic':
@@ -763,7 +711,7 @@ class Runfile(ParameterFile):
     else:
       raise ValueError('Unknown problem type: %s' %str(self.proj.problem))
     
-    self.blocks2single_iters(**kwargs)
+    self.blocks2iters(**kwargs)
     
     fname = self.fname
     content = read_txt_raw(fname)
@@ -794,20 +742,86 @@ class Runfile(ParameterFile):
         f.write('\n')
         
   # -----------------------------------------------------------------------------
+
+  def read_blocks(self, **kwargs):
+    """
+    Read iteration blocks.
+    
+    Notes
+    -----
+    It assumes that each block starts with a line setting a 'nits' parameter.
+    
+    If no blocks are present (like for synthetic projects), empty list 
+    is naturally returned.
+    
+    """
+    from fullwavepy.ioapi.generic import read_txt
+    
+    content = read_txt(self.fname)
+    
+    blocks = []
+    for line in content:
+      if len(line) < 3:
+        continue
+      
+      key = line[0]
+      colon = line[1]
+      val = line[2]
+      
+      if key == 'nits':
+        blocks.append({})
+        block = blocks[-1] 
+      
+      if len(blocks) > 0: 
+        try:
+          val = float(val)
+        except ValueError as err:
+          self.__log.debug('Non-numeric parameter: ' + str(err))
+        
+        block[key] = val
+        
+      
+    return blocks
   
-  def blocks2single_iters(self, **kwargs):
+  # -----------------------------------------------------------------------------
+  
+  def blocks2iters(self, **kwargs):
     """
     Prepare a list of all iterations, each
     having info about the block to which it belongs
     """
-    if not self.proj.problem.lower() == 'synthetic':
-      self.iters =  [None]    
-      for b in self.blocks:
-        for i_b in range(b['nits']):
-          self.iters.append(b)
+    self.iters =  [None]    
+    for b in self.blocks:
+      for i_b in np.arange(b['nits']):
+        self.iters.append(b)
+
+  # ----------------------------------------------------------------------------- 
+ 
+  def read_nits(self, **kwargs):
+    """
+    Read total no. of iterations. 
+
+    Notes
+    -----
+    We don't parse keys with spaces.
+    That's why 'nits' is OK, but 'no of iterations' is not.
+    
+    """
+    from fullwavepy.ioapi.generic import read_txt
+    
+    content = read_txt(self.fname)
+    
+    nits_total = 0
+    
+    for line in content:
+      if len(line) > 0 and line[0] == 'nits':
+        nits_total += int(line[2])
+      
+    self.nits_total = nits_total
+    return nits_total
 
   # -----------------------------------------------------------------------------
-  
+
 
 # -------------------------------------------------------------------------------
 

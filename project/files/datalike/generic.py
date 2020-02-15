@@ -89,10 +89,9 @@ class DataFile(ArrayProjFile):
   
   # -----------------------------------------------------------------------------   
   
-  def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'seismic', kwargs)
-    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    super().plot(**kwargs)
+  def read(self, **kwargs):
+    from fullwavepy.generic.array import WigglyData
+    self.array = WigglyData(super().read(**kwargs))
 
   # -----------------------------------------------------------------------------
 
