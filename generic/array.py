@@ -38,8 +38,8 @@ class Arr(np.ndarray):
     """
     source = cls.read(source, **kwargs)
     
-    # CAST THE TYPE
-    obj = np.asarray(source).view(cls)
+    obj = np.asarray(source).view(cls) # CAST THE TYPE
+    obj = cls.set_extent(obj, **kwargs)
     
     return obj # NECESSARY!
 
@@ -70,10 +70,22 @@ class Arr(np.ndarray):
      raise TypeError('Arguments need to be either ' + 
                      'file-names or arrays or np.memmap, NOT: %s' %
                      type(source))
-      
     return A
 
   # -----------------------------------------------------------------------------
+
+  def set_extent(obj, **kwargs):    
+    if 'extent' in kwargs:
+      obj.extent = kwargs['extent']
+    else:
+      obj.extent = []
+      for dim in obj.shape:
+        obj.extent.append(0)
+        obj.extent.append(dim-1)
+      
+    assert len(obj.extent) == 2 * len(obj.shape)
+    return obj
+
 
   def info(self, **kwargs):
     self.__log.info('shape: {}'.format(self.shape))
@@ -315,6 +327,8 @@ class Arr3d(Arr):
     tracker = IndexTrackerAll(fig, A, **kwargs)
     return tracker
     #return tracker.onscroll
+
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------

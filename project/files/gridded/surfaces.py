@@ -171,10 +171,14 @@ class FsFile(SurfaceFile):
   def run(self, **kwargs):
     cmd = self.proj.exe['fsprep'] + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
+  
+  def plot(self, *args, **kwargs):
+    plot3d(*args, **kwargs)
+  
+  def plot3d(self, **kwargs):
+    from mpl_toolkits.mplot3d import Axes3D
+    ax = plt.gca(projection='3d')
+    ax.plot_surface(self.array)
 
-  def create(self, **kwargs):
-    pass
-  
-  
 # -------------------------------------------------------------------------------  
 

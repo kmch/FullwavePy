@@ -62,8 +62,6 @@ def widgets(*widgets_args):
      > ValueError: cannot find widget or abbreviation for argument: 'self'
     
     """
-    print('THIS SHOULD NOT APPEAR ON SCREEN. RESTART THE NOTEBOOK AND TRY AGAIN')
-    
     @traced
     @logged
     def wrapper_widgets(*args, **kwargs):
@@ -126,22 +124,6 @@ def widgets(*widgets_args):
     return wrapper_widgets
   return widgets_actual_decorator
 
-# -------------------------------------------------------------------------------
-
-
-#@traced
-#@logged
-#def widgets_boilerplate(widgets_enabled, **kwargs):
-#  """
-#  Apparently one has to create a new figure INSIDE 
-#  a function passed to interact. 
-#  This is the code that has to be put in every 
-#  function decorated with @widgets then.
-#  """
-#  if widgets_enabled:
-#    from fullwavepy.plot.generic import new_figure
-#    return new_figure(**kwargs)
-    
 
 # -------------------------------------------------------------------------------
 

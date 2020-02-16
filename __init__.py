@@ -4,6 +4,7 @@ pd.set_option('display.max_columns', 50)
 
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+from mpl_toolkits.mplot3d import Axes3D
 
 import plotly.express as px
 import plotly.graph_objects as go

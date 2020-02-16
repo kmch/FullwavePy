@@ -92,6 +92,7 @@ class DataFile(ArrayProjFile):
   def read(self, **kwargs):
     from fullwavepy.generic.array import WigglyData
     self.array = WigglyData(super().read(**kwargs))
+    return self.array
 
   # -----------------------------------------------------------------------------
 

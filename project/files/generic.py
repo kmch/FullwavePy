@@ -157,8 +157,6 @@ class BinaryProjFile(ProjFile, BinaryFile):
 @logged
 class ArrayProjFile(ProjFile, ArrayFile):
   pass
-  #def compare(self, other_file, fig, gs=None, **kwargs):
-    #pass
 
 
 # -------------------------------------------------------------------------------

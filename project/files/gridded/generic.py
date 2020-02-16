@@ -32,6 +32,10 @@ class GridFile(ArrayProjFile):
   is assumed to be known a priori.
   
   """
+  def create(self, array, **kwargs):
+    from fullwavepy.ioapi.fw3d import save_vtr
+    super().create(**kwargs)
+    save_vtr(array , strip(self.fname) + '.vtr')
 
   # -----------------------------------------------------------------------------
   

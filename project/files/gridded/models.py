@@ -15,6 +15,7 @@ from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 from fullwavepy.project.files.gridded.generic import GridFile
 
+
 # -------------------------------------------------------------------------------
 
 
@@ -26,42 +27,6 @@ class ModelFile(GridFile):
   defined on the model grid.
   
   """
-
-  # -----------------------------------------------------------------------------
-  
-  def create(self, array, **kwargs):
-    """
-    
-    """
-    from fullwavepy.ioapi.fw3d import save_vtr
-    
-    super().create(**kwargs)
-    m = array
-    #dims = np.array(self.proj.dims)
-    
-    #if kind == 'hom':
-    #  m = np.zeros(dims) + kwargs['vel']
-    #
-    #elif kind == 'grad':
-    #  from fullwavepy.signal.model import grad
-    #  m  = grad(dims, kwargs['vtop'], kwargs['vbot'])
-    #
-    #elif kind == 'sphere':
-    #  from fullwavepy.signal.model import sphere
-    #  center = kw('center', dims // 2, kwargs)
-    #  radius = kw('radius', max(dims) / 10, kwargs) 
-    #  dv = kw('dv', 400, kwargs)
-    #  print('center, radius, vel, dv', center, radius, vel, dv)
-    #  m = np.full(dims, vel)
-    #  m += sphere(dims, center, radius, dv)
-    #else:
-    #  raise ValueError('Unknown kind: ' + kind)
-    
-    fvtr = strip(self.fname) + '.vtr'
-    save_vtr(m, fvtr)
-    
-  # -----------------------------------------------------------------------------  
-
   def dupl(self, source, cmd='cp',  *args, **kwargs): 
     """
     Standard file-duplication + resizing 
@@ -77,11 +42,6 @@ class ModelFile(GridFile):
                       ' will not be resized')
 
   # ----------------------------------------------------------------------------- 
-
-  def resize(self, **kwargs):
-    pass
-  
-  # -----------------------------------------------------------------------------  
   
 
 # -------------------------------------------------------------------------------
