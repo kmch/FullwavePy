@@ -402,10 +402,10 @@ class PbsFileCx1(PbsFile):
 
     """
     f.write('\n# RUN FULLWAVE \n')
-    if self.q != 'pqmrwarn':
-      self.__log.warn('Apparently after 1Feb2020 pbsexec (grace period) does work only for pqmrwarn')
+    if True:
+      self.__log.warn('Apparently after 1Feb2020 pbsexec (grace period) does not work (regardless of the queue)')
       pbsexec = ''
-    else:
+    else: # NOW IT'S NOT RECOGNIZED BY ANY QUEUE
       pbsexec = 'pbsexec '
     f.write(pbsexec + 'mpiexec ${code_path} ' + self.proj.name + 
             ' ${CPNUM} ${NTHREAD}' + 

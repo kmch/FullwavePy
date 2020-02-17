@@ -705,9 +705,9 @@ class Runfile(ParameterFile):
                              {'freq': 6.0, 'nits': nits, 'minoff': minoff},
                              {'freq': 6.5, 'nits': nits, 'minoff': minoff},
                             ], kwargs)
-      self.blocks= blocks # TO BE USED BY DUMPCOMPARE.read
+      self.blocks = blocks # TO BE USED BY DUMPCOMPARE.read
     elif self.proj.problem == 'synthetic':
-      blocks = kw('blocks', [], kwargs)
+      self.blocks = kw('blocks', [], kwargs)
     else:
       raise ValueError('Unknown problem type: %s' %str(self.proj.problem))
     
@@ -728,9 +728,9 @@ class Runfile(ParameterFile):
           f.write(nline) # NOTE
       
       # ADD CUSTOM SECTION E
-      f.write('     ' + '{:<13}'.format('nblock') + ' : ' + str(len(blocks)) + '\n\n')
+      f.write('     ' + '{:<13}'.format('nblock') + ' : ' + str(len(self.blocks)) + '\n\n')
       
-      for i, block in enumerate(blocks):
+      for i, block in enumerate(self.blocks):
         if 'freq' not in block:
           raise ValueError('Specify freq for block no. ' + str(i+1))
         if 'nits' not in block:
@@ -780,7 +780,7 @@ class Runfile(ParameterFile):
         
         block[key] = val
         
-      
+    self.blocks = blocks
     return blocks
   
   # -----------------------------------------------------------------------------

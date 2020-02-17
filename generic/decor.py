@@ -81,7 +81,7 @@ def widgets(*widgets_args):
       
       try:
         proj = args[0].proj
-        sids = list(proj.i.s.d.keys())
+        sids = sorted(list(proj.i.s.d.keys()))
         #it_max = proj.i.rnf.nits_total
       except AttributeError as err:
         wrapper_widgets._log.warn('Setting sids to [] because of %s' % str(err))
