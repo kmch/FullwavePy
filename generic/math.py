@@ -31,7 +31,7 @@ def ricker(fpeak, ns, dt):
   """
   http://subsurfwiki.org/wiki/Ricker_wavelet
   """
-  from ..signal.wavelet import shift_to_zero
+  from fullwavepy.signal.wavelet import shift_to_zero
 
   A  = np.zeros((1,1,ns))
 

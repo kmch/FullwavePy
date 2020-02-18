@@ -6,27 +6,48 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 import numpy as np
 from autologging import logged, traced
 
+from fullwavepy.generic.parse import kw, del_kw, exten, strip
+from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.decor import timer
+from fullwavepy.generic.array import Arr3d 
+
 
 @traced
 @logged
 class Solver(object):
   """
   """
-  def __init__(self, dims, dx, ns, dt, rsg, **kwargs):
+  def __init__(self, c, dx, ns, dt, rsg, srcs, recs, **kwargs):
     """
-    rsg: raw signagure (source/wavelet)
+    c: vp model
+    rsg: raw signature (source/wavelet)
     """
-    self.dims = dims
+    self.dump = kw('dump', -100, kwargs)
+    if self.dump < 0:
+      self.dump = -self.dump
+    else:
+      raise ValueError('self.dump: ' + self.dump)
+    
+    self.c = c
+    self.dims = c.shape
     self.dx = dx
     self.ns = ns
     self.dt = dt
-    self.rsg = rsg
+    assert rsg.shape[ :2] == (1,1)
+    self.rsg = rsg[0][0]
+    assert len(self.rsg) == self.ns
+    self.srcs = srcs
+    self.recs = recs
     
-    self.u_prv = np.zeros(dims)
-    self.u_now = np.zeros(dims)
-    self.u_nxt = np.zeros(dims)
+    self.dtdx2 = (dt*dt)/(dx*dx)
+    
+    self.u_prv = np.zeros(self.dims)
+    self.u_now = np.zeros(self.dims)
+    self.u_nxt = np.zeros(self.dims)
 
-    self.u = [self.u_prv, self.u_now, self.u_next]
+    self.u = [self.u_prv, self.u_now, self.u_nxt]
+
+    self.fw = np.zeros((self.ns // self.dump, *self.dims))
   
   def solve(self, **kwargs):
     """
@@ -45,24 +66,74 @@ class Solver2d_2t2x(Solver):
   Second-order in time, second-order in space.
   
   """  
+  def __init__(self, c, *args, **kwargs):
+    assert c.shape[1] == 1
+    super().__init__(c, *args, **kwargs)
+  
   def solve(self, **kwargs):
     """
     """
-    super().solve(self, **kwargs)
-    spatial = (+u[:-2,1:-1]+u[2:,1:-1]-4*u[1:-1,1:-1]+u[1:-1,:-2]+u[1:-1,2:])
-    self.u_nxt[1:-1,1:-1] = 2*u[1:-1,1:-1] - u_prv[1:-1,1:-1]  \
-            + (c[1:-1,1:-1]**2) * dtdx2 * 
-
+    super().solve(**kwargs)
+    
+    for i in range(self.ns):
+      self.__log.info('Step %d (of %d)\r' % (i+1,self.ns)) 
+      
+      spatial = +self.u_now[ :-2,:,1:-1] + self.u_now[2:  ,:,1:-1] \
+                +self.u_now[1:-1,:, :-2] + self.u_now[1:-1,:,2:  ] \
+              -4*self.u_now[1:-1,:,1:-1]
+            
+      self.u_nxt[1:-1,:,1:-1] = 2 * self.u_now[1:-1,:,1:-1] \
+                                   -self.u_prv[1:-1,:,1:-1] \
+                      +self.dtdx2 * spatial * self.c[1:-1,:,1:-1]**2 
+      
+      if i + 1 < self.ns:
+        for src in self.srcs:
+          x, y, z = src
+          self.u_nxt[x,y,z] = self.rsg[i+1]
+      
+      self.u_prv[:,:,:] = self.u_now[:,:,:]
+      self.u_now[:,:,:] = self.u_nxt[:,:,:]      
+      
+      
+      if i % self.dump == 0:
+        self.fw[int((i+1)/self.dump - 1)] = Arr3d(self.u_now[:,:,:])
 
 
 # -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @traced
 @logged
 def solve2d(proj, sources, receivers):
   """
-  Simple 2D solver.
+  Simple 2D solver (Igel)
   
   Parameters
   ----------
@@ -137,55 +208,6 @@ def solve2d(proj, sources, receivers):
       r.data[it] = p[r.z, r.x]
     
   return wavefield, receivers
-
-
-
-def propagate():
-    
-    # make sure everything starts off zero
-    u[:] = 0.0
-    u_prv[:] = 0.0
-
-    u[sx,sz] = src[0]  # inject first source entry into current wavefield
-
-    # begin time-stepping loop...
-
-    for i in range(nt):
-
-        if i%20==0:
-            sys.stdout.write('Done step %d (of %d)\r' % (i+1,nt))
-
-        # FILL IN CODE HERE TO CALCULATE THE NEW WAVEFIELD u_nxt (task 2)...
-    
-    #    NOTE: The commented code below uses loops, which is how we did it in the 1d code
-    #    However, you'll find it's really slow doing it like that, so see quicker code afterwards... 
-    #    for ix in range(1,nx-1):
-    #        for iz in range(1,nz-1):
-    #            u_nxt[ix,iz] = 2*u[ix,iz] - u_prv[ix,iz] + (c[ix,iz]**2) * dtdx2 *  \
-    #                                (-4*u[ix,iz]+u[ix-1,iz]+u[ix+1,iz]+u[ix,iz-1]+u[ix,iz+1])
-
-    #   This code is much quicker, since it works on (almost) the whole array at once
-    #   (apart from the edges, which we want to leave alone - note the index bounds)
-        u_nxt[1:-1,1:-1] = 2*u[1:-1,1:-1] - u_prv[1:-1,1:-1]  \
-            + (c[1:-1,1:-1]**2) * dtdx2 * (+u[:-2,1:-1]+u[2:,1:-1]-4*u[1:-1,1:-1]+u[1:-1,:-2]+u[1:-1,2:]) 
-
-        # inject source entry for this step at the source point
-        if i+1<ns:
-            u_nxt[sx,sz] = src[i+1]
-    
-        # shift wavefields for next time-step
-        u_prv[:,:] = u[:,:]
-        u[:,:] = u_nxt[:,:]
-    
-
-        # ADD CODE HERE TO PLACE WAVEFIELD VALUES ALONG RECEIVER LINE INTO ARRAY r (task 3)...
-    
-        r[:,i] = u[:,rz]
-
-
-    
-        if (i+1)%snapshot_gap == 0: # store the current wavefield u on every tenth step
-            wavefield[int((i+1)/snapshot_gap-1)] = u[:,:]
 
 
 # -------------------------------------------------------------------------------

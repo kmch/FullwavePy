@@ -71,6 +71,7 @@ def shift_to_zero(A, fraction=0.001, **kwargs): # DEL BECAUSE fraction IS ARBITR
   for x in range(nx):
     for y in range(ny):
       pick = int(picks[x][y])
+      assert pick > 0
       Az[x][y][ :-pick] = A[x][y][pick: ]
   
   return Az

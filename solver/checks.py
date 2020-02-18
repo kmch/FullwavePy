@@ -97,8 +97,6 @@ def check_stability(dx, dt, v_max, kernel, **kwargs):
   else:
     raise NotImplementedError('Unknown kernel: %s' % kernel)
     
-    
-  
   if C < C_max:
     check_stability._log.info('All good! Courant number C=%s < Cmax=%s' % (C, C_max))
   else:
@@ -184,3 +182,4 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
   
 
 # -------------------------------------------------------------------------------
+
