@@ -255,31 +255,32 @@ class ProjInput(ProjThroughput):
   
   def check(self, **kwargs):
     self.check_numerics(**kwargs)
+    print('\n')
     self.check_by_fullwave(**kwargs)
 
   # ----------------------------------------------------------------------------- 
   
-  def check_numerics(self, **kwargs): #FIXME
+  def check_numerics(self, **kwargs):
     """
     """
     from fullwavepy.generic.math import dft, dft_freqs
     from fullwavepy.solver.checks import check_stability, check_accuracy
     
-    self.__log.warn('It is buggy. Returning...')
-    return
+    print('Python is checking the input...')
     
     dx = self.proj.dx
     dt = self.proj.dt
     kernel = self.proj.kernel
-    
-    f = self.proj.inp.truevp
-    self.__log.info('Reading ' + f.fname + '...')
-    tvp = f.read(scoord=None)
-    
-    vmin, vmax = np.min(tvp), np.max(tvp)
-    self.__log.info('Extreme values of %s: %s, %s' 
-                    % (f.fname, vmin, vmax)) 
+    tvp = self.proj.inp.truevp.read(**kwargs)
+    tvp.info()
      
+     
+    check_stability(dx, dt, np.max(tvp), kernel) 
+    
+    self.__log.warn('It is buggy. Returning...')
+    return
+    
+    
     f = self.proj.inp.rawsign
     self.__log.info('Reading ' + f.fname + '...')
     rs = f.read(scoord=None)
@@ -309,7 +310,7 @@ class ProjInput(ProjThroughput):
       fmax = halfpeak_freqs[-1]
       print('fmax', fmax)
     
-    check_stability(dx, dt, vmax, kernel)
+
     check_accuracy(dx, vmin, fmax, kernel)
     
   # ----------------------------------------------------------------------------- 
@@ -321,7 +322,7 @@ class ProjInput(ProjThroughput):
     
     """    
     exe = self.proj.exe['fullwave_local']
-    self.__log.info(exe + ' is checking the input...')
+    print('Fullwave3D executable %s is checking the input...' % exe)
     path = self.path
     o, e = bash(exe+ ' -checkinput ' + self.proj.name, path=path)
     print(o, e)

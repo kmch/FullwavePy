@@ -495,7 +495,8 @@ class Runfile(ParameterFile):
     
     # APPLY THE REMAINDER 
     self.__log.info('Setting boundary conditions...')
-    self.modify(problem=self.proj.problem,                   
+    self.modify(problem=self.proj.problem, 
+                dim=self.proj.dim,
                 btop=str(btop),
                 bbot=str(b_abs), 
                 bleft=str(b_abs), 

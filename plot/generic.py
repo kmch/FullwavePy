@@ -22,7 +22,7 @@ def new_figure(**kwargs):
   This is the code that has to be put in every 
   function decorated with @widgets then.
   """
-  figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
+  figsize = (kw('figsize_x', 6, kwargs), kw('figsize_y', 6, kwargs))
   return plt.figure(figsize=figsize)
     
 

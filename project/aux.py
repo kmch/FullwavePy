@@ -405,6 +405,14 @@ class ProjGeometry(object): # FIXME: CLEAN
     """
     self.proj = proj
     
+    # FOLD OUT geom IN kwargs IF IT'S PROVIDED AS A SUBDIR OF KWARGS
+    if 'geom' in kwargs:
+      geom = kwargs['geom']
+      assert isinstance(geom, dict)
+      del kwargs['geom']
+      kwargs = {**kwargs, **geom}
+    
+    
     for f in [proj.inp.sp, proj.inp.runfile]:
       if exists(f.fname):
         # THIS SHOULD CREATE f.params DICTIONARY

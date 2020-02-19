@@ -32,7 +32,7 @@ class GridFile(ArrayProjFile):
   is assumed to be known a priori.
   
   """
-  def create(self, array, **kwargs):
+  def create(self, array, **kwargs): # FIXME MOVE TO VTR
     from fullwavepy.ioapi.fw3d import save_vtr
     super().create(**kwargs)
     save_vtr(array , strip(self.fname) + '.vtr')
@@ -54,31 +54,18 @@ class GridFile(ArrayProjFile):
                       ' will not be resized')
 
   # ----------------------------------------------------------------------------- 
-
-  def resize(self, **kwargs):
-    pass
-  
-  # -----------------------------------------------------------------------------  
   
   def read(self, **kwargs):
-    """
-    
-    Notes
-    -----
-    The idea is to have shape=self.proj.dims.
-    This wouldn't work for surface files that's 
-    why it's defined here, not in the parent 
-    class.
-
-    """
-    try:
-      kwargs['shape'] = kw('shape', tuple(self.proj.dims), kwargs)
-    except AttributeError:
-      self.__log.warn("self.proj.dims not defined. Instead setting " + 
-                      "kwargs['shape'] to {}".format(kwargs['shape']))  
-    
-    A = super().read(**kwargs)
-    return A
+    self.array = super().read(**kwargs)
+    self.array.extent = np.array([self.proj.box[ :2], 
+                                  self.proj.box[2:4],
+                                  self.proj.box[4: ]])
+    return self.array
+  
+  # -----------------------------------------------------------------------------
+  
+  def resize(self, **kwargs):
+    pass
   
   # -----------------------------------------------------------------------------
   

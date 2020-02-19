@@ -14,7 +14,7 @@ from fullwavepy.project.files.generic import ArrayProjFile
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
-from fullwavepy.project.files.gridded.models import ModelFileVtr
+from fullwavepy.project.files.gridded.generic import GridFile
 
 
 # -------------------------------------------------------------------------------
@@ -22,13 +22,24 @@ from fullwavepy.project.files.gridded.models import ModelFileVtr
 
 @traced
 @logged
-class SurfaceFile(ModelFileVtr):
+class SurfaceFile(GridFile, VtrFile):
   """
   Free surface or a model
   interface.
   
   """
-  pass
+  def __init__(self, suffix, proj, path, **kwargs):
+    """
+    """
+    self.name = proj.name + '-' + suffix + '.vtr'
+    self.fname = path + self.name
+    super().__init__(proj, path, **kwargs)
+
+  def plot(self, **kwargs):
+    self.array = self.read(**kwargs)
+    shape = self.array.shape
+    assert shape[-1] == 1
+  
 
 
 # -------------------------------------------------------------------------------  
@@ -168,17 +179,35 @@ class FsFile(SurfaceFile):
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
   
+  #def read(self, **kwargs): # FIXME: ONLY 2D
+    #shape = kw('shape', (self.proj.dims[0], 
+  
+  #def create(self, *args, **kwargs):
+    #super().create(*args, **kwargs)
+  
+  
   def run(self, **kwargs):
-    cmd = self.proj.exe['fsprep'] + " " + self.proj.name
+    exe = self.proj.exe['fsprep']
+    o, e = bash('make -C %s' % exe)
+    cmd = exe + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
   
   def plot(self, *args, **kwargs):
-    plot3d(*args, **kwargs)
+    self.plot2d(*args, **kwargs)
+  
+  def plot2d(self, **kwargs):
+    self.array = self.read(**kwargs)
+    x1, x2 = self.proj.box[ :2]
+    dx = self.proj.dx
+    x = np.arange(x1, x2+dx, dx)
+    z = self.array[:,0,0]
+    plt.plot(x, z)
   
   def plot3d(self, **kwargs):
     from mpl_toolkits.mplot3d import Axes3D
     ax = plt.gca(projection='3d')
     ax.plot_surface(self.array)
+
 
 # -------------------------------------------------------------------------------  
 

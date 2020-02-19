@@ -88,7 +88,6 @@ def check_stability(dx, dt, v_max, kernel, **kwargs):
   
   """  
   C = courant(dx, dt, v_max)
-  check_stability._log.info('Courant number: %s' %C)
   
   if kernel == 'high':
     C_max = 0.38
@@ -98,7 +97,7 @@ def check_stability(dx, dt, v_max, kernel, **kwargs):
     raise NotImplementedError('Unknown kernel: %s' % kernel)
     
   if C < C_max:
-    check_stability._log.info('All good! Courant number C=%s < Cmax=%s' % (C, C_max))
+    print('All good! Courant number C=%s < Cmax=%s' % (C, C_max))
   else:
     raise ValueError('The scheme is unstable for the current discretization\n' + 
                      '(Courant number C=%s >= Cmax=%s' % (C, C_max) + ')\n' + 

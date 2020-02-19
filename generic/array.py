@@ -39,9 +39,23 @@ class Arr(np.ndarray):
     source = cls.read(source, **kwargs)
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
-    obj = cls.set_extent(obj, **kwargs)
+    obj = cls._set_extent(obj, **kwargs)
     
     return obj # NECESSARY!
+
+  # -----------------------------------------------------------------------------   
+  
+  def _set_extent(obj, **kwargs):    
+    if 'extent' in kwargs:
+      obj.extent = kwargs['extent']
+    else:
+      obj.extent = []
+      for dim in obj.shape:
+        obj.extent.append(0)
+        obj.extent.append(dim-1)
+      
+    assert len(obj.extent) == 2 * len(obj.shape)
+    return obj
 
   # -----------------------------------------------------------------------------
 
@@ -59,6 +73,7 @@ class Arr(np.ndarray):
         type(source) == Arr2d or
         type(source) == Arr3d or
         type(source) == WigglyData or
+        type(source) == Surf or
         type(source) == np.memmap):
       A = source    
 
@@ -73,19 +88,6 @@ class Arr(np.ndarray):
     return A
 
   # -----------------------------------------------------------------------------
-
-  def set_extent(obj, **kwargs):    
-    if 'extent' in kwargs:
-      obj.extent = kwargs['extent']
-    else:
-      obj.extent = []
-      for dim in obj.shape:
-        obj.extent.append(0)
-        obj.extent.append(dim-1)
-      
-    assert len(obj.extent) == 2 * len(obj.shape)
-    return obj
-
 
   def info(self, **kwargs):
     self.__log.info('shape: {}'.format(self.shape))
@@ -172,6 +174,8 @@ class Arr2d(Arr):
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
     
+    kwargs['extent'] = self.extent
+    
     # IT SHOULDN'T BE APPLIED TWICE!
     self = modify_array(self, **kwargs)
     
@@ -203,7 +207,11 @@ class Arr3d(Arr):
     """
     di = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice_at INTO AXIS NO.
     axis = di[slice_at]
-    return Arr2d(np.take(self, indices=node, axis=axis))
+    A = Arr2d(np.take(self, indices=node, axis=axis))
+    
+    extent2d = [el for i, el in enumerate(self.extent) if i != di[slice_at]]
+    A.extent = np.ravel(extent2d)
+    return A
   
   # -----------------------------------------------------------------------------
   
@@ -222,8 +230,8 @@ class Arr3d(Arr):
     """
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     arr2d.plot(**kwargs)
-    if slice_at == 'z':
-      plt.gca().invert_yaxis()
+    #if slice_at == 'z':
+    plt.gca().invert_yaxis()
   
   # -----------------------------------------------------------------------------
   
@@ -354,12 +362,51 @@ class WigglyData(Arr3d):
 # -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class Surf(Arr3d):
+  pass
+  #def plot(self, **kwargs):
+    #self.array = self.read(**kwargs)
+    #shape = self.array.shape
 
 
+# -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class SurfFunc(Surf):
+  """
+  Surface of the form z = z(x,y).
+  
+  """
+  pass
 
 
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SurfParam(Surf):
+  """
+  Surface in a parametric form
+  X, Y, Z.
+
+  E.g. a torus:
+  angle = np.linspace(0, 2 * np.pi, 32)
+  theta, phi = np.meshgrid(angle, angle)
+  r, R = .25, 1.
+  X = (R + r * np.cos(phi)) * np.cos(theta)
+  Y = (R + r * np.cos(phi)) * np.sin(theta)
+  Z = r * np.sin(phi)
+  
+  """
+  pass
+
+
+# -------------------------------------------------------------------------------
 
 
 
