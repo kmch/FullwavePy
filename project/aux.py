@@ -526,6 +526,10 @@ class ProjGeometry(object): # FIXME: CLEAN
     proj.nn = reduce((lambda x, y: x * y), proj.dims) # TOTAL NO. OF NODES
     proj.ttime = proj.ns * proj.dt
     
+    if proj.nx2 == 1:
+      proj.dim = '2d' # FIXME HERE?
+    
+    
   # ----------------------------------------------------------------------------- 
  
   def _extend_grid(self, **kwargs):
@@ -589,6 +593,12 @@ class ProjGeometry(object): # FIXME: CLEAN
         self.proj.enx2 = self.proj.nx2 + self.proj.efro + self.proj.ebac
       else:
         self.proj.enx2 = self.proj.nx2
+    
+    
+    
+    
+    if self.proj.dim == '2d': # FIXME AD-HOC
+      self.proj.enx2 = 1
     
     #if verbos > 1:
       #print(this_func, 'etop, eleft, efront', etop, eleft, efront)  

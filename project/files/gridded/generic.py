@@ -103,7 +103,7 @@ class ExtendedGridFile(GridFile):
   #  #  A = A[self.proj.eleft:-self.proj.eright, :, self.proj.etop:-self.proj.ebot]
   #  return A    
     """
-    kwargs['shape'] = (self.proj.enx1, self.proj.enx2, self.proj.enx3)
+    kwargs['shape'] = kw('shape', (self.proj.enx1, self.proj.enx2, self.proj.enx3), kwargs)
     A = super().read(**kwargs)
     return A
 

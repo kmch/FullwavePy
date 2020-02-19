@@ -14,7 +14,7 @@ from fullwavepy.project.files.generic import ArrayProjFile
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
-from fullwavepy.project.files.gridded.generic import GridFile
+from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
 
 
 # -------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ from fullwavepy.project.files.gridded.generic import GridFile
 
 @traced
 @logged
-class SurfaceFile(GridFile, VtrFile):
+class SurfaceFile(ArrayProjFile, VtrFile):
   """
   Free surface or a model
   interface.
@@ -39,7 +39,6 @@ class SurfaceFile(GridFile, VtrFile):
     self.array = self.read(**kwargs)
     shape = self.array.shape
     assert shape[-1] == 1
-  
 
 
 # -------------------------------------------------------------------------------  
@@ -170,7 +169,7 @@ class TopographyFile(SurfaceFile):
 
 @traced
 @logged
-class FsFile(SurfaceFile):
+class FsFile(SurfaceFile, GridFile):
   """
   Free surface
   
@@ -188,7 +187,8 @@ class FsFile(SurfaceFile):
   
   def run(self, **kwargs):
     exe = self.proj.exe['fsprep']
-    o, e = bash('make -C %s' % exe)
+    path = exe[ :-len('fsprep')]
+    o, e = bash('make -C %s' % path)
     cmd = exe + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
   
@@ -210,4 +210,22 @@ class FsFile(SurfaceFile):
 
 
 # -------------------------------------------------------------------------------  
+
+
+@traced
+@logged
+class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
+  def __init__(self, proj, path, **kwargs):
+    suffix = 'FreeSurf_exten'
+    super().__init__(suffix, proj, path, **kwargs)
+  
+  def read(self, **kwargs):
+    kwargs['shape'] = (self.proj.enx1, self.proj.enx2, 1)
+    A = super().read(**kwargs)
+    return A  
+
+
+
+
+
 
