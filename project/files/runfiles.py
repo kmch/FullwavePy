@@ -655,18 +655,18 @@ class Runfile(ParameterFile):
     
     ! E. ITERATIONS & DATA SELECTION (THE LAST PART OF THE FILE)
      nblock         : 3
-     freq           : 3.0
      nits           : 10
+     freq           : 3.0     
      minoff         : 2000
      maxoff         : 20000
      
+     nits           : 5
      freq           : 4.0
-     nits           : 5
      minoff         : 2000
      maxoff         : 20000
      
-     freq           : 5.0
      nits           : 5
+     freq           : 5.0
      minoff         : 2000
      maxoff         : 20000
     """
@@ -697,14 +697,14 @@ class Runfile(ParameterFile):
     if self.proj.problem == 'tomography':
       nits = kw('nits_per_block', 20, kwargs)
       minoff = kw('minoff', 5000, kwargs)
-      blocks = kw('blocks', [{'freq': 3.0, 'nits': nits, 'minoff': minoff},
-                             {'freq': 3.5, 'nits': nits, 'minoff': minoff},
-                             {'freq': 4.0, 'nits': nits, 'minoff': minoff},
-                             {'freq': 4.5, 'nits': nits, 'minoff': minoff},
-                             {'freq': 5.0, 'nits': nits, 'minoff': minoff},
-                             {'freq': 5.5, 'nits': nits, 'minoff': minoff},
-                             {'freq': 6.0, 'nits': nits, 'minoff': minoff},
-                             {'freq': 6.5, 'nits': nits, 'minoff': minoff},
+      blocks = kw('blocks', [{'nits': nits, 'freq': 3.0, 'minoff': minoff},
+                             {'nits': nits, 'freq': 3.5, 'minoff': minoff},
+                             {'nits': nits, 'freq': 4.0, 'minoff': minoff},
+                             {'nits': nits, 'freq': 4.5, 'minoff': minoff},
+                             {'nits': nits, 'freq': 5.0, 'minoff': minoff},
+                             {'nits': nits, 'freq': 5.5, 'minoff': minoff},
+                             {'nits': nits, 'freq': 6.0, 'minoff': minoff},
+                             {'nits': nits, 'freq': 6.5, 'minoff': minoff},
                             ], kwargs)
       self.blocks = blocks # TO BE USED BY DUMPCOMPARE.read
     elif self.proj.problem == 'synthetic':
@@ -737,6 +737,13 @@ class Runfile(ParameterFile):
         if 'nits' not in block:
           raise ValueError('Specify nits for block no. ' + str(i+1))
         
+        # START WITH nits, OTHERWISE COULD SORT DIFFERENTLY
+        key = 'nits'
+        val = block[key]
+        f.write('     ' + '{:<13}'.format(key) + ' : ' + str(val) + '\n')
+        
+        del block[key]
+        
         for key, val in block.items():
           f.write('     ' + '{:<13}'.format(key) + ' : ' + str(val) + '\n')
         
@@ -759,6 +766,8 @@ class Runfile(ParameterFile):
     from fullwavepy.ioapi.generic import read_txt
     
     content = read_txt(self.fname)
+    
+    self.__log.debug(str(content))
     
     blocks = []
     for line in content:

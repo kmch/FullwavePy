@@ -10,6 +10,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.array import WigglyData
 from fullwavepy.project.files.generic import BinaryProjFile, ArrayProjFile
 from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
@@ -190,7 +191,7 @@ class DumpCompareFile(DataFileTtr):
         obj.lid = {}
         for lid in lids:
           subhead = self.head[:][self.head[lid_hw] == lid]
-          obj.lid[lid] = np.take(obj, indices=subhead.index, axis=0)
+          obj.lid[lid] = WigglyData(np.take(obj, indices=subhead.index, axis=0))
   
   # -----------------------------------------------------------------------------
   

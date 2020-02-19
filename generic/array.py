@@ -51,10 +51,7 @@ class Arr(np.ndarray):
     else:
       obj.extent = []
       for dim in obj.shape:
-        obj.extent.append(0)
-        obj.extent.append(dim-1)
-      
-    assert len(obj.extent) == 2 * len(obj.shape)
+        obj.extent.append([0, dim-1])
     return obj
 
   # -----------------------------------------------------------------------------
@@ -174,7 +171,7 @@ class Arr2d(Arr):
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
     
-    kwargs['extent'] = self.extent
+    kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
     
     # IT SHOULDN'T BE APPLIED TWICE!
     self = modify_array(self, **kwargs)
@@ -210,6 +207,7 @@ class Arr3d(Arr):
     A = Arr2d(np.take(self, indices=node, axis=axis))
     
     extent2d = [el for i, el in enumerate(self.extent) if i != di[slice_at]]
+    self.__log.debug('extent2d: ' + str(extent2d))
     A.extent = np.ravel(extent2d)
     return A
   
@@ -230,8 +228,8 @@ class Arr3d(Arr):
     """
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     arr2d.plot(**kwargs)
-    #if slice_at == 'z':
-    plt.gca().invert_yaxis()
+    if slice_at == 'z':
+      plt.gca().invert_yaxis()
   
   # -----------------------------------------------------------------------------
   
