@@ -35,10 +35,16 @@ class SurfaceFile(ArrayProjFile, VtrFile):
     self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
 
-  def plot(self, **kwargs):
+  def plot(self, *args, **kwargs):
+    self.plot2d(*args, **kwargs)
+  
+  def plot2d(self, **kwargs):
     self.array = self.read(**kwargs)
-    shape = self.array.shape
-    assert shape[-1] == 1
+    x1, x2 = self.proj.box[ :2]
+    dx = self.proj.dx
+    x = np.arange(x1, x2+dx, dx)
+    z = self.array[:,0,0]
+    plt.plot(x, z)
 
 
 # -------------------------------------------------------------------------------  
@@ -192,17 +198,6 @@ class FsFile(SurfaceFile, GridFile):
     cmd = exe + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
   
-  def plot(self, *args, **kwargs):
-    self.plot2d(*args, **kwargs)
-  
-  def plot2d(self, **kwargs):
-    self.array = self.read(**kwargs)
-    x1, x2 = self.proj.box[ :2]
-    dx = self.proj.dx
-    x = np.arange(x1, x2+dx, dx)
-    z = self.array[:,0,0]
-    plt.plot(x, z)
-  
   def plot3d(self, **kwargs):
     from mpl_toolkits.mplot3d import Axes3D
     ax = plt.gca(projection='3d')
@@ -224,7 +219,15 @@ class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
     A = super().read(**kwargs)
     return A  
 
-
+  def plot2d(self, **kwargs):
+    self.array = self.read(**kwargs)
+    
+    dx = self.proj.dx
+    ex1 = self.proj.box[0] - self.proj.elef * dx
+    ex2 = self.proj.box[1] + self.proj.erig * dx
+    x = np.arange(ex1, ex2+dx, dx)
+    z = self.array[:,0,0]
+    plt.plot(x, z)
 
 
 
