@@ -236,7 +236,7 @@ class BashFile(JobFile, AsciiProjFile):
     """
     ompthreads = kw('ompthreads', 4, kwargs)
     path_fullwave = self.proj.exe['fullwave_local']
-    path_make = self.proj.exe['fullwave_local'] + '/../../'
+    path_make = self.proj.exe['fullwave_local'][ :-len('bin/fullwave3d.exe')]
     
     #outlog = '../../' + self.proj.out.out.no[self.run_id].fname
     #errlog = '../../' + self.proj.out.err.no[self.run_id].fname
@@ -262,14 +262,23 @@ class BashFile(JobFile, AsciiProjFile):
       project={pname}
       path_fullwave={path_fullwave}
       
+      make -C {path_make}
+      if [[ $? != 0 ]]; then
+        echo "Error Compiling fsprep modules failed." 2> {err}
+        exit
+      else 
+        echo good
+      fi
+      
       echo 'current dir: '
       pwd
       
       work_dir={outdir}
       ln {inpdir}/* $work_dir 
       cd $work_dir # !!!
-      """.format(ompthreads=ompthreads, pname=self.proj.name, path_fullwave=path_fullwave,
-                 inpdir=self.proj.inp.path, outdir=self.proj.out.path)
+      """.format(ompthreads=ompthreads, pname=self.proj.name, path_fullwave=path_fullwave, path_make=path_make,
+                 inpdir=self.proj.inp.path, outdir=self.proj.out.path, 
+                 err=self.proj.o.e.no[self.run_id].name)
       
       f.write(text)
       

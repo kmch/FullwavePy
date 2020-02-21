@@ -573,7 +573,16 @@ class Runfile(ParameterFile):
      
     ! D. BOUNDARY CONDITIONS
      ibfs          : 0
-    
+     seaLevel      : 0
+     maxGhostIter  : 2
+     vacuum        : 0
+     accuracy      : 0.001
+     minGhostFS    : 0.001
+     minFictFS     : 0.5
+     interpMode    : 1
+     srcType       : 0
+     recType       : 0
+     
      btop          : 0
      bbot          : 2
      bleft         : 2

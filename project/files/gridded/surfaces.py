@@ -40,9 +40,10 @@ class SurfaceFile(ArrayProjFile, VtrFile):
   
   def plot2d(self, **kwargs):
     self.array = self.read(**kwargs)
-    x1, x2 = self.proj.box[ :2]
-    dx = self.proj.dx
-    x = np.arange(x1, x2+dx, dx)
+    #x1, x2 = self.proj.box[ :2]
+    #dx = self.proj.dx
+    #x = np.arange(x1, x2+dx, dx)
+    x = np.arange(0, len(self.array))
     z = self.array[:,0,0]
     plt.plot(x, z)
 
@@ -192,6 +193,9 @@ class FsFile(SurfaceFile, GridFile):
   
   
   def run(self, **kwargs):
+    """
+    set log_lvl(n<=10) to see the output messages.
+    """
     exe = self.proj.exe['fsprep']
     path = exe[ :-len('fsprep')]
     o, e = bash('make -C %s' % path)

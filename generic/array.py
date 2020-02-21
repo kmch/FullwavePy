@@ -171,7 +171,7 @@ class Arr2d(Arr):
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
     
-    kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
+    #kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
     
     # IT SHOULDN'T BE APPLIED TWICE!
     self = modify_array(self, **kwargs)
