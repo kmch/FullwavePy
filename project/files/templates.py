@@ -35,8 +35,10 @@ class TemplateFileTtr(DataFile, TtrFile):
     """
     
     """  
-    self.name = proj.name + '-Observed-0000.ttr'
-    self.fname = path + self.name
+    self.suffix = 'Observed-0000'
+    self.ext = 'ttr' #FIXME move to ttr
+    #self.name = proj.name + '-Observed-0000.ttr'
+    #self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
 
   def read(self, **kwargs):

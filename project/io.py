@@ -277,10 +277,6 @@ class ProjInput(ProjThroughput):
      
     check_stability(dx, dt, np.max(tvp), kernel) 
     
-    self.__log.warn('It is buggy. Returning...')
-    return
-    
-    
     f = self.proj.inp.rawsign
     self.__log.info('Reading ' + f.fname + '...')
     rs = f.read(scoord=None)
@@ -289,6 +285,8 @@ class ProjInput(ProjThroughput):
     ampls = dft(rs)
     ampls = list(ampls[ :len(freqs)])
     
+    print('sdhkf')
+    return
     
     plt.plot(freqs, ampls)
     plt.xlim(0,50)

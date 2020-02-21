@@ -560,8 +560,14 @@ class ProjGeometry(object): # FIXME: CLEAN
       return
     
     err = False
-    for param in ['btop', 'bbot', 'bleft', 'bright', 'bfront', 'bback', 
-                  'etop', 'ebot', 'elef', 'erig', 'efro', 'ebac']:
+    params = ['btop', 'bbot', 'bleft', 'bright',
+              'etop', 'ebot', 'elef', 'erig',]
+    
+    if self.proj.dim == '3d':
+      params += ['bfront', 'bback', 
+                 'efro', 'ebac']
+    
+    for param in params:    
       try:
         val = int(runfile.params[param])
         setattr(self.proj, param, val)

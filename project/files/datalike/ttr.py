@@ -58,7 +58,9 @@ class DataFileTtr(DataFile, TtrFile):
 @traced
 @logged
 class SynDataFileTtr(DataFileTtr, SynDataFile):
-  pass
+  def __init__(self, proj, path, **kwargs):
+    suffix = 'Observed-Time'
+    super().__init__(suffix, proj, path, **kwargs)
   
 
 # -------------------------------------------------------------------------------
@@ -67,7 +69,9 @@ class SynDataFileTtr(DataFileTtr, SynDataFile):
 @traced
 @logged
 class ObsDataFileTtr(DataFileTtr, ObsDataFile):
-  pass
+  def __init__(self, proj, path, **kwargs):
+    suffix = 'Observed-Time'
+    super().__init__(suffix, proj, path, **kwargs)
 
 
 # -------------------------------------------------------------------------------
