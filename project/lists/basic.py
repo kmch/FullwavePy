@@ -141,7 +141,7 @@ class ShotFileList(ProjFileList):
     try:
       sids_all = self.proj.inp.s.read(dx=1).keys() # dx IS DUMMY HERE
     except FileNotFoundError as err:
-      self.__log.warn('Returning [] due to: ' + str(err))
+      self.__log.warn('Returning [] due to FileNotFoundError: ' + str(err)) #FIXME: WHY DOESN'T err CONTAIN FileNotFoundError
       return []
     
     # .get IS A dict's METHOD

@@ -71,6 +71,7 @@ class Arr(np.ndarray):
         type(source) == Arr3d or
         type(source) == WigglyData or
         type(source) == Surf or
+        type(source) == SurfFunc or
         type(source) == np.memmap):
       A = source    
 
@@ -364,9 +365,6 @@ class WigglyData(Arr3d):
 @logged
 class Surf(Arr3d):
   pass
-  #def plot(self, **kwargs):
-    #self.array = self.read(**kwargs)
-    #shape = self.array.shape
 
 
 # -------------------------------------------------------------------------------
@@ -379,7 +377,12 @@ class SurfFunc(Surf):
   Surface of the form z = z(x,y).
   
   """
-  pass
+  def plot(self, **kwargs):
+    kwargs['cmap'] = kw('cmap', [], kwargs)
+    self.plot_slice(slice_at='z', **kwargs)
+    #self.array = self.read(**kwargs)
+    #shape = self.array.shape
+    #self.array = 
 
 
 # -------------------------------------------------------------------------------

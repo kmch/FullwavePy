@@ -10,6 +10,9 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 
 
+#class box
+
+
 # ------------------------------------------------------------------------------
 
 

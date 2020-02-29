@@ -91,7 +91,18 @@ class SignatureFileTtr(DataFileTtr):
     super().__init__(suffix, proj, path, **kwargs)
 
   # ----------------------------------------------------------------------------- 
-
+  
+  def read(self, **kwargs):
+    try:
+      self.array = super().read(**kwargs)
+    except FileNotFoundError as err: #FIXME? MOVE TO A MORE GENERAL CLASS
+      self.__log.warn('%s not found. Now looking for a txt version...' % err)
+      fname = self.fname
+      self.fname = strip(fname) + '.txt'
+      self.array = super().read(**kwargs)
+      self.fname = fname
+    return self.array
+      
 
 # -------------------------------------------------------------------------------
 

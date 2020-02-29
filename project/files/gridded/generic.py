@@ -48,7 +48,8 @@ class GridFile(ArrayProjFile):
     super().dupl(source, cmd=cmd, **kwargs)
     
     if 'geom' in dir(self.proj):
-      self.resize(*args, **kwargs)
+      #self.resize(*args, **kwargs)
+      self.__log.warn('Resize disabled until debugged')
     else:
       self.__log.warn('proj.geom not yet set.' + self.fname + 
                       ' will not be resized')

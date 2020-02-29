@@ -41,9 +41,9 @@ class SRFile(AsciiProjFile):
   
   # -----------------------------------------------------------------------------
   
-  def read(self, **kwargs):
+  def read(self, extend=False, unit='node', **kwargs):
     """
-    
+    extend: if True, add extra nodes
     """
     #if not hasattr(self, 'd'): #IT'S A TINY FILE SO IT'S SAFER TO READ IT EVERYTIME
     io = self.proj.io
@@ -61,6 +61,19 @@ class SRFile(AsciiProjFile):
     
     else:
       raise ValueError('Unknown io: ' + io)
+    
+    if extend:
+      etop = self.proj.etop
+      elef = self.proj.elef
+      if self.proj.dim == '3d':
+        efro = self.proj.efro
+      else:
+        efro = 0
+      if unit == 'm':
+        etop, elef, efro = [i*self.proj.dx for i in [etop, elef, efro]]
+      for key, val in sr.items():
+        x, y, z = val 
+        sr[key] = [x+elef, y+efro, z+etop]
     
     self.d = sr
     
@@ -114,14 +127,15 @@ class SRFile(AsciiProjFile):
     """
     Add slice later.
     """
-    if fig is None:
-      fig = plt.figure()
-      gs = fig.add_gridspec(2,2)
-      fig.add_subplot(gs[0,0])
-      fig.add_subplot(gs[0,1])
-      fig.add_subplot(gs[1,:])
-    
-    self.plot_3slices(fig, **kwargs)
+    self.plot_slice('y', **kwargs)
+    #if fig is None:
+    #  fig = plt.figure()
+    #  gs = fig.add_gridspec(2,2)
+    #  fig.add_subplot(gs[0,0])
+    #  fig.add_subplot(gs[0,1])
+    #  fig.add_subplot(gs[1,:])
+    #
+    #self.plot_3slices(fig, **kwargs)
     
   # ----------------------------------------------------------------------------- 
   

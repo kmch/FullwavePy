@@ -263,12 +263,6 @@ class BashFile(JobFile, AsciiProjFile):
       path_fullwave={path_fullwave}
       
       make -C {path_make}
-      if [[ $? != 0 ]]; then
-        echo "Error Compiling fsprep modules failed." 2> {err}
-        exit
-      else 
-        echo good
-      fi
       
       echo 'current dir: '
       pwd

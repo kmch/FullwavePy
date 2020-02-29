@@ -9,7 +9,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw
 from fullwavepy.generic.system import exists
-#from.projfiles import BinaryProjFile # FIXME
+from fullwavepy.ioapi.generic import ArrayFile
 
 
 # -------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ from fullwavepy.generic.system import exists
 
 @traced
 @logged
-class VtrFile(object):
+class VtrFile(ArrayFile):
   """
   
   """
@@ -179,16 +179,21 @@ def read_vtr(fname, **kwargs):
 
 @traced
 @logged
-class TtrFile(object):
+class TtrFile(ArrayFile):
   """
   
   """
   def _get_sr_coords(self, **kwargs):
     raise NotImplementedError('It must be overwritten by a child class.')
     
-
+  def plot(self, **kwargs):
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    super().plot(**kwargs)
+  
 # -------------------------------------------------------------------------------
 
+
+#save_ttr
 
 @traced
 @logged

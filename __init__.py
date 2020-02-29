@@ -21,7 +21,7 @@ from fullwavepy.generic.parse import strip, exten
 from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array, WigglyData, SurfFunc, Surf, SurfParam
 
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
-from fullwavepy.ioapi.fw3d import read_vtr, save_vtr
+from fullwavepy.ioapi.fw3d import TtrFile, VtrFile, read_vtr, save_vtr
 from fullwavepy.ioapi.segy import SgyFile
 
 from fullwavepy.plot.generic import plot, compare, new_figure

@@ -125,10 +125,10 @@ def plot_wiggl(image, **kwargs): #NOTE
     #print(trace)
     trace += i * gap
     #plt.plot(trace)
-    #zero_axis = np.ones(len(t)) * i * gap
+    zero_axis = np.ones(len(t)) * i * gap
     plot_1d(lines=[trace], **kwargs)
-    plot_1d(t, zero_axis, trace, orient='verti',
-            c1='k', c2='w', c_line='k', lw=.1, **kwargs)
+    #plot_1d(t, zero_axis, trace, orient='verti',
+            #c1='k', c2='w', c_line='k', lw=.1, **kwargs)
     
     #plt.plot(trace, c='k')
   #plt.gca().invert_yaxis() # DISABLED SINCE IT IS FLIPPED BY ANOTHER FUNCTION

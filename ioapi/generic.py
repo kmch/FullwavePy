@@ -175,58 +175,6 @@ class ArrayFile(File):
 # -------------------------------------------------------------------------------
 
 
-@timer
-@traced
-@logged
-def read_arrays(*args, **kwargs): #FIXME: DEL
-  """
-  Read data either from arrays
-  or files. Both types can appear
-  in *args.
-  
-  Parameters
-  ----------
-  *args : see below 
-    List of string/arrays.
-    If string, it is assumed to 
-    stand for a file name (incl.
-    the path if file is outside './'),
-    otherwise it must be an array.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  arrays : list
-    List of read arrays.
-  
-  Notes
-  -----
-  You can mix files and arrays defined ad hoc
-  in the notebook which may come in handy.
-  
-  """
-  from fullwavepy.generic.array import slice_array, modify_array
-  
-  arrays = []
-  for arg in args:
-    if isinstance(arg, str):
-      A = read_any(arg, **kwargs)
-    elif type(arg) == type(np.array([])) or type(arg) == np.memmap:
-      A = arg
-    else:
-      raise TypeError('Arguments need to be either ' + 
-                      'file-names or arrays or np.memmap.')
-      
-    A = slice_array(A, **kwargs)  
-    A = modify_array(A, **kwargs)
-    read_arrays._log.debug('Min of the array after modifs: ' + str(np.min(A)))
-    read_arrays._log.debug('Max of the array after modifs: ' + str(np.max(A)))
-    arrays.append(A)
-  return arrays
-
-
-# -------------------------------------------------------------------------------
 
 
 @traced
@@ -293,6 +241,10 @@ def read_any_format(fname, **kwargs):
     A = read_ttr(fname, **kwargs)    
   elif ext == 'sgy':
     A = read_sgy(fname, **kwargs)
+  elif ext == 'txt':
+    c = read_txt(fname, **kwargs)
+    A = np.zeros((1,1,len(c)))
+    A[0,0,:] = [float(i[0]) for i in c]    
   else:
     raise ValueError('Unknown extension: ' + ext)
   
@@ -469,3 +421,67 @@ def save_txt(fname, lines, **kwargs):
 # -------------------------------------------------------------------------------
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@timer
+@traced
+@logged
+def read_arrays(*args, **kwargs): #FIXME: DEL
+  """
+  Read data either from arrays
+  or files. Both types can appear
+  in *args.
+  
+  Parameters
+  ----------
+  *args : see below 
+    List of string/arrays.
+    If string, it is assumed to 
+    stand for a file name (incl.
+    the path if file is outside './'),
+    otherwise it must be an array.
+  **kwargs : keyword arguments (optional)
+    Current capabilities:
+  
+  Returns
+  -------
+  arrays : list
+    List of read arrays.
+  
+  Notes
+  -----
+  You can mix files and arrays defined ad hoc
+  in the notebook which may come in handy.
+  
+  """
+  from fullwavepy.generic.array import slice_array, modify_array
+  
+  arrays = []
+  for arg in args:
+    if isinstance(arg, str):
+      A = read_any(arg, **kwargs)
+    elif type(arg) == type(np.array([])) or type(arg) == np.memmap:
+      A = arg
+    else:
+      raise TypeError('Arguments need to be either ' + 
+                      'file-names or arrays or np.memmap.')
+      
+    A = slice_array(A, **kwargs)  
+    A = modify_array(A, **kwargs)
+    read_arrays._log.debug('Min of the array after modifs: ' + str(np.min(A)))
+    read_arrays._log.debug('Max of the array after modifs: ' + str(np.max(A)))
+    arrays.append(A)
+  return arrays
