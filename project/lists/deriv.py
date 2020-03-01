@@ -100,7 +100,8 @@ class SlaveFileList(SchedFileList, ShotFileList):
           plt.figure()
         except FileNotFoundError as err:
           self.__log.warn(err)
-  
+
+
 # -------------------------------------------------------------------------------
 
 

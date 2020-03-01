@@ -285,7 +285,7 @@ class ProjInput(ProjThroughput):
     ampls = dft(rs)
     ampls = list(ampls[ :len(freqs)])
     
-    print('sdhkf')
+    print('terminating...')
     return
     
     plt.plot(freqs, ampls)

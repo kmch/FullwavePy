@@ -186,11 +186,14 @@ def suwind(fname, nfname, window, **kwargs):
       vmin = values['min'] 
       vmax = values['max']
       cmd += ' | suwind key={} min={} max={}'.format(key, vmin, vmax)
-    else:
+    elif isinstance(values, list):
       cmd += ' | suwind key={} max=-10000000 accept='.format(key)
       for val in values:
         cmd += '{},'.format(val)
       cmd = cmd[ :-1] # TRIM THE LAST COMMA
+    else:
+      raise TypeError(key+" needs to be either a dict with 'min' and 'max' " +
+                      "or a list of values")
   cmd += ' | segyhdrs | segywrite tape={}'.format(nfname)
   o, e = bash(cmd) 
   

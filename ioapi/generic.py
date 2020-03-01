@@ -175,8 +175,6 @@ class ArrayFile(File):
 # -------------------------------------------------------------------------------
 
 
-
-
 @traced
 @logged
 def read_any(fname, overwrite_mmp=False, **kwargs):
