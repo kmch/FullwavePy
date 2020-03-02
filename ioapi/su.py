@@ -200,6 +200,36 @@ def suwind(fname, nfname, window, **kwargs):
 
 # -------------------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @traced
 @logged
 def suwind_OLD(fname, nfname, key, vmin, vmax, **kwargs):
@@ -227,21 +257,6 @@ def suwind_OLD(fname, nfname, key, vmin, vmax, **kwargs):
   #print(o, e)
 
 # -------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @timer

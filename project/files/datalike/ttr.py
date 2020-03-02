@@ -252,11 +252,11 @@ class DumpCompareFile(DataFileTtr):
       self.read(**kwargs)
       self.read_header(**kwargs)
       
-      if not hasattr(self, 'fbreaks'):
-        self.fbreaks = first_breaks(self.syn, **kwargs)
+      if not hasattr(self, 'fb'):
+        self.fb = first_breaks(self.syn, **kwargs)
       
-      ph_syn = extract_phase(self.syn, self.fbreaks, self.proj.dt, freq, **kwargs)
-      ph_obs = extract_phase(self.obs, self.fbreaks, self.proj.dt, freq, **kwargs)
+      ph_syn = extract_phase(self.syn, self.fb, self.proj.dt, freq, **kwargs)
+      ph_obs = extract_phase(self.obs, self.fb, self.proj.dt, freq, **kwargs)
       ph_dif = ph_syn - ph_obs
       
       ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])

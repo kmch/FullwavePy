@@ -29,6 +29,7 @@ class Arr(np.ndarray):
   
   def __new__(cls, source, **kwargs):
     """
+    Init by reading from source.
     
     Notes
     -----

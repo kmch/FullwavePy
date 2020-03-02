@@ -11,6 +11,8 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.array import Arr3d 
 
+# TRY Devito EVENTUALLY
+
 
 @traced
 @logged

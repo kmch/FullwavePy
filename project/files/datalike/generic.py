@@ -107,6 +107,12 @@ class SynDataFile(DataFile):
   Synthetic data.
   
   """
+  def __init__(self, *args, **kwargs):
+    self.phase = {}
+    super().__init__(*args, **kwargs) 
+  
+  # -----------------------------------------------------------------------------
+  
   def get_fbreaks(self, fraction=0.01, overwrite=True, **kwargs):
     """
     
@@ -134,6 +140,56 @@ class SynDataFile(DataFile):
 
   # -----------------------------------------------------------------------------
   
+  def _get_phase(self, freq, overwrite=True, **kwargs):
+    """
+    
+    Notes
+    -----
+    First breaks must be extracted from START-MOD
+    synthetic data in all cases!
+    Noise in observed.
+
+    # I CHANGED BACK AFTER JO SAID THE ORIGINAL VERSION WAS OK
+    # WE TAKE SYNTHETICS FROM THE START MOD FOR ALL ITERATIONS!
+    #Bsyn, Bobs, Bdif = self.proj.out.dumpcomp.it[1][self.sid].read(**kwargs)
+    #picks = first_breaks(Bsyn, **kwargs)
+    
+    Actually we should assume (ntraces, 1, nsamps) shape...
+    
+    """
+    if (not freq in self.phase) or overwrite:
+      from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
+      from fullwavepy.generic.math import rms    
+      self.__log.info('Getting phase info from ' + self.fname)
+      
+      self.read(**kwargs)
+      self.read_header(**kwargs)
+      
+      if not hasattr(self, 'fb'):
+        self.fb = first_breaks(self.array, **kwargs)
+      
+      ph_syn = np.ravel(extract_phase(self.array, self.fb, self.proj.dt, freq, **kwargs))
+      #ph_obs = extract_phase(self.obs, self.fb, self.proj.dt, freq, **kwargs)
+      #ph_dif = ph_syn - ph_obs
+      
+      #ph_dif = np.array([[wrap_phase(i) for i in j] for j in ph_dif])
+      #ph_syn, ph_obs, ph_dif = [np.ravel(i) for i in [ph_syn, ph_obs, ph_dif]]
+      
+      #self.rms_value = rms(ph_dif)
+      #self.__log.info('RMS of wrapped phase-differences: ' + 
+                      #str(self.rms_value))
+      
+      self.head['phase syn (%s Hz)' % freq] = ph_syn
+      #self.head['phase obs (%s Hz)' % freq] = ph_obs
+      #self.head['phase dif (%s Hz)' % freq] = ph_dif
+      
+      self.phase[freq] = {'syn': ph_syn,}
+                          #'obs': ph_obs,
+                          #'dif': ph_dif}
+    return self.phase[freq]
+
+  # -----------------------------------------------------------------------------  
+
 
 # -------------------------------------------------------------------------------
 
