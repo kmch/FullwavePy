@@ -411,6 +411,12 @@ class SurfParam(Surf):
 # -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class Metadata(object):
+  def plotly(self, **kwargs):
+    pass
+
 
 
 

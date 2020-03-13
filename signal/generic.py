@@ -27,9 +27,6 @@ def xcorr(data, target, **kwargs):
   from scipy.signal import correlate
 
   shift = np.argmax(correlate(data, target)) - len(target) #+ 10
-  
-  #print('shiift', shift)
-  
   datan = np.zeros(len(data))# - shift)
     
   if shift > 0:

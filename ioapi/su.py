@@ -186,7 +186,7 @@ def suwind(fname, nfname, window, **kwargs):
       vmin = values['min'] 
       vmax = values['max']
       cmd += ' | suwind key={} min={} max={}'.format(key, vmin, vmax)
-    elif isinstance(values, list):
+    elif isinstance(values, list) or isinstance(values, tuple):
       cmd += ' | suwind key={} max=-10000000 accept='.format(key)
       for val in values:
         cmd += '{},'.format(val)

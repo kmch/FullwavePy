@@ -87,7 +87,7 @@ class PbsFileCx1(PbsFile):
       ncpus_min = 32
       ncpus_max = 32    
       mem_min = 1
-      mem_max = 62 # OR 124
+      mem_max = kw('mem_max', 62, kwargs) # OR 124
     
     elif q == 'single':
       select_min = 1
