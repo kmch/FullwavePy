@@ -57,7 +57,7 @@ class Proj(object):
     from fullwavepy.project.files.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.runfiles import Runfile
     from fullwavepy.project.files.gridded.surfaces import TopographyFile
-    from fullwavepy.project.aux import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
+    from fullwavepy.project.auxil import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
                                         ProjEnv, ProjSegyMapp, ProjBox)    
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
