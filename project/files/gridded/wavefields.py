@@ -31,7 +31,7 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
   # -----------------------------------------------------------------------------  
   
   @timer
-  def __init__(self, proj, file_id, ts, sid, it, tid, **kwargs):
+  def __init__(self, proj, file_id, ts, sid, it, **kwargs):
     """
     
     Notes
@@ -55,9 +55,9 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
                  '-' + str(ts).rjust(6,'0') + # YES, 6 DIGITS
                  '-csref' + str(sid).rjust(5,'0') + 
                  '-iter' + str(it).rjust(5,'0')  + 
-                 '-taskid?????.vtr') #+ str(tid).rjust(5,'0'))
+                 '-taskid' + str('').rjust(5,'?'))
     
-    pattern = proj.name + '-' + suffix
+    pattern = proj.name + '-' + suffix + '.vtr'
     fnames = get_files(path, pattern, **kwargs)
     if len(fnames) > 1:
      raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
@@ -88,9 +88,9 @@ class ForwardWavefieldFile(WavefieldFile):
   Forward wavefield.
   
   """
-  def __init__(self, proj, ts, sid, it, tid, **kwargs):
+  def __init__(self, proj, ts, sid, it, **kwargs):
     file_id = 'fw'
-    super().__init__(proj, file_id, ts, sid, it, tid, **kwargs)
+    super().__init__(proj, file_id, ts, sid, it, **kwargs)
 
 
 # -------------------------------------------------------------------------------

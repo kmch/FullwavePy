@@ -197,8 +197,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
           self.it[it][sid] = {}
           for ts in tsteps:
             ts = int(ts)
-            tid = '00001' #'?????'
-            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, tid, **kwargs)
+            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
     else:
       self.__log.warn(self.init_err)
   

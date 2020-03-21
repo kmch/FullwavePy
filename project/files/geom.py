@@ -238,10 +238,11 @@ class ReceiversFile(SRFile):
   # -----------------------------------------------------------------------------  
 
   def plot(self, **kwargs):
-    kwargs['annotate'] = False
-    kwargs['s'] = 1e-2
-    kwargs['c'] = 'gray'
-    kwargs['alpha'] = .0001
+    kwargs['annotate'] = kw('annotate', False, kwargs)
+    # FIXME: THESE DON'T WORK (INSTEAD markerfacecolor ETC.)
+    kwargs['s'] = kw('s', 1e-2, kwargs)
+    kwargs['c'] = kw('c', 'gray', kwargs)
+    kwargs['alpha'] = kw('alpha', 1, kwargs)
     super().plot(**kwargs)
   
   # -----------------------------------------------------------------------------  
