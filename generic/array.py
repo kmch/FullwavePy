@@ -13,7 +13,6 @@ from fullwavepy.generic.parse import kw
 from fullwavepy.plot.generic import new_figure
 from fullwavepy.plot.twod import plot_image
 
-# test VSCode 
 
 # -------------------------------------------------------------------------------
 
