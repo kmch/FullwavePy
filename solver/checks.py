@@ -182,3 +182,66 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
 
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged
+def check_propag_dists(dims, dx, t, v_min, v_max, f_min, f_max):
+  """
+  Calculate propagation distance across 
+  the model covered by the fastest waves.
+  
+  Parameters
+  ----------
+  dims : tuple
+  dx : float 
+    Size of the spatial grid cell [m].
+  t : s
+
+  f_min : float
+    Min. frequency present in the source function.
+  f_max : float
+    Max. frequency present in the source function.
+  v_min : float
+    Min. vel. of the true model.
+  v_max : float
+    Max. vel. of the true model.   
+  
+  Returns
+  -------
+  dist : float 
+    Distance in metres.
+    
+  Notes
+  -----
+  
+  """    
+  nx1, nx2, nx3 = dims
+
+  assert f_min > 0 and f_max > 0
+  shortest_wavelength = v_min / f_max
+  longest_wavelength = v_max / f_min
+  
+  d1 = v_max * t # dist, m
+  d2 = v_max * t / shortest_wavelength # dist_per_shortest_wavelength 
+  d3 = v_max * t / longest_wavelength # dist_per_longest_wavelength
+  d4 = v_min * t / dx # dist_in_nodes
+  d5 = d4 / nx1 # dist_as_fraction_nx1
+  d6 = d4 / nx2 # dist_as_fraction_nx2
+  d7 = d4 / nx3 # dist_as_fraction_nx3
+  
+  text = ''
+  text += 'Assuming t = ' + str(t) + ' s, the fastest wave will cover: \n'
+  text += str(d1) + ' m \n'
+  text += str(d2) + ' shortest wavelengths \n'
+  text += str(d3) + ' longest wavelengths \n'
+  text += str(d4) + ' nodes \n'
+  text += str(d5) + ' model-sizes in X direction \n'
+  text += str(d6) + ' model-sizes in Y direction \n'    
+  text += str(d7) + ' model-sizes in Z direction \n'    
+
+  print(text)
+
+
+# -------------------------------------------------------------------------------
+
+

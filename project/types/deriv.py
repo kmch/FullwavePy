@@ -17,7 +17,13 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.types.basic import ProjSyn, ProjInv
 
 
+#@traced
+#@logged
+#class ProjSynAIT(ProjSyn)
+
+
 # -------------------------------------------------------------------------------
+
 
 @traced
 @logged

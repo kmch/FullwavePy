@@ -253,63 +253,52 @@ class ProjInput(ProjThroughput):
 
   # -----------------------------------------------------------------------------   
   
-  def check(self, **kwargs):
-    self.check_numerics(**kwargs)
-    print('\n')
-    self.check_by_fullwave(**kwargs)
+  def check(self, by='both', **kwargs):
+    if by == 'python' or by == 'both':
+      self.check_by_python(**kwargs)
+    if by == 'fullwave' or by == 'both':
+      self.check_by_fullwave(**kwargs)
 
   # ----------------------------------------------------------------------------- 
   
-  def check_numerics(self, **kwargs):
+  def check_stability(self, **kwargs):
+    from fullwavepy.solver.checks import check_stability
+    
+    assert self.proj.equation == 'acoustic' # DOES ProjSynAIT MAKE SENSE?
+    vp = self.proj.inp.truevp.read()
+    
+    check_stability(self.proj.dx, 
+                    self.proj.dt, 
+                    np.max(vp),
+                    self.proj.kernel) 
+  
+  # -----------------------------------------------------------------------------
+  
+  def check_accuracy(self, **kwargs):
+    from fullwavepy.solver.checks import check_accuracy
+    from fullwavepy.signal.wavelet import find_passband
+    
+    # READ SOURCE'S AMP. SPECTRUM
+    self.__log.debug('Assuming there is only 1 wavelet, RawSign.')
+    rsg = self.rsg.read()
+    f_min, f_max = find_passband(rsg, self.proj.dt)
+    
+    # READ THE MODEL
+    vp = self.tvp.read()
+    
+    check_accuracy(self.proj.dx,
+                   np.min(vp), 
+                   f_max, 
+                   self.proj.kernel)
+
+  # -----------------------------------------------------------------------------
+  
+  def check_by_python(self, **kwargs):
     """
     """
-    from fullwavepy.generic.math import dft, dft_freqs
-    from fullwavepy.solver.checks import check_stability, check_accuracy
-    
-    print('Python is checking the input...')
-    
-    dx = self.proj.dx
-    dt = self.proj.dt
-    kernel = self.proj.kernel
-    tvp = self.proj.inp.truevp.read(**kwargs)
-    tvp.info()
-     
-     
-    check_stability(dx, dt, np.max(tvp), kernel) 
-    
-    f = self.proj.inp.rawsign
-    self.__log.info('Reading ' + f.fname + '...')
-    rs = f.read(scoord=None)
-
-    freqs = dft_freqs(len(rs), which='positive', dt=dt)
-    ampls = dft(rs)
-    ampls = list(ampls[ :len(freqs)])
-    
-    print('terminating...')
-    return
-    
-    plt.plot(freqs, ampls)
-    plt.xlim(0,50)
-    plt.grid()
-    
-    print('maaaax', np.max(ampls))
-    fpeak = freqs[ampls.index(np.max(ampls))]
-    self.__log.info('Peak freq %s' % fpeak)
-    
-    epsi = 5 # THIS MUST BE TUNED... # FIXME
-    halfpeak_freqs = [i for i, x in enumerate(ampls) if abs(x - 0.5*np.max(ampls)) < epsi]
-    
-    if len(halfpeak_freqs) == 0:
-      self.__log.warn('fmax=fpeak???')
-      fmax = fpeak
-    else:
-      halfpeak_freqs = [freqs[i] for i in halfpeak_freqs]
-      print('halfpeak_freqs', halfpeak_freqs)
-      fmax = halfpeak_freqs[-1]
-      print('fmax', fmax)
-    
-
-    check_accuracy(dx, vmin, fmax, kernel)
+    self.__log.info('Python is checking the input...')
+    self.check_stability(**kwargs)
+    self.check_accuracy(**kwargs)
     
   # ----------------------------------------------------------------------------- 
 
@@ -320,11 +309,24 @@ class ProjInput(ProjThroughput):
     
     """    
     exe = self.proj.exe['fullwave_local']
-    print('Fullwave3D executable %s is checking the input...' % exe)
+    print('%s is checking the input...' % exe)
     path = self.path
     o, e = bash(exe+ ' -checkinput ' + self.proj.name, path=path)
-    print(o, e)
-
+    
+    mssg = 'Checked input & dumped canonical runfile'
+    err = False
+    if mssg in o:
+      print(mssg)
+    else:
+      err = True
+    
+    print('Accuracy criterion is not checked by Fullwave.')
+    print('Set log_lvl<=30 to see the full log.')
+    self.__log.warn(o)
+    self.__log.warn(e)
+    if err:
+      raise OSError('Error while checking the input by Fullwave')
+    
   # ----------------------------------------------------------------------------- 
 
 
