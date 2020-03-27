@@ -97,7 +97,7 @@ def check_stability(dx, dt, v_max, kernel, **kwargs):
     raise NotImplementedError('Unknown kernel: %s' % kernel)
     
   if C < C_max:
-    print('All good! Courant number C=%s < Cmax=%s' % (C, C_max))
+    check_stability._log.info('\n\nAll good! Courant number C=%s < Cmax=%s' % (C, C_max))
   else:
     raise ValueError('The scheme is unstable for the current discretization\n' + 
                      '(Courant number C=%s >= Cmax=%s' % (C, C_max) + ')\n' + 
@@ -140,10 +140,9 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
   check_accuracy._log.debug('dx, v_min, f_max, kernel: %s, %s, %s, %s' % (dx, v_min, f_max, kernel))
   shortest_wavelength = v_min / f_max
   nodes_per_shortest_wavelength = shortest_wavelength / dx
-  check_accuracy._log.info('Shortest wavelength for this model: %s m (%s nodes)' % (shortest_wavelength, 
-                                                                                    nodes_per_shortest_wavelength))
-  check_accuracy._log.info('No. of nodes per (shortest) wavelength: %s' % nodes_per_shortest_wavelength)  
-  
+  text  = '\n\n'
+  text += str('Shortest wavelength for this model: %s m (%s nodes)' % ("{0:.1f}".format(shortest_wavelength), 
+                                                                                    "{0:.1f}".format(nodes_per_shortest_wavelength)))
   # CHOOSE MIN NODES PER WAVELENGTH FOR A GIVEN SCHEME
   if kernel == 'high':
     min_nodes_per_wavelen = 3.6
@@ -155,7 +154,7 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
   f_allowed = v_min / (min_nodes_per_wavelen * dx)
   
   if f_max < f_allowed:
-    check_stability._log.info('All good! f_max=%s < f_allowed=%s' % (f_max, f_allowed))
+    text += str('\nAll good! f_max=%s < f_allowed=%s' % (f_max, "{0:.1f}".format(f_allowed)))
   else:
     good_f_max = v_min / (min_nodes_per_wavelen * dx)
     raise ValueError('The scheme is not accurate for the current discretization\n' + 
@@ -163,21 +162,11 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
                      'To make it accurate, do one of the following: \n' +
                      '1. Decrease f_max below: ' + str(good_f_max) + ' Hz\n' +
                      '2. Decrease grid cell below: ' + 
-                     str(v_min / (min_nodes_per_wavelen * f_max)) + ' m\n' +
+                     "{0:.1f}".format(v_min / (min_nodes_per_wavelen * f_max)) + ' m\n' +
                      '3. Increase v_min of the model above: ' + 
-                     str(min_nodes_per_wavelen * f_max * dx) + ' m/s\n')   
-    
-    #eprint(this_func + '  (Decrease f_peak below: ' + str(nf_max / ricker_fmax2fpeak_ratio) + ' Hz)\n')
-    
-    #eprint(this_func + 'f_allowed = ' + str(f_allowed) + ', f_max = ' + str(f_max) + '\n')
-    #eprint(this_func + 'Error! Inaccurate for ' + kernel + ' kernel\n')
-    #eprint(this_func + 'Possible solutions which will work independently: \n')
-    #nf_max = v_min / (min_nodes_per_wavelen * dx)
-    #eprint(this_func + '1. Decrease f_max below: ' + str(nf_max) + ' Hz\n')
-    #eprint(this_func + '  (Decrease f_peak below: ' + str(nf_max / ricker_fmax2fpeak_ratio) + ' Hz)\n')
-    #eprint(this_func + '2. Decrease grid cell below: ' + str(v_min / (min_nodes_per_wavelen * f_max)) + ' m\n')
-    #eprint(this_func + '3. Increase v_min of the model above: ' + str(min_nodes_per_wavelen * f_max * dx) + ' m/s\n')
-    #quit()
+                     "{0:.1f}".format(min_nodes_per_wavelen * f_max * dx) + ' m/s\n')   
+   
+  check_stability._log.info(text)
   
 
 # -------------------------------------------------------------------------------
@@ -229,17 +218,17 @@ def check_propag_dists(dims, dx, t, v_min, v_max, f_min, f_max):
   d6 = d4 / nx2 # dist_as_fraction_nx2
   d7 = d4 / nx3 # dist_as_fraction_nx3
   
-  text = ''
-  text += 'Assuming t = ' + str(t) + ' s, the fastest wave will cover: \n'
-  text += str(d1) + ' m \n'
-  text += str(d2) + ' shortest wavelengths \n'
-  text += str(d3) + ' longest wavelengths \n'
-  text += str(d4) + ' nodes \n'
-  text += str(d5) + ' model-sizes in X direction \n'
-  text += str(d6) + ' model-sizes in Y direction \n'    
-  text += str(d7) + ' model-sizes in Z direction \n'    
-
-  print(text)
+  text = '\n\n'
+  text += 'Assuming t = ' + str(t) + ' s, the fastest wave will cover '
+  text += "{0:.1f}".format(d1) + ' m, which corresponds to: \n'
+  text += "{0:6.1f}".format(d2) + ' shortest wavelengths \n'
+  text += "{0:6.1f}".format(d3) + ' longest wavelengths \n'
+  text += "{0:6.1f}".format(d4) + ' nodes \n'
+  text += "{0:6.1f}".format(d5) + ' model-sizes in X direction \n'
+  text += "{0:6.1f}".format(d6) + ' model-sizes in Y direction \n'    
+  text += "{0:6.1f}".format(d7) + ' model-sizes in Z direction \n'    
+#.ljust(7, ' ')
+  check_propag_dists._log.info(text)
 
 
 # -------------------------------------------------------------------------------

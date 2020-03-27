@@ -190,7 +190,7 @@ class ProjInput(ProjThroughput):
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
-    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile
+    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, GhostDataFileBin, GhostDataFileTxt
     from fullwavepy.project.files.geom import SourcesFile, ReceiversFile
     from fullwavepy.project.files.misc import RawSeisTxtFile, JobInfoFile
     from fullwavepy.project.files.runfiles import SegyPrepFile, Runfile, Skeleton
@@ -220,6 +220,10 @@ class ProjInput(ProjThroughput):
     
     self.fs = FsFile(self.proj, self.path, **kwargs)
     self.fse = ExtendedFsFile(self.proj, self.path, **kwargs)
+    self.ghostbin = GhostDataFileBin(self.proj, self.path, **kwargs)
+    self.ghb = self.ghostbin
+    self.ghosttxt = GhostDataFileTxt(self.proj, self.path, **kwargs)
+    self.ght = self.ghosttxt
     
     self.s = SourcesFile(self.proj, self.path, **kwargs)
     self.r = ReceiversFile(self.proj, self.path, **kwargs)
@@ -293,12 +297,32 @@ class ProjInput(ProjThroughput):
 
   # -----------------------------------------------------------------------------
   
+  def check_propag_dists(self, **kwargs): 
+    from fullwavepy.solver.checks import check_propag_dists
+    from fullwavepy.signal.wavelet import find_passband
+    
+    # READ SOURCE'S AMP. SPECTRUM
+    self.__log.debug('Assuming there is only 1 wavelet, RawSign.')
+    rsg = self.rsg.read()
+    f_min, f_max = find_passband(rsg, self.proj.dt)    
+  
+    # READ THE MODEL
+    vp = self.tvp.read()  
+    
+    check_propag_dists(self.proj.dims, 
+                       self.proj.dx, 
+                       self.proj.ttime, 
+                       np.min(vp), np.max(vp), f_min, f_max)
+    
+  # -----------------------------------------------------------------------------
+  
   def check_by_python(self, **kwargs):
     """
     """
-    self.__log.info('Python is checking the input...')
+    self.__log.info('\nPython is checking the input...')
     self.check_stability(**kwargs)
     self.check_accuracy(**kwargs)
+    self.check_propag_dists(**kwargs)
     
   # ----------------------------------------------------------------------------- 
 
@@ -309,21 +333,26 @@ class ProjInput(ProjThroughput):
     
     """    
     exe = self.proj.exe['fullwave_local']
-    print('%s is checking the input...' % exe)
+    text = '\n\n'
+    text += ('Fullwave is checking the input...')
+    text += str('\n(exe = %s)' % exe)
+    self.__log.info(text)
+    
     path = self.path
     o, e = bash(exe+ ' -checkinput ' + self.proj.name, path=path)
     
     mssg = 'Checked input & dumped canonical runfile'
     err = False
     if mssg in o:
-      print(mssg)
+      self.__log.info(mssg)
     else:
       err = True
     
-    print('Accuracy criterion is not checked by Fullwave.')
-    print('Set log_lvl<=30 to see the full log.')
-    self.__log.warn(o)
-    self.__log.warn(e)
+    self.__log.warn('Note, accuracy criterion is not checked by Fullwave.')
+    self.__log.warn('Make sure log_lvl<=20 in order to see the full log.')
+    self.__log.info(o)
+    if len(e) > 0:
+      self.__log.info(e)
     if err:
       raise OSError('Error while checking the input by Fullwave')
     

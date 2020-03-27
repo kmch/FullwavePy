@@ -37,7 +37,7 @@ class Arr(np.ndarray):
     Input array is an already formed ndarray instance
 
     """
-    source = cls.read(source, **kwargs)
+    source = cls._read(source, **kwargs)
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
@@ -62,7 +62,7 @@ class Arr(np.ndarray):
   
   # -----------------------------------------------------------------------------  
   
-  def read(source, **kwargs):
+  def _read(source, **kwargs):
     """
     """
     if (type(source) == type(np.array([])) or 
