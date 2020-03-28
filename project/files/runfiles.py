@@ -175,7 +175,6 @@ class SegyPrepFile(ParameterFile):
     segyprep['io'] = kw('io', proj.io, kwargs)  
     segyprep['reciprocity'] = kw('reciprocity', 0, kwargs)
     self.__log.warn('Reciprocity: ' + str(bool(segyprep['reciprocity'])))
-    segyprep['geometry'] = kw('geometry', 'sgy', kwargs)
     segyprep['fixed array'] = kw('fixed array', 'yes', kwargs)
     segyprep['unique'] = kw('unique', 'yes', kwargs)
     
@@ -196,52 +195,13 @@ class SegyPrepFile(ParameterFile):
     segyprep['dx'] = dx
     segyprep['ttime'] = ttime_ms # YES, _ms!
     segyprep['dtms'] = dt_ms
-
-    if segyprep['geometry'] == 'sgy':
-      segyprep['geometry'] = 'segy'
-      segyprep['x origin'] = proj.box[0]
-      segyprep['x shift'] = 0
-      segyprep['y origin'] = proj.box[2]
-      segyprep['y shift'] = 0
-      segyprep['z type'] = 'elevation' 
     
+    # GEOMETRY
+    segyprep['geometry'] = kw('geometry', 'sgy', kwargs)
+    if segyprep['geometry'] == 'sgy':
+      segyprep = self.set_geom_segy(segyprep, **kwargs)
     elif segyprep['geometry'] == 'regular':
-      geometry_in_nodes = kw('geometry_in_nodes', True, kwargs)
-      
-      if geometry_in_nodes:
-        self.__log.warning('geometry_in_nodes=True => ' + 
-                           'expecting regular geometry specified in nodes')
-        a = -1
-        b = self.proj.dx
-      else:
-        self.__log.info('Expecting regular geometry specified in metres')
-        a = 0
-        b = 1
-        
-      segyprep['souz']  = (kwargs['souz']  + a) * b
-      segyprep['recz']  = (kwargs['recz']  + a) * b        
-      segyprep['soux0'] = (kwargs['soux0'] + a) * b
-      segyprep['soudx'] = (kwargs['soudx'] + a) * b
-      segyprep['sounx'] = kwargs['sounx']
-      segyprep['recx0'] = (kwargs['recx0'] + a) * b
-      segyprep['recnx'] = kwargs['recnx']
-      segyprep['recdx'] = (kwargs['recdx'] + a) * b
-      if self.proj.dims[1] > 1:
-        segyprep['souy0'] = (kwargs['souy0'] + a) * b
-        segyprep['soudy'] = (kwargs['soudy'] + a) * b
-        segyprep['souny'] = kwargs['souny']
-        segyprep['recy0'] = (kwargs['recy0'] + a) * b
-        segyprep['recny'] = kwargs['recny']
-        segyprep['recdy'] = (kwargs['recdy'] + a) * b
-      else:
-        segyprep['souy0'] = 0
-        segyprep['soudy'] = 0
-        segyprep['souny'] = 1        
-        segyprep['recy0'] = 0
-        segyprep['recny'] = 0
-        segyprep['recdy'] = 1         
-
-
+      segyprep = self.set_geom_regular(segyprep, **kwargs)
     else:
       raise ValueError('Unknown geometry: ' + str(geometry))
       
@@ -253,7 +213,61 @@ class SegyPrepFile(ParameterFile):
                       "will be generated which will affect e.g. the phasubplots.")
                       
   # -----------------------------------------------------------------------------
+
+  def set_geom_segy(self, segyprep, **kwargs):
+    segyprep['geometry'] = 'segy'
+    segyprep['x origin'] = self.proj.box[0]
+    segyprep['x shift'] = 0
+    segyprep['y origin'] = self.proj.box[2]
+    segyprep['y shift'] = 0
+    segyprep['z type'] = 'elevation' 
+    return segyprep
   
+  # -----------------------------------------------------------------------------  
+  
+  def set_geom_regular(self, segyprep, **kwargs):
+    geometry_in_nodes = kw('geometry_in_nodes', True, kwargs)
+    
+    if geometry_in_nodes:
+      self.__log.warning('geometry_in_nodes=True => ' + 
+                         'expecting regular geometry specified in nodes')
+      a = -1
+      b = self.proj.dx
+      az = 0
+      bz = b
+    else:
+      self.__log.info('Expecting regular geometry specified in metres')
+      a = 0
+      b = 1
+      az = a
+      bz = b
+      
+    segyprep['souz']  = (kwargs['souz']  + az) * bz
+    segyprep['recz']  = (kwargs['recz']  + az) * bz       
+    segyprep['soux0'] = (kwargs['soux0'] + a) * b
+    segyprep['soudx'] = (kwargs['soudx'] + a) * b
+    segyprep['sounx'] = kwargs['sounx']
+    segyprep['recx0'] = (kwargs['recx0'] + a) * b
+    segyprep['recnx'] = kwargs['recnx']
+    segyprep['recdx'] = (kwargs['recdx'] + a) * b
+    if self.proj.dims[1] > 1:
+      segyprep['souy0'] = (kwargs['souy0'] + a) * b
+      segyprep['soudy'] = (kwargs['soudy'] + a) * b
+      segyprep['souny'] = kwargs['souny']
+      segyprep['recy0'] = (kwargs['recy0'] + a) * b
+      segyprep['recny'] = kwargs['recny']
+      segyprep['recdy'] = (kwargs['recdy'] + a) * b
+    else:
+      segyprep['souy0'] = 0
+      segyprep['soudy'] = 0
+      segyprep['souny'] = 1        
+      segyprep['recy0'] = 0
+      segyprep['recny'] = 0
+      segyprep['recdy'] = 1  
+    return segyprep
+    
+  # -----------------------------------------------------------------------------    
+    
   @timer
   def run(self, overwrite=False, **kwargs):
     """

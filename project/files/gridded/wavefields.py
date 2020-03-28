@@ -25,13 +25,11 @@ from fullwavepy.project.files.gridded.models import ModelFileVtr
 @logged
 class WavefieldFile(ExtendedGridFile, ModelFileVtr):
   """
+  Shot-specific wavefield.
   
   """
-  
-  # -----------------------------------------------------------------------------  
-  
   @timer
-  def __init__(self, proj, file_id, ts, sid, it, tid, **kwargs):
+  def __init__(self, proj, file_id, ts, sid, it, **kwargs):
     """
     
     Notes
@@ -55,9 +53,9 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
                  '-' + str(ts).rjust(6,'0') + # YES, 6 DIGITS
                  '-csref' + str(sid).rjust(5,'0') + 
                  '-iter' + str(it).rjust(5,'0')  + 
-                 '-taskid?????.vtr') #+ str(tid).rjust(5,'0'))
+                 '-taskid' + str('').rjust(5,'?'))
     
-    pattern = proj.name + '-' + suffix
+    pattern = proj.name + '-' + suffix + '.vtr'
     fnames = get_files(path, pattern, **kwargs)
     if len(fnames) > 1:
      raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
@@ -68,6 +66,13 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
     
     super().__init__(suffix, proj, path, **kwargs)
   
+  # -----------------------------------------------------------------------------
+  
+  #def _slice_coords(self, **kwargs):
+    #xyz = self.inp.s.read(unit='metres')[self.sid]
+
+  #def _zoom_at_shot(self, **kwargs):
+  
   # -----------------------------------------------------------------------------  
   
   def plot(self, **kwargs):
@@ -76,7 +81,8 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
     super().plot(**kwargs)
 
   # -----------------------------------------------------------------------------
-
+  
+  
 
 # ------------------------------------------------------------------------------- 
 
@@ -88,9 +94,9 @@ class ForwardWavefieldFile(WavefieldFile):
   Forward wavefield.
   
   """
-  def __init__(self, proj, ts, sid, it, tid, **kwargs):
+  def __init__(self, proj, ts, sid, it, **kwargs):
     file_id = 'fw'
-    super().__init__(proj, file_id, ts, sid, it, tid, **kwargs)
+    super().__init__(proj, file_id, ts, sid, it, **kwargs)
 
 
 # -------------------------------------------------------------------------------

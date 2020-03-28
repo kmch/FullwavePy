@@ -63,6 +63,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
+  alpha = kw('alpha', 1, kwargs)
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
@@ -81,7 +82,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   #ax = fig.add_subplot()
   im = ax.imshow(image.T, cmap=cmap, extent=extent, 
-                  vmin=vmin, vmax=vmax)
+                 vmin=vmin, vmax=vmax, alpha=alpha)
   if cbar:
     colorbar(im, ax)
 
