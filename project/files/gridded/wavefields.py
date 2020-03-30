@@ -47,10 +47,15 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
     self.sid = sid
     self.it = it
     
+    if ts.is_integer():
+      ts = str(ts).rjust(6,'0') # YES, 6 DIGITS
+    else:
+      ts = str(ts)
+    
     path = proj.out.path
     
     suffix = str(file_id + 
-                 '-' + str(ts).rjust(6,'0') + # YES, 6 DIGITS
+                 '-' + ts + 
                  '-csref' + str(sid).rjust(5,'0') + 
                  '-iter' + str(it).rjust(5,'0')  + 
                  '-taskid' + str('').rjust(5,'?'))

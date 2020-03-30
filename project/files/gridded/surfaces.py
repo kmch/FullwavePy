@@ -225,13 +225,19 @@ class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
   
   def plot2d(self, **kwargs):
     self.array = self.read(**kwargs)
-    
-    dx = self.proj.dx
-    ex1 = self.proj.box[0] - self.proj.elef * dx
-    ex2 = self.proj.box[1] + self.proj.erig * dx
-    x = np.arange(ex1, ex2+dx, dx)
+    p = self.proj
+    shift = 0
+    x1 = -p.elef + shift
+    x2 = x1 + p.enx1
+    y1 = -p.etop + shift
+    y2 = y1 + p.enx3
+    #dx = self.proj.dx
+    #ex1 = self.proj.box[0] - self.proj.elef * dx
+    #ex2 = self.proj.box[1] + self.proj.erig * dx
+    x = np.arange(-self.proj.elef, ex2+dx, dx)
     z = self.array[:,0,0]
-    plt.plot(x, z)
+    #plt.plot(x, z)
+    plt.plot(z)
 
 
 # -------------------------------------------------------------------------------

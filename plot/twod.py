@@ -56,6 +56,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   """
   from fullwavepy.plot.generic import new_figure
+  from matplotlib.colors import LogNorm
   
   ax = kw('ax', plt.gca(), kwargs)
   cmap = kw('cmap', 'twilight', kwargs)
@@ -64,6 +65,14 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
   alpha = kw('alpha', 1, kwargs)
+  lognorm = kw('lognorm', False, kwargs)
+  norm = LogNorm() if lognorm else None
+  if lognorm:
+    plot_image._log.warn('lognorm on => setting vmin,vmax to None and center_cmap to False')
+    vmin = None
+    vmax = None
+    center_cmap = False
+    
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
@@ -82,7 +91,8 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   #ax = fig.add_subplot()
   im = ax.imshow(image.T, cmap=cmap, extent=extent, 
-                 vmin=vmin, vmax=vmax, alpha=alpha)
+                 vmin=vmin, vmax=vmax, norm=norm,
+                 alpha=alpha)
   if cbar:
     colorbar(im, ax)
 

@@ -28,321 +28,206 @@ import matplotlib.pyplot as plt
 ## MODULES (CUSTOM)
 from lib_generic import *
 from lib_generic_CONST import *
-##
-
-# -------------------------------------------------------------------------------
-# INJECTION ONTO A FINITE-DIFFERENCE GRID
-# -------------------------------------------------------------------------------
 
 
-def FWI_Source_Inject(sid, w0, **kwargs):
+@traced
+@logged
+class Point(np.ndarray):
   """
+  """
+  def __new__(cls, xyz, **kwargs):
+    return np.asarray(xyz).view(cls)
+
+  def __array_finalize__(self, obj):
+    if obj is None: return
+
+  def find_neighs(self, mode='cube', *args, **kwargs):
+    """
+    Find neighbouring nodes (integer coords).
+    """
+    if mode == 'cube':
+      self.find_neighs_cube(*args, **kwargs)
   
+  def find_neighs_cube(self, r, incl, **kwargs):
+    pass
+  
+  def spread(self, mode='hicks', **kwargs):
+    if mode == 'hicks':
+      self.spread_hicks()
+  
+  def spread_hicks(self, **kwargs):
+    pass
+  
+  def interp(self, **kwargs):
+    pass
+  
+  def interp_hicks(self, **kwargs):
+    pass
+
+# -------------------------------------------------------------------------------
+
+class SrcRec(Point):
+  def __init__(self, xyz, **kwargs):
+    pass
+
+# -------------------------------------------------------------------------------
+
+class Src(SrcRec):
+  def check_fs_pos(self, **kwargs):
+    pass  
+  def spread_n_bounce(self, **kwargs):
+    pass
+  def spread_factors(self, **kwargs):
+    self.find_neighs()
+  def spread_bounce(self, **kwargs):
+    pass
+  def find_neighs(self, **kwargs):
+    pass
+  def 
+
+# -------------------------------------------------------------------------------
+
+#class Hicks
+
+# -------------------------------------------------------------------------------
+
+class SuperSrc(Src):
+  """
+  """
+  def check_fs_pos(self, **kwargs):
+    pass
+  
+  def spread_factors(self, **kwargs):
+    nsrcs = []
+    while diverged:
+      for src in srcs:
+        nsrcs.append(src.spread_n_bounce())
+      srcs = nsrcs
+      self._check_convergence()
+  
+  def _check_convergence():
+    pass
+  
+  def inject(self, wf, **kwargs):
+    pass
+  
+
+# -------------------------------------------------------------------------------
+
+
+def Nearest_Neighbours(ndims, point, radius, include_point, **kwargs):
+  """
+  Find grid nodes which are the nearest neighbours
+  of the point.
   
   Parameters
   ----------
-  sid : int 
-    Source ID.
-  w0 : array 
-    Wavefield before injection.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  
-  Returns
-  -------
-  w0 : array
-    Wavefield after injecting s.
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'FWI_Source_Inject: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  depth = Source_Depth(sid, **kwargs)
-  
-  if depth == 'deep':
-    Source_Inject_Deep(sid, w0, **kwargs)
+  ndims : int 
+    Dimensionality of the problem: 1, 2, or 3.
+  point : array / list
+    Vector of 3D coordinates [x, y, z].
+    They do NOT need to be integers.
+  radius : int 
+    Radius of the ball (in the taxi-cab metric 
+    i.e. along the grid lines; it's a cube) 
+    centred on the point that contains only 
+    the 'nearest neighbours' of the point.
+  include_point : bool 
+    If false, the neighbours cannot lie on 
+    the same grid line as the given point. 
+    This grid line is skipped and the 
+    next one outwards is chosen for adjacent
+    neighbours. This matters only if any of 
+    point's coordinate is an integer 
+    (<=> lies along a grid line).
     
-  elif depth == 'shallow':
-    Source_Inject_Shallow(sid, w0, **kwargs)
-  
-  else:
-    raise ValueError('Unknown depth-identifier: ' + depth)
-
-  #print this_func + 'END'
-  return 0
-
-
-# -------------------------------------------------------------------------------
-
-
-def FWI_Source_Inject_Deep(sid, w0, **kwargs):
-  """
-  Wrapper for AU's spread_source subroutine. 
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
-  w0 : array 
-    Wavefield before injection.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  
   Returns
   -------
-  w0 : array
-    Wavefield after injection.
-  
+  coord_lists : list 
+    List of lists of coordinates:
+    [x_coord_list, y_coord_list, z_coord_list].
+    They can differ in length, in particular 
+    some of them can have unit-length.
+   
   Notes
   -----
-  It is not affected by the free surface.
+  2D => y-coord is fixed.
+  1D => y-coord and z-coord are fixed.
+  
+  Before deleting the middle point of the list
+  has always odd number of elements.
+  
+  FIXME; Check how Hicks is meant to work exactly.
+  Is it alwasy 7x7x7?
+  
+  # 3 TO GET 7-POINT HICKS STENCIL # FIXME: IT GIVES 6 POINT STENCIL WITH False BELOW!!!
   
   """
-  this_func = this_lib + 'FWI_Source_Inject_Deep: '
-  print(this_func + 'START')
-  
-  
-  
-  print(this_func + 'END')
-  return 0
-
-
-# -------------------------------------------------------------------------------
-
-
-def FWI_Source_Inject_Shallow(sid, w0, **kwargs):
-  """
-  
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
-  w0 : array 
-    Wavefield before injection.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  
-  Returns
-  -------
-  w0 : array
-    Wavefield after injection.
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'FWI_Source_Inject_Shallow: '
+  this_func = this_lib + 'Nearest_Neighbours: '
   verbos = Kwarg('verbos', 1, kwargs)
   if verbos == verbos_func:
-    print(this_func + 'START')
+    print(this_func + 'START') 
   
+  from lib_generic import Delete_List_Midpoint
   
-  Spread_Source_FS_Read_Input()
-  Spread_Source_FS_Apply()
-
-
-  #print this_func + 'END'
-  return 0
-
-
-# -------------------------------------------------------------------------------
-# PRECALCULATION (FRAMEWORK)
-# -------------------------------------------------------------------------------
-
-
-def Sources_Precalc(proj_name, **kwargs):
-  """
+  # CHECK THE INPUT
+  if len(point) != 3:
+    eprint(this_func + 'Error. Point has to have 3 coordinates.\n')
+    eprint(this_func + 'Point: ' + str(point) + '\n')
+    quit()
   
+  # PRECISION OF TREATING COORDINATE AS INT
+  precision = epsi # FIXME: TUNE IT.
   
-  Parameters
-  ----------
-
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'Sources_Precalc: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  from lib_fwi_generic import SR_Read
-  
-  dims, Ss, Rs = SR_Read(proj_name, adjust=0, **kwargs)
-  
-  sources = []
-  
-  for S in Ss:
-    source = Source_Precalc(proj_name, sid=S, sxyz=Ss[S])
-    sources.append(source)
+  # ITERATE OVER COORDINATES
+  coord_lists = []
+  for i in range(len(point)):
+    coord_list = []
     
-  #print this_func + 'END'
-  return sources
+    # SPECIAL TREATMENT OF Y-COORD IN 2D
+    if (ndims == 2) and (i == 1):
+      coord_lists.append([point[i]]) 
+      continue
+    
+    # SPECIAL TREATMENT OF Y-COORD AND Z-COORD IN 1D
+    if (ndims == 1) and (i > 0):
+      coord_lists.append([point[i]]) 
+      continue    
+    
+    # 'FLOOR-NEAREST' NODE OF THE POINT
+    nint = int(point[i]) 
+    
+    # DEFINE THE RANGES OF COORDINATES
+    rmin = nint - radius
+    rmax = nint + radius
+    if not Is_Int(point[i], precision):
+      rmin += 1
+   
+    # GET THE LIST OF COORDINATES
+    coord_list = np.arange(rmin, rmax + 1)
+    
+    # DELETE THE MIDDLE POINT IF NECESSARY
+    if (Is_Int(point[i], precision)) and (not include_point):      
+      coord_list = Delete_List_Midpoint(coord_list)
+    
+    coord_lists.append(list(coord_list))
+  
+  #print this_func + 'END' 
+  return coord_lists
 
 
 # -------------------------------------------------------------------------------
 
 
-def Source_Precalc(proj_name, **kwargs):
-  """
-  
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
 
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'Source_Precalc: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  from lib_fwi_generic import SR_Read
-  
-  sid = Kwarg('sid', None, kwargs)
-  sxyz = Kwarg('sxyz', None, kwargs)
-  
-  if not (sid or sxyz):
-    raise ValueError('You need to provide source ID and coords.')
-  
-  source = [sid, sxyz]
-  
-  #print this_func + 'END'
-  return source
 
 
 # -------------------------------------------------------------------------------
 
 
-def Source_Depth(proj_name, sid, **kwargs):
-  """
-  
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
-
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'Source_Depth: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  fs_z = Kwarg('fs_z', None, kwargs)
-  
-  if not fs_z:
-    fs_z = Read_vtr(proj_name + '-FreeSurf.vtr')
-  
-  depth = 'shallow'
-  
-  #print this_func + 'END'
-  return depth
 
 
 # -------------------------------------------------------------------------------
-
-
-def Source_Coeffs_Write(proj_name, sid, **kwargs):
-  """
-  Already smeared.
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
-
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'Source_Coeffs_Write: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  
-  #print this_func + 'END'
-  return 0
-
-
-# -------------------------------------------------------------------------------
-
-
-def Source_Coeffs_Read(proj_name, sid, **kwargs):
-  """
-  Already smeared.
-  
-  Parameters
-  ----------
-  sid : int 
-    Source ID.
-
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  
-  Notes
-  -----
-  
-  
-  """
-  this_func = this_lib + 'Source_Coeffs_Write: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START')
-  
-  
-  #print this_func + 'END'
-  return 0
 
 
 # -------------------------------------------------------------------------------
@@ -1107,112 +992,6 @@ def Nodes_Flag(w0, ghosts, **kwargs): # FIXME: DEL?
   
   #print this_func + 'END'
   return flags
-
-
-# -------------------------------------------------------------------------------
-
-
-def Nearest_Neighbours(ndims, point, radius, include_point, **kwargs):
-  """
-  Find grid nodes which are the nearest neighbours
-  of the point.
-  FIXME: DOESN'T WORK FOR NEGATIVE COORDS!!
-  FIXME: MOVE TO lib_fwi_generic
-  
-  Parameters
-  ----------
-  ndims : int 
-    Dimensionality of the problem: 1, 2, or 3.
-  point : array / list
-    Vector of 3D coordinates [x, y, z].
-    They do NOT need to be integers.
-  radius : int 
-    Radius of the ball (in the taxi-cab metric 
-    i.e. along the grid lines; it's a cube) 
-    centred on the point that contains only 
-    the 'nearest neighbours' of the point.
-  include_point : bool 
-    If false, the neighbours cannot lie on 
-    the same grid line as the given point. 
-    This grid line is skipped and the 
-    next one outwards is chosen for adjacent
-    neighbours. This matters only if any of 
-    point's coordinate is an integer 
-    (<=> lies along a grid line).
-    
-  Returns
-  -------
-  coord_lists : list 
-    List of lists of coordinates:
-    [x_coord_list, y_coord_list, z_coord_list].
-    They can differ in length, in particular 
-    some of them can have unit-length.
-   
-  Notes
-  -----
-  2D => y-coord is fixed.
-  1D => y-coord and z-coord are fixed.
-  
-  Before deleting the middle point of the list
-  has always odd number of elements.
-  
-  FIXME; Check how Hicks is meant to work exactly.
-  Is it alwasy 7x7x7?
-  
-  # 3 TO GET 7-POINT HICKS STENCIL # FIXME: IT GIVES 6 POINT STENCIL WITH False BELOW!!!
-  
-  """
-  this_func = this_lib + 'Nearest_Neighbours: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START') 
-  
-  from lib_generic import Delete_List_Midpoint
-  
-  # CHECK THE INPUT
-  if len(point) != 3:
-    eprint(this_func + 'Error. Point has to have 3 coordinates.\n')
-    eprint(this_func + 'Point: ' + str(point) + '\n')
-    quit()
-  
-  # PRECISION OF TREATING COORDINATE AS INT
-  precision = epsi # FIXME: TUNE IT.
-  
-  # ITERATE OVER COORDINATES
-  coord_lists = []
-  for i in range(len(point)):
-    coord_list = []
-    
-    # SPECIAL TREATMENT OF Y-COORD IN 2D
-    if (ndims == 2) and (i == 1):
-      coord_lists.append([point[i]]) 
-      continue
-    
-    # SPECIAL TREATMENT OF Y-COORD AND Z-COORD IN 1D
-    if (ndims == 1) and (i > 0):
-      coord_lists.append([point[i]]) 
-      continue    
-    
-    # 'FLOOR-NEAREST' NODE OF THE POINT
-    nint = int(point[i]) 
-    
-    # DEFINE THE RANGES OF COORDINATES
-    rmin = nint - radius
-    rmax = nint + radius
-    if not Is_Int(point[i], precision):
-      rmin += 1
-   
-    # GET THE LIST OF COORDINATES
-    coord_list = np.arange(rmin, rmax + 1)
-    
-    # DELETE THE MIDDLE POINT IF NECESSARY
-    if (Is_Int(point[i], precision)) and (not include_point):      
-      coord_list = Delete_List_Midpoint(coord_list)
-    
-    coord_lists.append(list(coord_list))
-  
-  #print this_func + 'END' 
-  return coord_lists
 
 
 # -------------------------------------------------------------------------------
