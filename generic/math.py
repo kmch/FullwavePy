@@ -12,6 +12,62 @@ from fullwavepy.generic.parse import kw
 
 epsi = 1e-10 # epsilon (a small number)
 
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def neighs_of_int(a, r):
+  """
+  Integers surrounding an integer 'a' within radius 'r'.
+  
+  Examples
+  --------
+  r=1, a=2   returns (1,3)
+  r=2, a=2   returns (0,1,3,4)
+  
+  """
+  return np.array(list(np.arange(a-r, a)) + list(np.arange(a+1, a+r+1)))
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def neighs_of_float(a, r):
+  """
+  Integers surrounding a float 'a' within radius 'r'.
+  
+  Examples
+  --------
+  r=1, a=2.5   returns (2,3)
+  r=2, a=2.5   returns (1,2,3,4)
+  
+  """  
+  return np.arange(np.ceil(a)-r, np.ceil(a)+r)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def neighs1d(a, r):
+  """
+  Nearest nodes in 1D.
+  
+  a : float
+  r : int
+  
+  Examples
+  --------
+  r=1, a=2   returns (1,3)
+  r=1, a=2.5 returns (2,3)
+  
+  """
+  return np.where(isinstance(a, int), neighs_of_int(a, r), neighs_of_float(a, r))
+
 
 # -------------------------------------------------------------------------------
 
@@ -203,7 +259,8 @@ def kaiser(x, r=3, b=4.14, bessel='py', **kwargs):
   -----
   See Hicks 2002 for details.
   
-  It can't be vectorized.
+  It can be vectorized because 'if' statement was replaced 
+  with np.where.
   
   """
   from scipy.special import i0

@@ -26,8 +26,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ## MODULES (CUSTOM)
-from lib_generic import *
-from lib_generic_CONST import *
+#from lib_generic import *
+#from lib_generic_CONST import *
 
 
 @traced
@@ -38,18 +38,25 @@ class Point(np.ndarray):
   def __new__(cls, xyz, **kwargs):
     return np.asarray(xyz).view(cls)
 
+  # -----------------------------------------------------------------------------
+  
   def __array_finalize__(self, obj):
     if obj is None: return
 
-  def find_neighs(self, mode='cube', *args, **kwargs):
+  # -----------------------------------------------------------------------------
+
+  def find_neighs(self, r, **kwargs):
     """
-    Find neighbouring nodes (integer coords).
+    Find a cube of nodes surrounding the point.
     """
-    if mode == 'cube':
-      self.find_neighs_cube(*args, **kwargs)
-  
-  def find_neighs_cube(self, r, incl, **kwargs):
-    pass
+    from fullwavepy.generic.math import neighs1d
+    x,y,z = self
+    X = neighs1d(x, r)
+    Y = neighs1d(y, r)
+    Z = neighs1d(z, r)
+    return np.array(np.meshgrid(X, Y, Z, indexing='ij')).T.swapaxes(0, 2) 
+
+  # -----------------------------------------------------------------------------    
   
   def spread(self, mode='hicks', **kwargs):
     if mode == 'hicks':
@@ -83,7 +90,6 @@ class Src(SrcRec):
     pass
   def find_neighs(self, **kwargs):
     pass
-  def 
 
 # -------------------------------------------------------------------------------
 
