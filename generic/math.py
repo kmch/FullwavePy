@@ -194,7 +194,34 @@ def sinc(x, **kwargs):
   
   pi = 3.141592654 # TO STAY CONSISTENT WITH FULLWAVE3D
   x = np.array(x)
-  return np.where(abs(x) < epsi, 1.0, np.sin(pi * x) / (pi * x)) # ALLOWS VECTORIZATION WITH CONDITION INSIDE  
+  # ALLOWS VECTORIZATION WITH CONDITION INSIDE
+  return np.where(abs(x) < epsi, 1.0, np.sin(pi * x) / (pi * x)) 
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def dsinc_dx(x, **kwargs):
+  """
+  sinc'(x)
+  
+  Notes
+  -----
+  Unlike sinc:
+  - max > 1
+  - odd function
+  
+  See sinc docs too.
+  
+  """
+  from fullwavepy.generic.math import epsi
+  
+  pi = 3.141592654 # TO STAY CONSISTENT WITH FULLWAVE3D
+  x = np.array(x)
+  # NOTE dsinc_dx(0) = 0
+  return np.where(abs(x) < epsi, 0.0, (np.cos(pi * x) - sinc(x)) / x)
 
 
 # -------------------------------------------------------------------------------
@@ -253,7 +280,7 @@ def gauss(x, mu=0, sigma=1):
 
 @traced
 @logged
-def kaiser(x, r=3, **kwargs):
+def kaiser(x, r=3, dipole=False, **kwargs):
   """
   Value of the Kaiser-windowing function at point x.
   Bessel function can computed using different 
@@ -286,17 +313,22 @@ def kaiser(x, r=3, **kwargs):
   from scipy.special import i0
   from fullwavepy.generic.math import epsi
   
-  # OPTIMUM VALUES FROM Hicks2002/Table1 FOR A MONOPOLE SOURCE
-  if r == 1:
-    b = kw('b', 0.00, kwargs)
-  elif r == 2:
-    b = kw('b', 1.84, kwargs)
-  elif r == 3:
-    b = kw('b', 3.04, kwargs)
-  elif r == 4:
-    b = kw('b', 4.14, kwargs)
+  assert isinstance(r, int)
+  
+  # OPTIMAL VALUES FOR r=0 (-> None), r=1, ... FROM Hicks2002/Table 1 & 2
+  b_optim_mono = [None, 0.00, 1.84, 3.04, 4.14, 5.26] # kmax = 2/3 pi
+  b_optim_dipo = [None, 0.00, 1.48, 3.25, 4.40, 5.44] # kmax = 2/3 pi 
+  
+  if dipole:
+    b = kw('b', b_optim_dipo[r], kwargs)
   else:
-    raise ValueError('r=%s' % r)
+    b = kw('b', b_optim_mono[r], kwargs)
+
+  if r != 3:
+    kaiser._log.warn('Using r=%s, not 3 as in Fullwave3D.' % r)
+  
+  if r == 3 and b != 4.14:
+    kaiser._log.warn('Using b=%s, not 4.14 as in Fullwave3D.' % b)
   
   bessel = 'py'
   if bessel == 'py':

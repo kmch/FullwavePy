@@ -2,6 +2,10 @@
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
+This library provides procedures for injection 
+of a point source onto a finite-difference grid 
+in the vicinity of an irregular free surface.
+
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,25 +13,6 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
 from fullwavepy.generic.decor import timer
-
-"""
-Author: Kajetan Chrapkiewicz, 2019. 
-All rights reserved. Ask for permision writing 
-to: k.chrapkiewicz17@imperial.ac.uk.
-
-This library provides procedures for injection 
-of a point source onto a finite-difference grid 
-in the vicinity of an irregular free surface.
-
-"""
-
-## MODULES (STANDARD)
-import numpy as np
-import matplotlib.pyplot as plt
-
-## MODULES (CUSTOM)
-#from lib_generic import *
-#from lib_generic_CONST import *
 
 
 @traced
@@ -58,11 +43,10 @@ class Point(np.ndarray):
 
   # -----------------------------------------------------------------------------    
   
-  def spread(self, r, **kwargs):
+  def spread(self, r, funcx, funcy, funcz, **kwargs):
     """
     Spread the point onto a cuboid 
-    using discrete, band-limited approximation
-    of the delta function.
+    a discrete, band-limited Dirac delta.
     
     Notes
     -----
@@ -72,8 +56,6 @@ class Point(np.ndarray):
     outside the window values are zero by definition.
     
     """
-    from fullwavepy.generic.math import kaiser, sinc
-    
     # CUBE OF (x,y,z) TUPLES
     cube = self.find_neighs(r, **kwargs)
     # CENTER THE COORDINATE SYSTEM AT self
@@ -83,11 +65,10 @@ class Point(np.ndarray):
     # APPLY ALONG TUPLE AXIS, I.E. TAKE POINTS COORDS AS AN ARGUMENT
     axis = 3
     # DEAL WITH ONE COORDINATE AT A TIME
-    for coord in range(3):
-      # KAISER-WINDOWED SINC
-      func1d = lambda point : kaiser(point[coord], r) * sinc(point[coord])
+    for i, func1d in enumerate([funcx, funcy, funcz]):
+      func_of_xyz = lambda point : func1d(point[i])
       # ND DELTA IS A PRODUCT OF 1D ONES
-      spread *= np.apply_along_axis(func1d, axis, dists)
+      spread *= np.apply_along_axis(func_of_xyz, axis, dists)
     return spread
 
   # -----------------------------------------------------------------------------
@@ -98,32 +79,105 @@ class Point(np.ndarray):
   def interp_hicks(self, **kwargs):
     pass
 
+
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged
+class Monopole(Point):
+  """
+  """
+  def spread(self, r, **kwargs):
+    from fullwavepy.generic.math import kaiser, sinc
+    func = lambda x : kaiser(x, r) * sinc(x)
+    return super().spread(r, func, func, func, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Dipole(Point):
+  """
+  axis : 0, 1 or 2
+    corresponds to dipole along X, Y or Z axis respectively
+  
+  """
+  def __new__(cls, xyz, axis, **kwargs):
+    assert axis in [0, 1, 2]
+    cls.axis = axis
+    return super().__new__(cls, xyz, **kwargs)
+  
+  def spread(self, r, **kwargs):
+    from fullwavepy.generic.math import kaiser, sinc, dsinc_dx
+    
+    func1 = lambda x : kaiser(x, r) * sinc(x) 
+    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
+    
+    funcs = [func1, func1, func1]
+    funcs[self.axis] = func2
+    
+    return super().spread(r, *funcs, **kwargs)
+  
+
+# -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@traced
+@logged
+def xyz2w(xyz, dims, **kwargs):
+  """
+  """
+  x, y, z = xyz
+  nx, ny, nz = dims
+  return (x - 1) * ny * nz + (y - 1) * nz + z
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class SrcRec(Point):
-  def __init__(self, xyz, **kwargs):
-    pass
+  pass
+
 
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged
 class Src(SrcRec):
   def check_fs_pos(self, **kwargs):
     pass  
   def spread_n_bounce(self, **kwargs):
     pass
-  def spread_factors(self, **kwargs):
-    self.find_neighs()
+  #def spread_factors(self, **kwargs):
+    #self.find_neighs()
   def spread_bounce(self, **kwargs):
     pass
-  def find_neighs(self, **kwargs):
-    pass
+
 
 # -------------------------------------------------------------------------------
 
-#class Hicks
 
-# -------------------------------------------------------------------------------
-
+@traced
+@logged
 class SuperSrc(Src):
   """
   """
@@ -146,6 +200,20 @@ class SuperSrc(Src):
   
 
 # -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def Nearest_Neighbours(ndims, point, radius, include_point, **kwargs):

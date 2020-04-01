@@ -24,9 +24,6 @@ class Arr(np.ndarray):
   Wrapper around numpy's array.
   
   """
-
-  # -----------------------------------------------------------------------------
-  
   def __new__(cls, source, **kwargs):
     """
     Init by reading from source.
@@ -85,7 +82,13 @@ class Arr(np.ndarray):
                      'file-names or arrays or np.memmap, NOT: %s' %
                      type(source))
     return A
+  
+  # -----------------------------------------------------------------------------
 
+  def save(self, fname, **kwargs):
+    from fullwavepy.ioapi.fw3d import save_vtr
+    save_vtr(self, fname)
+  
   # -----------------------------------------------------------------------------
 
   def info(self, **kwargs):
