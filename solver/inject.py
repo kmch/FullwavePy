@@ -50,7 +50,7 @@ class Point(np.ndarray):
     Find a cube of nodes surrounding the point.
     """
     from fullwavepy.generic.math import neighs1d
-    x,y,z = self
+    x, y, z = self
     X = neighs1d(x, r)
     Y = neighs1d(y, r)
     Z = neighs1d(z, r)
@@ -58,12 +58,39 @@ class Point(np.ndarray):
 
   # -----------------------------------------------------------------------------    
   
-  def spread(self, mode='hicks', **kwargs):
-    if mode == 'hicks':
-      self.spread_hicks()
-  
-  def spread_hicks(self, **kwargs):
-    pass
+  def spread(self, r, **kwargs):
+    """
+    Spread the point onto a cuboid 
+    using discrete, band-limited approximation
+    of the delta function.
+    
+    Notes
+    -----
+    See Hicks 2002, Geophysics for details.
+    
+    We use the same r for neighbours and the window as 
+    outside the window values are zero by definition.
+    
+    """
+    from fullwavepy.generic.math import kaiser, sinc
+    
+    # CUBE OF (x,y,z) TUPLES
+    cube = self.find_neighs(r, **kwargs)
+    # CENTER THE COORDINATE SYSTEM AT self
+    dists = cube - self
+    # START WITH ONES TO MULTIPLY BY NEW VALUES
+    spread = np.ones(dists[...,0].shape)
+    # APPLY ALONG TUPLE AXIS, I.E. TAKE POINTS COORDS AS AN ARGUMENT
+    axis = 3
+    # DEAL WITH ONE COORDINATE AT A TIME
+    for coord in range(3):
+      # KAISER-WINDOWED SINC
+      func1d = lambda point : kaiser(point[coord], r) * sinc(point[coord])
+      # ND DELTA IS A PRODUCT OF 1D ONES
+      spread *= np.apply_along_axis(func1d, axis, dists)
+    return spread
+
+  # -----------------------------------------------------------------------------
   
   def interp(self, **kwargs):
     pass

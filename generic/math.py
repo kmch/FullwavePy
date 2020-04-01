@@ -27,7 +27,8 @@ def neighs_of_int(a, r):
   r=2, a=2   returns (0,1,3,4)
   
   """
-  return np.array(list(np.arange(a-r, a)) + list(np.arange(a+1, a+r+1)))
+  return np.arange(a-r, a+r+1) # INCLUDES THE POINT ITSELF (SAME AS FULLWAVE3D's HICKS)
+  #return np.array(list(np.arange(a-r, a)) + list(np.arange(a+1, a+r+1))) # EXCLUDES
 
 
 # -------------------------------------------------------------------------------
@@ -60,14 +61,33 @@ def neighs1d(a, r):
   a : float
   r : int
   
+  Notes
+  -----
+  For integer 'a', 'a' is included itself.
+  This is for ND discrete delta functions, 
+  that needs non-zero values.
+  
+  This would be the version excluding int 'a':
+  return np.where(float(a).is_integer(), neighs_of_int(a, r), 
+                                         neighs_of_float(a, r))
+  In this case we  can make use of np.where as the shape of the output 
+  is the same in both situations.
+  
   Examples
   --------
-  r=1, a=2   returns (1,3)
+  r=1, a=2   returns (1,2,3)
   r=1, a=2.5 returns (2,3)
   
   """
-  return np.where(isinstance(a, int), neighs_of_int(a, r), neighs_of_float(a, r))
-
+  if float(a).is_integer():
+    n = neighs_of_int(a, r)
+  else:
+    n = neighs_of_float(a, r)
+  
+  neighs1d._log.debug('nodal-neighbours of %s within r=%s are: %s' % (a, r, n))
+  return n
+  #
+  
 
 # -------------------------------------------------------------------------------
 
@@ -233,7 +253,7 @@ def gauss(x, mu=0, sigma=1):
 
 @traced
 @logged
-def kaiser(x, r=3, b=4.14, bessel='py', **kwargs):
+def kaiser(x, r=3, **kwargs):
   """
   Value of the Kaiser-windowing function at point x.
   Bessel function can computed using different 
@@ -266,6 +286,19 @@ def kaiser(x, r=3, b=4.14, bessel='py', **kwargs):
   from scipy.special import i0
   from fullwavepy.generic.math import epsi
   
+  # OPTIMUM VALUES FROM Hicks2002/Table1 FOR A MONOPOLE SOURCE
+  if r == 1:
+    b = kw('b', 0.00, kwargs)
+  elif r == 2:
+    b = kw('b', 1.84, kwargs)
+  elif r == 3:
+    b = kw('b', 3.04, kwargs)
+  elif r == 4:
+    b = kw('b', 4.14, kwargs)
+  else:
+    raise ValueError('r=%s' % r)
+  
+  bessel = 'py'
   if bessel == 'py':
     bessel = lambda x : i0(x)
   elif bessel == 'fw3d':
