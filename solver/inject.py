@@ -45,8 +45,9 @@ class Point(np.ndarray):
   
   def spread(self, r, funcx, funcy, funcz, **kwargs):
     """
-    Spread the point onto a cuboid 
-    a discrete, band-limited Dirac delta.
+    Spread the point onto a cuboid using
+    possibly different discrete, band-limited 
+    Dirac delta along each coordinate axis.
     
     Notes
     -----
@@ -67,7 +68,7 @@ class Point(np.ndarray):
     # DEAL WITH ONE COORDINATE AT A TIME
     for i, func1d in enumerate([funcx, funcy, funcz]):
       func_of_xyz = lambda point : func1d(point[i])
-      # ND DELTA IS A PRODUCT OF 1D ONES
+      # ND-DELTA IS A PRODUCT OF 1D ONES
       spread *= np.apply_along_axis(func_of_xyz, axis, dists)
     return spread
 
