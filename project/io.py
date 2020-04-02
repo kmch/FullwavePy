@@ -190,7 +190,7 @@ class ProjInput(ProjThroughput):
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
-    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, GhostDataFileBin, GhostDataFileTxt
+    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile, GhostDataFileBin, GhostDataFileTxt
     from fullwavepy.project.files.geom import SourcesFile, ReceiversFile
     from fullwavepy.project.files.misc import RawSeisTxtFile, JobInfoFile
     from fullwavepy.project.files.runfiles import SegyPrepFile, Runfile, Skeleton
@@ -220,6 +220,7 @@ class ProjInput(ProjThroughput):
     
     self.fs = FsFile(self.proj, self.path, **kwargs)
     self.fse = ExtendedFsFile(self.proj, self.path, **kwargs)
+    self.fsi = InterpolFsFile(self.proj, self.path, **kwargs)
     self.ghostbin = GhostDataFileBin(self.proj, self.path, **kwargs)
     self.ghb = self.ghostbin
     self.ghosttxt = GhostDataFileTxt(self.proj, self.path, **kwargs)

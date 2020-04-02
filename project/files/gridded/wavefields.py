@@ -47,7 +47,7 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
     self.sid = sid
     self.it = it
     
-    if ts.is_integer():
+    if float(ts).is_integer():
       ts = str(ts).rjust(6,'0') # YES, 6 DIGITS
     else:
       ts = str(ts)

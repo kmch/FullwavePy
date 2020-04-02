@@ -103,7 +103,7 @@ def bash(command, path='./', truncate=150, **kwargs):
     if len(err) > truncate:
       err = str('Truncated stderr (first ' + str(truncate) + 
                 ' chars):' + err[ :truncate] + '...')
-    bash._log.warn('stderr:' + err)
+    bash._log.debug('stderr:' + err)
       
   
   return out, err

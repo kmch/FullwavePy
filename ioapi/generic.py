@@ -125,7 +125,7 @@ class ArrayFile(File):
     """
     if (not hasattr(self, 'array')) or overwrite:
       from fullwavepy.generic.array import Arr3d
-      self.__log.warn('{}.array does not exist and will be read.'.format(type(self)))
+      self.__log.debug('{}.array does not exist and will be read.'.format(type(self)))
       kwargs['scoord'] = kw('scoord', None, kwargs)
       if fname is None:
         fname = self.fname
@@ -196,14 +196,14 @@ def read_any(fname, overwrite_mmp=False, **kwargs):
   fname_mmp = strip(fname) + '.mmp'
   
   if not exists(fname_mmp) or overwrite_mmp:
-    read_any._log.warn(fname_mmp+' does not exist. Reading ' + 
+    read_any._log.debug(fname_mmp+' does not exist. Reading ' + 
                        fname + ' instead...')
     A = read_any_format(fname, **kwargs)
     read_any._log.info('Saving ' + fname_mmp + '...')
     save_mmp(A, fname_mmp)
 
   elif shape is None:
-    read_any._log.warn('File ' + fname_mmp + ' exists, but you' +
+    read_any._log.debug('File ' + fname_mmp + ' exists, but you' +
                        ' need to provide its shape to read it. Reading ' + 
                        fname + ' instead...')
     A = read_any_format(fname, **kwargs) 

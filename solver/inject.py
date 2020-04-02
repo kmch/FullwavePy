@@ -13,6 +13,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
 from fullwavepy.generic.decor import timer
+from fullwavepy.generic.array import Arr3d
 
 
 @traced
@@ -33,21 +34,39 @@ class Point(np.ndarray):
   def find_neighs(self, r, **kwargs):
     """
     Find a cube of nodes surrounding the point.
+    
+    Notes
+    -----
+    Works in any dimension (checked 1-3), although in 1D 
+    the resultant array should be flattened.
+    
+    Last axis of np.array(np.meshgrid(*ranges, indexing='ij')).T
+    is a tuple of coordinates of a given point. e.g. (x,y,z) in 3D.
+    
+    We swap the first and the second (!) but last axis to have the Z-coordinate 
+    to be the last and thus fastest-changing (np.arrays are row-major) index.
+    
     """
     from fullwavepy.generic.math import neighs1d
-    x, y, z = self
-    X = neighs1d(x, r)
-    Y = neighs1d(y, r)
-    Z = neighs1d(z, r)
-    return np.array(np.meshgrid(X, Y, Z, indexing='ij')).T.swapaxes(0, 2) 
+
+    ranges = []
+    for i in self:
+      ranges.append(neighs1d(i, r))
+    
+    self.neighs = np.array(np.meshgrid(*ranges, indexing='ij')).T.swapaxes(0,-2)
+    return self.neighs
 
   # -----------------------------------------------------------------------------    
   
-  def spread(self, r, funcx, funcy, funcz, **kwargs):
+  def spread(self, r, funcs, **kwargs):
     """
     Spread the point onto a cuboid using
-    possibly different discrete, band-limited 
-    Dirac delta along each coordinate axis.
+    in general different functions along each coordinate 
+    axis.
+    
+    Parameters
+    ----------
+    funcs : list
     
     Notes
     -----
@@ -57,20 +76,24 @@ class Point(np.ndarray):
     outside the window values are zero by definition.
     
     """
+    assert len(funcs) == len(self)
+    
     # CUBE OF (x,y,z) TUPLES
     cube = self.find_neighs(r, **kwargs)
     # CENTER THE COORDINATE SYSTEM AT self
     dists = cube - self
-    # START WITH ONES TO MULTIPLY BY NEW VALUES
-    spread = np.ones(dists[...,0].shape)
+    # ND-DELTA IS A PRODUCT (!) OF 1D-ONES
+    vol = np.ones(dists[...,0].shape)
     # APPLY ALONG TUPLE AXIS, I.E. TAKE POINTS COORDS AS AN ARGUMENT
-    axis = 3
+    coord_axis = -1
     # DEAL WITH ONE COORDINATE AT A TIME
-    for i, func1d in enumerate([funcx, funcy, funcz]):
-      func_of_xyz = lambda point : func1d(point[i])
-      # ND-DELTA IS A PRODUCT OF 1D ONES
-      spread *= np.apply_along_axis(func_of_xyz, axis, dists)
-    return spread
+    for i, func in enumerate(funcs):
+      # WRAPPER TO ACT ON A SINGLE COORDINATE OF AN ND-POINT
+      func_of_xyz = lambda point : func(point[i])
+      vol *= np.apply_along_axis(func_of_xyz, coord_axis, dists)
+    
+    self.vol = vol
+    return self.vol
 
   # -----------------------------------------------------------------------------
   
@@ -79,74 +102,6 @@ class Point(np.ndarray):
   
   def interp_hicks(self, **kwargs):
     pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Monopole(Point):
-  """
-  """
-  def spread(self, r, **kwargs):
-    from fullwavepy.generic.math import kaiser, sinc
-    func = lambda x : kaiser(x, r) * sinc(x)
-    return super().spread(r, func, func, func, **kwargs)
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Dipole(Point):
-  """
-  axis : 0, 1 or 2
-    corresponds to dipole along X, Y or Z axis respectively
-  
-  """
-  def __new__(cls, xyz, axis, **kwargs):
-    assert axis in [0, 1, 2]
-    cls.axis = axis
-    return super().__new__(cls, xyz, **kwargs)
-  
-  def spread(self, r, **kwargs):
-    from fullwavepy.generic.math import kaiser, sinc, dsinc_dx
-    
-    func1 = lambda x : kaiser(x, r) * sinc(x) 
-    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
-    
-    funcs = [func1, func1, func1]
-    funcs[self.axis] = func2
-    
-    return super().spread(r, *funcs, **kwargs)
-  
-
-# -------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@traced
-@logged
-def xyz2w(xyz, dims, **kwargs):
-  """
-  """
-  x, y, z = xyz
-  nx, ny, nz = dims
-  return (x - 1) * ny * nz + (y - 1) * nz + z
 
 
 # -------------------------------------------------------------------------------
@@ -163,6 +118,84 @@ class SrcRec(Point):
 
 @traced
 @logged
+class Monopole(SrcRec):
+  """
+  """
+  def spread(self, r, **kwargs):
+    from fullwavepy.generic.math import kaiser, sinc
+    func = lambda x : kaiser(x, r) * sinc(x)
+    funcs = [func for i in range(len(self))]
+    return super().spread(r, funcs, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Dipole(SrcRec):
+  """
+  axis : 0, 1 or 2
+    corresponds to dipole along X, Y or Z axis respectively
+  
+  """
+  def __new__(cls, xyz, axis, **kwargs):
+    assert axis in [0, 1, 2]
+    cls.axis = axis
+    return super().__new__(cls, xyz, **kwargs)
+  
+  # -----------------------------------------------------------------------------
+  
+  def spread(self, r, **kwargs):
+    from fullwavepy.generic.math import kaiser, sinc, dsinc_dx
+    
+    func1 = lambda x : kaiser(x, r) * sinc(x) 
+    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
+    
+    funcs = [func1 for i in range(len(self))]
+    funcs[self.axis] = func2
+    
+    return super().spread(r, funcs, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+
+@traced
+@logged
+class Volume(Arr3d):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Grid(Arr3d):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class Src(SrcRec):
   def check_fs_pos(self, **kwargs):
     pass  
@@ -172,6 +205,24 @@ class Src(SrcRec):
     #self.find_neighs()
   def spread_bounce(self, **kwargs):
     pass
+
+
+
+
+
+
+@traced
+@logged
+def xyz2w(xyz, dims, **kwargs):
+  """
+  """
+  x, y, z = xyz
+  nx, ny, nz = dims
+  return (x - 1) * ny * nz + (y - 1) * nz + z
+
+
+
+
 
 
 # -------------------------------------------------------------------------------
@@ -212,119 +263,6 @@ class SuperSrc(Src):
 
 
 
-
-
-
-
-
-def Nearest_Neighbours(ndims, point, radius, include_point, **kwargs):
-  """
-  Find grid nodes which are the nearest neighbours
-  of the point.
-  
-  Parameters
-  ----------
-  ndims : int 
-    Dimensionality of the problem: 1, 2, or 3.
-  point : array / list
-    Vector of 3D coordinates [x, y, z].
-    They do NOT need to be integers.
-  radius : int 
-    Radius of the ball (in the taxi-cab metric 
-    i.e. along the grid lines; it's a cube) 
-    centred on the point that contains only 
-    the 'nearest neighbours' of the point.
-  include_point : bool 
-    If false, the neighbours cannot lie on 
-    the same grid line as the given point. 
-    This grid line is skipped and the 
-    next one outwards is chosen for adjacent
-    neighbours. This matters only if any of 
-    point's coordinate is an integer 
-    (<=> lies along a grid line).
-    
-  Returns
-  -------
-  coord_lists : list 
-    List of lists of coordinates:
-    [x_coord_list, y_coord_list, z_coord_list].
-    They can differ in length, in particular 
-    some of them can have unit-length.
-   
-  Notes
-  -----
-  2D => y-coord is fixed.
-  1D => y-coord and z-coord are fixed.
-  
-  Before deleting the middle point of the list
-  has always odd number of elements.
-  
-  FIXME; Check how Hicks is meant to work exactly.
-  Is it alwasy 7x7x7?
-  
-  # 3 TO GET 7-POINT HICKS STENCIL # FIXME: IT GIVES 6 POINT STENCIL WITH False BELOW!!!
-  
-  """
-  this_func = this_lib + 'Nearest_Neighbours: '
-  verbos = Kwarg('verbos', 1, kwargs)
-  if verbos == verbos_func:
-    print(this_func + 'START') 
-  
-  from lib_generic import Delete_List_Midpoint
-  
-  # CHECK THE INPUT
-  if len(point) != 3:
-    eprint(this_func + 'Error. Point has to have 3 coordinates.\n')
-    eprint(this_func + 'Point: ' + str(point) + '\n')
-    quit()
-  
-  # PRECISION OF TREATING COORDINATE AS INT
-  precision = epsi # FIXME: TUNE IT.
-  
-  # ITERATE OVER COORDINATES
-  coord_lists = []
-  for i in range(len(point)):
-    coord_list = []
-    
-    # SPECIAL TREATMENT OF Y-COORD IN 2D
-    if (ndims == 2) and (i == 1):
-      coord_lists.append([point[i]]) 
-      continue
-    
-    # SPECIAL TREATMENT OF Y-COORD AND Z-COORD IN 1D
-    if (ndims == 1) and (i > 0):
-      coord_lists.append([point[i]]) 
-      continue    
-    
-    # 'FLOOR-NEAREST' NODE OF THE POINT
-    nint = int(point[i]) 
-    
-    # DEFINE THE RANGES OF COORDINATES
-    rmin = nint - radius
-    rmax = nint + radius
-    if not Is_Int(point[i], precision):
-      rmin += 1
-   
-    # GET THE LIST OF COORDINATES
-    coord_list = np.arange(rmin, rmax + 1)
-    
-    # DELETE THE MIDDLE POINT IF NECESSARY
-    if (Is_Int(point[i], precision)) and (not include_point):      
-      coord_list = Delete_List_Midpoint(coord_list)
-    
-    coord_lists.append(list(coord_list))
-  
-  #print this_func + 'END' 
-  return coord_lists
-
-
-# -------------------------------------------------------------------------------
-
-
-
-
-
-# -------------------------------------------------------------------------------
 
 
 

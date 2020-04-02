@@ -201,6 +201,9 @@ class FsFile(SurfaceFile, GridFile):
     o, e = bash('make -C %s' % path)
     cmd = exe + " " + self.proj.name
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
+    self.__log.info(o) 
+    if len(e) > 0:
+      self.__log.warn(e)
   
   def plot3d(self, **kwargs):
     from mpl_toolkits.mplot3d import Axes3D
@@ -214,8 +217,7 @@ class FsFile(SurfaceFile, GridFile):
 @traced
 @logged
 class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
-  def __init__(self, proj, path, **kwargs):
-    suffix = 'FreeSurf_exten'
+  def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   
   def read(self, **kwargs):
@@ -239,6 +241,13 @@ class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
     #plt.plot(x, z)
     plt.plot(z)
 
+
+@traced
+@logged
+class InterpolFsFile(ExtendedFsFile):
+  def __init__(self, proj, path, **kwargs):
+    suffix = 'FreeSurf_exten_interp'
+    super().__init__(proj, path, suffix, **kwargs)
 
 # -------------------------------------------------------------------------------
 

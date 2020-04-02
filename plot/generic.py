@@ -10,6 +10,29 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 
 
+@traced
+@logged
+def flipy(ax=plt.gca(), **kwargs):
+  ax.invert_yaxis()
+
+
+# -------------------------------------------------------------------------------
+
+@traced
+@logged
+def autect(ax=plt.gca(), **kwargs):
+  ax.set_aspect('auto')
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def aspeqt(ax=plt.gca(), **kwargs):
+  ax.set_aspect('equal')
+
+
 # -------------------------------------------------------------------------------
 
 

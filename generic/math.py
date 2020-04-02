@@ -166,6 +166,15 @@ def normalize(x, **kwargs):
 
 @traced
 @logged
+def sine(t, freq_hz, phase=0, **kwargs):
+  return np.sin(2*np.pi*freq_hz*t + phase)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 def sinc(x, **kwargs):
   """
   Calculate value of the sinc function defined as:
@@ -314,6 +323,7 @@ def kaiser(x, r=3, dipole=False, **kwargs):
   from fullwavepy.generic.math import epsi
   
   assert isinstance(r, int)
+  assert r <= 5 
   
   # OPTIMAL VALUES FOR r=0 (-> None), r=1, ... FROM Hicks2002/Table 1 & 2
   b_optim_mono = [None, 0.00, 1.84, 3.04, 4.14, 5.26] # kmax = 2/3 pi
