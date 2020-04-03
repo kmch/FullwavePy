@@ -6,6 +6,7 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
+from matplotlib.gridspec import GridSpec
 
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets, timer

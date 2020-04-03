@@ -187,6 +187,8 @@ class ProjInput(ProjThroughput):
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
+    
+    from fullwavepy.project.files.gridded.generic import InextFile
     from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile
     from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt
     from fullwavepy.project.files.text.srcrec import SourcesFile, ReceiversFile
@@ -223,6 +225,7 @@ class ProjInput(ProjThroughput):
     self.ghb = self.ghostbin
     self.ghosttxt = GhostDataFileTxt(self.proj, self.path, **kwargs)
     self.ght = self.ghosttxt
+    self.ine = InextFile(self.proj, self.path, **kwargs)
     
     self.s = SourcesFile(self.proj, self.path, **kwargs)
     self.r = ReceiversFile(self.proj, self.path, **kwargs)

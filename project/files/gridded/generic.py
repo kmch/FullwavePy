@@ -108,3 +108,45 @@ class ExtendedGridFile(GridFile):
 
 # -------------------------------------------------------------------------------  
 
+
+@traced
+@logged
+class InextFile(ExtendedGridFile):
+  """
+  """
+  def __init__(self, proj, path, **kwargs):
+    self.name = proj.name + '-InextNodes.txt'
+    self.fname = path + self.name
+    super().__init__(proj, path, **kwargs)
+  
+  # -----------------------------------------------------------------------------
+  
+  def read(self, verbos, **kwargs):
+    from fullwavepy.ioapi.generic import read_txt
+    c = read_txt(self.fname, **kwargs)
+    en1, en2, en3 = c[0]
+    en1, en2, en3 = [int(i) for i in [en1, en2, en3]]
+    data = c[1: ]
+  
+    flags = np.ones((en1, en2, en3)) * 33333 # FOR DEBUGG.
+    i = 0
+    for x in range(en3):
+      for y in range(en2):
+        for z in range(en1):
+          #print this_func, 'data', data#[i]
+          flag = int(data[i][-1])
+          flags[x, y, z] = flag
+          i += 1
+  
+    if verbos > 4:
+      from lib_generic_PLOTT import Plot_Slices_XYZ
+      Plot_Slices_XYZ(vols=[flags], minn=-2, maxx=2)
+ 
+    return flags
+  
+  # -----------------------------------------------------------------------------  
+
+
+# -------------------------------------------------------------------------------
+
+
