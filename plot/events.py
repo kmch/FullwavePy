@@ -23,7 +23,7 @@ class IndexTracker(object):
   def __init__(self, ax, A, istep=1, **kwargs):
     """
     """
-    from fullwavepy.generic.array import slice_array
+    from fullwavepy.ndat.arrays import slice_array
     from fullwavepy.plot.generic import plot_array
     
     scoord = kw('scoord', 'y', kwargs)
@@ -55,7 +55,7 @@ class IndexTracker(object):
     self.update()
 
   def update(self, **kwargs):
-    from fullwavepy.generic.array import slice_array    
+    from fullwavepy.ndat.arrays import slice_array    
     kwargs['svalue'] = self.ind
     a = slice_array(self.A, **kwargs)
     self.im.set_data(a.T)

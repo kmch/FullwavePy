@@ -14,11 +14,6 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets
 
 
-# -------------------------------------------------------------------------------
-# PLOT 2D
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 def compare_2d(A1, A2, **kwargs):
@@ -28,7 +23,7 @@ def compare_2d(A1, A2, **kwargs):
   mode = kw('mode', 'interleave', kwargs)
   
   if mode == 'interleave':
-    from fullwavepy.generic.array import interleave_arrays, Arr3d
+    from fullwavepy.ndat.arrays import interleave_arrays, Arr3d
     A = Arr3d(interleave_arrays(A1, A2, **kwargs))
     A.plot(**kwargs)
     #plt.grid(color='black', linestyle='-.', linewidth=0.7)
@@ -144,11 +139,6 @@ def plot_wiggl(image, **kwargs): #FIXME MOVE TO SEISMIC DATA
     #plt.plot(trace, c='k')
   #plt.gca().invert_yaxis() # DISABLED SINCE IT IS FLIPPED BY ANOTHER FUNCTION
   
-
-# ------------------------------------------------------------------------------
-# FORMAT 2D
-# ------------------------------------------------------------------------------
-
 
 @traced
 @logged

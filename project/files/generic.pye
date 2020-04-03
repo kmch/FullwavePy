@@ -23,9 +23,6 @@ class ProjFile(object):
   Project file.
   
   """
-  
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     """
     

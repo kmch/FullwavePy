@@ -9,7 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.generic.array import Arr3d
+from fullwavepy.ndat.arrays import Arr3d
 
 
 @traced

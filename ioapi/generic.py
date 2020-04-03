@@ -124,7 +124,7 @@ class ArrayFile(File):
     
     """
     if (not hasattr(self, 'array')) or overwrite:
-      from fullwavepy.generic.array import Arr3d
+      from fullwavepy.ndat.arrays import Arr3d
       self.__log.debug('{}.array does not exist and will be read.'.format(type(self)))
       kwargs['scoord'] = kw('scoord', None, kwargs)
       if fname is None:

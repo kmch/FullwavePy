@@ -158,7 +158,7 @@ class SynDataFile(DataFile):
     """
     if (not freq in self.phase) or overwrite:
       from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
-      from fullwavepy.generic.math import rms    
+      from fullwavepy.import import rms    
       self.__log.info('Getting phase info from ' + self.fname)
       
       self.read(**kwargs)

@@ -52,6 +52,8 @@ class GhostDataFileTxt(AsciiProjFile):
     weights : list
     
     """
+    from fullwavepy.immerse.points import Ghosts
+    
     ct = super().read(**kwargs)
     
     header = ct[0]

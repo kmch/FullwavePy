@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.generic.array import Arr3d
+from fullwavepy.ndat.arrays import Arr3d
 
 
 @traced
@@ -37,16 +37,50 @@ class Surf(Arr3d):
 @logged
 class SurfZ(Surf):
   """
-  Surface of the form z = z(x,y).
+  Surface of the form z = f(x,y).
   
   """
   def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', [], kwargs)
     self.plot_slice(slice_at='z', **kwargs)
-    #self.array = self.read(**kwargs)
-    #shape = self.array.shape
-    #self.array = 
 
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Plane(SurfZ):
+  """
+  Plane dipping along X.
+  
+  Parameters
+  ----------
+  z0 : float
+    GENERALIZE TO ANY ANGLE
+  tilt_angle : float
+    Dip.
+  tilt_azim : float 
+    Angle 0-360 deg: 0 <=> dip along X.
+  
+  
+  """
+  def __new__(cls, dims, z0, tilt_angle, tilt_azim=0, **kwargs):
+    """
+    """
+    from fullwavepy.import import linear
+    assert len(dims) == 3
+    if dims[-1] != 1:
+      cls.__log.warn('Replacing nz=%s with nz=1' % dims[-1])
+      dims = np.copy(dims) # OTHERWISE OVERWRITES proj.dims IF PASSED AS DIMS
+      dims[-1] = 1
+    
+    source = np.zeros(dims)
+    arr = super().__new__(cls, source, **kwargs)
+    
+    for y in range(dims[1]):
+      arr[:, y, 0] = linear(np.arange(dims[0]), tilt_angle, z0)
+    return arr
+    
 
 # -------------------------------------------------------------------------------
 
@@ -71,4 +105,6 @@ class SurfXYZ(Surf):
 
 
 # -------------------------------------------------------------------------------
+
+
 

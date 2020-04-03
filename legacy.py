@@ -38,7 +38,7 @@ def read_arrays(*args, **kwargs):
   in the notebook which may come in handy.
   
   """
-  from fullwavepy.generic.array import slice_array, modify_array
+  from fullwavepy.ndat.arrays import slice_array, modify_array
   
   arrays = []
   for arg in args:
@@ -289,7 +289,7 @@ def plot_image_OLD(image, **kwargs):
   
   # SET CORRECT Y-AXIS FOR SPECTRAL PLOTS
   if 'spect' in kwargs:
-    from fullwavepy.generic.math import dft_freqs
+    from fullwavepy.import import dft_freqs
     nsamps, ntraces = imageT.shape
     y = dft_freqs(nsamps, which='positive', **kwargs)
     imageT = np.array(imageT[ :len(y)])

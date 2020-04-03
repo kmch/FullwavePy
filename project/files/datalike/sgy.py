@@ -358,11 +358,11 @@ class RawSignFile(DataFileSgy):
         raise TypeError('You need to provide fpeak argument.')
       
       if wavelet == 'ricker':
-        from fullwavepy.generic.math import ricker
+        from fullwavepy.math.funcs import ricker
         array = ricker(fpeak, self.proj.ns, self.proj.dt)
       
       elif wavelet == 'gauss':
-        from fullwavepy.generic.math import gauss
+        from fullwavepy.import import gauss
         self.__log.warn('Actually fpeak is WRONG, it is tpeak')
         sigma = kw('sigma', 1, kwargs)
         self.__log.info('Assuming sigma=%s' % sigma)
@@ -391,7 +391,7 @@ class RawSignFile(DataFileSgy):
     Convert into a 1D array.
     
     """
-    from fullwavepy.generic.array import Arr1d
+    from fullwavepy.ndat.arrays import Arr1d
     a = super().read(**kwargs)
     
     #assert a.shape[:2] == (1,1) # WE ASSUME shape=(1,1,nsamp)

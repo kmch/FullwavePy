@@ -16,9 +16,6 @@ from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class GridFile(ArrayProjFile):

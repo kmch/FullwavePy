@@ -10,6 +10,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.points import Point
+from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
 @traced
@@ -30,7 +31,6 @@ class Monopole(SrcRec):
   """
   """
   def spread(self, r, **kwargs):
-    from fullwavepy.generic.math import kaiser, sinc
     func = lambda x : kaiser(x, r) * sinc(x)
     funcs = [func for i in range(len(self))]
     return super().spread(r, funcs, **kwargs)
@@ -55,8 +55,6 @@ class Dipole(SrcRec):
   # -----------------------------------------------------------------------------
   
   def spread(self, r, **kwargs):
-    from fullwavepy.generic.math import kaiser, sinc, dsinc_dx
-    
     func1 = lambda x : kaiser(x, r) * sinc(x) 
     func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
     

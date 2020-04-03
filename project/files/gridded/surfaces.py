@@ -9,12 +9,9 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
-from fullwavepy.generic.array import Arr
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import ArrayProjFile, BinaryProjFile, AsciiProjFile
-from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
-from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
+from fullwavepy.project.files.generic import ArrayProjFile
 from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
 
 
@@ -22,8 +19,20 @@ from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
 @logged
 class SurfaceFile(ArrayProjFile, VtrFile):
   """
-  Free surface or a model
-  interface.
+  File storing a model boundary (e.g. free surface) 
+  or interface.
+  
+  Notes
+  -----
+  At the moment it assumes the surface to be 
+  a function z = f(x,y), i.e. it doesn't allow
+  overhangs etc. 
+
+  This implies it has a shape (nx, ny, 1) because
+  there is only one z value per (x,y).
+  
+  Such an array can be stored in a vtr file and 
+  that is what we do here.
   
   """
   def __init__(self, suffix, proj, path, **kwargs):
@@ -33,8 +42,19 @@ class SurfaceFile(ArrayProjFile, VtrFile):
     self.fname = path + self.name
     super().__init__(proj, path, **kwargs)
 
+  # -----------------------------------------------------------------------------
+  
+  def read(self, **kwargs):
+    from fullwavepy.ndat.manifs import SurfZ
+    self.array = SurfZ(super().read(**kwargs))
+    return self.array
+    
+  # -----------------------------------------------------------------------------
+  
   def plot(self, *args, **kwargs):
     self.plot2d(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
   
   def plot2d(self, **kwargs):
     self.array = self.read(**kwargs)
@@ -44,6 +64,8 @@ class SurfaceFile(ArrayProjFile, VtrFile):
     x = np.arange(0, len(self.array))
     z = self.array[:,0,0]
     plt.plot(x, z)
+
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------  

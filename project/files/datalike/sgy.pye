@@ -32,8 +32,8 @@ class DataFileSgy(DataFile, SgyFile):
     """
     
     """  
-    from fullwavepy.project.files.index import IndexFile
-    from fullwavepy.project.files.templates import HedFile
+    from fullwavepy.project.files.other.index import IndexFile
+    from fullwavepy.project.files.text.hed import HedFile
     self.suffix = suffix
     self.ext = 'sgy'
     self.idx = IndexFile(suffix, proj, path, **kwargs) # SIMILAR TO TEMPLATE
@@ -170,7 +170,7 @@ class TemplateFileSgy(DataFileSgy):
     """
     
     """ 
-    from fullwavepy.project.files.index import IndexFile
+    from fullwavepy.project.files.other.index import IndexFile
     suffix = 'Template'
     self.idx = IndexFile(suffix, proj, path, **kwargs)
     self.hed = HedFile(suffix, proj, path, **kwargs) # NOT SURE THIS FILE IS CREATED BY SegyPrep
@@ -358,7 +358,7 @@ class RawSignFile(DataFileSgy):
         raise TypeError('You need to provide fpeak argument.')
       
       if wavelet == 'ricker':
-        from fullwavepy.generic.math import ricker
+        from fullwavepy.math.funcs import ricker
         array = ricker(fpeak, self.proj.ns, self.proj.dt)
       
       elif wavelet == 'gauss':
@@ -391,7 +391,7 @@ class RawSignFile(DataFileSgy):
     Convert into a 1D array.
     
     """
-    from fullwavepy.generic.array import Arr1d
+    from fullwavepy.ndat.arrays import Arr1d
     a = super().read(**kwargs)
     
     #assert a.shape[:2] == (1,1) # WE ASSUME shape=(1,1,nsamp)

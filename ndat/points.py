@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.generic.array import Arr
+from fullwavepy.ndat.arrays import Arr
 
 
 @traced
@@ -42,7 +42,7 @@ class Point(np.ndarray):
     to be the last and thus fastest-changing (np.arrays are row-major) index.
     
     """
-    from fullwavepy.generic.math import neighs1d
+    from fullwavepy.import import neighs1d
 
     ranges = []
     for i in self:

@@ -33,7 +33,7 @@ def compare(arg1, arg2, **kwargs):
   e.g. to color-fill the area between them.
   
   """
-  from fullwavepy.generic.array import Arr3d
+  from fullwavepy.ndat.arrays import Arr3d
   
   A1 = Arr3d(arg1)
   A2 = Arr3d(arg2)

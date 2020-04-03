@@ -658,7 +658,7 @@ class ProjGeometry(object): # FIXME: CLEAN
     
     """
     from pandas import read_csv
-    from fullwavepy.generic.array import list2str
+    from fullwavepy.ndat.arrays import list2str
     
     if receivers_csv is None:
       self.__log.warning('No receivers_csv file provided. Returning none.')

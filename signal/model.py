@@ -59,7 +59,7 @@ def gauss(dims, centers, radius, **kwargs):
   vectorized.
   
   """
-  from fullwavepy.generic.math import gauss as gaussian
+  from fullwavepy.import import gauss as gaussian
   coords = np.indices(dims)
   A = np.zeros(dims)
   for center in centers: 

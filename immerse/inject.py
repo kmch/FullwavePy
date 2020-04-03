@@ -13,7 +13,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.array import Arr3d
+from fullwavepy.ndat.arrays import Arr3d
 
 
 #def inject():
