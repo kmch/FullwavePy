@@ -40,13 +40,16 @@ class Arr(np.ndarray):
 
   # -----------------------------------------------------------------------------   
   
-  def _set_extent(obj, **kwargs):    
+  def _set_extent(obj, func=None, **kwargs):    
+    if func is None:
+      func = lambda dim : [0, dim-1]
+    
     if 'extent' in kwargs:
       obj.extent = kwargs['extent']
     else:
       obj.extent = []
       for dim in obj.shape:
-        obj.extent.append([0, dim-1])
+        obj.extent.append(func(dim))
     return obj
 
   # -----------------------------------------------------------------------------
@@ -61,6 +64,7 @@ class Arr(np.ndarray):
     """
     from fullwavepy.seismic.data import Data
     from fullwavepy.ndat.manifs import Surf, SurfZ, Plane
+    from fullwavepy.ndat.points import Points, Nodes
     
     if (type(source) == type(np.array([])) or 
         type(source) == Arr or
@@ -71,6 +75,8 @@ class Arr(np.ndarray):
         type(source) == Surf or
         type(source) == SurfZ or
         type(source) == Plane or
+        type(source) == Points or
+        type(source) == Nodes or
         type(source) == np.memmap):
       A = source    
 
@@ -177,7 +183,7 @@ class Arr2d(Arr):
     """
     from fullwavepy.plot.twod import plot_image, plot_wiggl
     
-    #kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
+    kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
     
     # IT SHOULDN'T BE APPLIED TWICE!
     self = modify_array(self, **kwargs)
@@ -212,9 +218,15 @@ class Arr3d(Arr):
     axis = di[slice_at]
     A = Arr2d(np.take(self, indices=node, axis=axis))
     
-    extent2d = [el for i, el in enumerate(self.extent) if i != di[slice_at]]
+    extent2d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+    
+    if axis != 2:
+      self.__log.debug('Setting extent2d so that no vertical-axis flipping is needed.')
+      extent2d[-2: ] = [extent2d[-1], extent2d[-2]]
     self.__log.debug('extent2d: ' + str(extent2d))
-    A.extent = np.ravel(extent2d)
+    
+    A.extent = extent2d
+    
     return A
   
   # -----------------------------------------------------------------------------

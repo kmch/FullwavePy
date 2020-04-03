@@ -13,19 +13,22 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
 
 
+
 @traced
 @logged
-class ProjObj(object):
+class ProjGrid(object):
+  """
+  """
   def __init__(self, proj, **kwargs):
     self.proj = proj
-  
-  
+
+
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
-class ProjBox(ProjObj):
+class ProjBox(object):
   """
   """
   def __init__(self, proj, **kwargs):
@@ -62,6 +65,311 @@ class ProjBox(ProjObj):
 
   # -----------------------------------------------------------------------------
 
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjGeometry(object):
+  """
+  Class storing information on the geometry 
+  of the project i.e.:
+  - grid geometry (dimensions, interval)
+  - acquisition geometry (sources and receivers positions
+    of the experiment as a whole)
+  
+  """  
+  def __init__(self, proj, reciprocity=True, **kwargs):  
+    """
+    
+    """
+    self.proj = proj
+    
+    # FOLD OUT geom IN kwargs IF IT'S PROVIDED AS A SUBDIR OF KWARGS
+    if 'geom' in kwargs:
+      geom = kwargs['geom']
+      assert isinstance(geom, dict)
+      del kwargs['geom']
+      kwargs = {**kwargs, **geom}
+    
+    
+    for f in [proj.inp.sp, proj.inp.runfile]:
+      if exists(f.fname):
+        # THIS SHOULD CREATE f.params DICTIONARY
+        f.read()
+      else:
+        self.__log.warn(f.fname + ' not found.')
+    
+    self._set_discret(**kwargs)
+    self._extend_grid(**kwargs)
+    self.__log.debug('Double-check _retain_rreceivers')
+    #self._retain_receivers(**kwargs)
+    
+    if self.proj.dims[1] == 1:
+      self.proj.dim = '2d'
+    
+    # PRINT INFO
+    box_attrs = ['x1', 'x2', 'y1', 'y2', 'z1', 'z2']
+    box_values = self.proj.box
+    attrs = ['dx', 'nx1', 'nx2', 'nx3', 'nn', 'ttime', 'dt', 'ns']
+    values = [getattr(self.proj, attr) for attr in attrs]
+    attrs = box_attrs + attrs
+    values = box_values + values
+    # WIDTH = 41 = 20 + 20 + 1 (colon)
+    self.__log.info('\n' + '{:-^41}'.format('') + '\nProject geometry' + 
+                    '\n' + '{:-^41}'.format('') + 
+                    ''.join(['\n' + '{:<20}'.format(key) + ':' + '{:>20}'.format(value) 
+                    for key, value in zip(attrs, values)]))     
+
+  # -----------------------------------------------------------------------------
+  
+  def _set_discret(self, **kwargs):
+    """
+    Set discretization params for both 
+    space and time.
+    
+    Notes
+    -----
+    Time discretisation can be read only
+    from data files and/or segyprep.key.
+    Parsing data files is not added yet.
+
+    In SI units (metres, seconds).    
+    
+    """  
+    from functools import reduce
+    
+    proj = self.proj
+    
+    sources = [type('Kwargs', (object,), 
+                    {'fname' : 'kwargs', 'params': kwargs}),
+               proj.inp.sp, proj.inp.runfile]
+    
+    self.__log.debug('Searching for grid dimensions in ' +
+                    ', '.join([i.fname for i in sources]))
+    
+    # SEARCH FOR PARAMS IN VARIOUS PLACES
+    for param in ['dx', 'box', 'dims', 'nx1', 'nx2', 'nx3', 'dt', 'dtms', 'ttime', 'ns']:
+      val = None
+      for source in sources:
+        if val is None: # OVERWRITE ONLY IF NOT FOUND PREVIOUSLY
+          val = kw(param, None, source.params)
+          setattr(proj, param, val)
+    
+    # DEAL WITH TIME-DISCR. READ FROM SP.key
+    if getattr(proj, 'dt') is None:
+      if getattr(proj, 'dtms') is None:
+        raise TypeError('Neither dt nor dtms found in any of: ' + 
+                      ', '.join([i.fname for i in sources]))
+      else:
+        setattr(proj, 'dt', float(getattr(proj, 'dtms')))
+
+    if getattr(proj, 'ns') is None:
+      dt = getattr(proj, 'dt')
+      ttime = getattr(proj, 'ttime')
+      if dt is not None and ttime is not None:
+        ns = int(float(ttime) / (float(dt) * 1000))
+        setattr(proj, 'ns', ns)
+    
+    # SET THE PRIMARY PARAMS
+    for param in ['dx', 'dt', 'ns']:
+      if getattr(proj, param) is None:
+        raise TypeError(param+str(' not found in any of: ' + 
+                      ', '.join([i.fname for i in sources])))
+      else:
+        setattr(proj, param, float(getattr(proj, param)))
+    
+    param = 'ns'
+    setattr(proj, param, int(getattr(proj, param)))
+    
+    if proj.box is not None:
+      self.__log.debug('Setting proj.dims based on the box provided.')
+      proj.dims = self.box2dims(proj.box, proj.dx)
+    
+    elif proj.dims is not None:
+      self.__log.debug('Setting proj.box based on the dims provided.')
+      proj.box = self.dims2box(proj.dims, proj.dx)
+    
+    elif ((proj.nx1 is not None) and (proj.nx2 is not None) and 
+          (proj.nx3 is not None)):
+      self.__log.debug('Setting proj.box and proj.dims based on' + 
+                       ' the nx1, nx2, nx3 provided.')
+      proj.dims = [int(i) for i in [proj.nx1, proj.nx2, proj.nx3]]
+      proj.box = self.dims2box(proj.dims, proj.dx)
+    
+    else:
+      raise IOError('Grid dimensions not specified correctly. Provide' +
+                    ' a box, dims or all nx1, nx2, nx3 in any of: ' + 
+                    ', '.join([i.fname for i in sources]))
+      
+    proj.nx1, proj.nx2, proj.nx3 = proj.dims
+    proj.nn = reduce((lambda x, y: x * y), proj.dims) # TOTAL NO. OF NODES
+    proj.ttime = proj.ns * proj.dt
+    
+    if proj.nx2 == 1:
+      proj.dim = '2d' # FIXME HERE?
+    
+  # ----------------------------------------------------------------------------- 
+ 
+  def _extend_grid(self, **kwargs):
+    """
+    (by e nodes, see the runfile).
+    
+    Parameters
+    ----------
+    Returns
+    -------
+    etop : float 
+      No. of e nodes added to the top edge.
+    eleft  : float 
+      No. of e nodes added to the left edge.
+    efront  : float 
+      No. of e nodes added to the front edge.
+      
+    Notes
+    -----
+    It must be consistent with what Fullwave3D does!
+    It should also be synced with io_mod.f90/Set_Aux_Variables.
+    
+    """
+    runfile = self.proj.inp.runfile
+    
+    if not exists(runfile.fname):
+      self.__log.warn(runfile.fname + ' not found. Cannot read extra nodes.')
+      return
+    
+    err = False
+    params = ['btop', 'bbot', 'bleft', 'bright',
+              'etop', 'ebot', 'elef', 'erig',]
+    
+    if self.proj.dim == '3d':
+      params += ['bfront', 'bback', 
+                 'efro', 'ebac']
+    
+    for param in params:    
+      try:
+        val = int(runfile.params[param])
+        setattr(self.proj, param, val)
+      except KeyError:
+        err = True
+        self.__log.warn(param + ' missing from ' + runfile.fname)
+        
+    if err:    
+      self.__log.warn('Failed to extend_grid. Some of the boundaries info missing.')
+    else:
+      if (self.proj.btop == 0) and (self.proj.etop < 2):
+        self.proj.etop += 2
+      if (self.proj.bbot == 0) and (self.proj.ebot < 2):
+        self.proj.ebot += 2
+      if (self.proj.bleft == 0) and (self.proj.elef < 2):
+        self.proj.elef += 2
+      if (self.proj.bright == 0) and (self.proj.erig < 2):
+        self.proj.erig += 2
+      
+      self.proj.enx1 = self.proj.nx1 + self.proj.elef + self.proj.erig
+      self.proj.enx3 = self.proj.nx3 + self.proj.etop + self.proj.ebot
+      
+      if self.proj.dim == '3d':
+        if (self.proj.bfront == 0) and (self.proj.efro < 2):
+          self.proj.efro += 2
+        if (self.proj.bback == 0) and (self.proj.ebac < 2):
+          self.proj.ebac += 2    
+      
+        self.proj.enx2 = self.proj.nx2 + self.proj.efro + self.proj.ebac
+      else:
+        self.proj.enx2 = self.proj.nx2
+    
+    
+    
+    
+    if self.proj.dim == '2d': # FIXME AD-HOC
+      self.proj.enx2 = 1
+    
+    #if verbos > 1:
+      #print(this_func, 'etop, eleft, efront', etop, eleft, efront)  
+      #print(this_func, 'ebot, eright, eback', ebot, eright, eback)  
+ 
+  # -----------------------------------------------------------------------------
+  
+  def dims2box(self, dims, dx, **kwargs):
+    """
+    
+    """
+    nx1, nx2, nx3 = [int(i) for i in dims]
+    x1 = 0
+    x2 = (nx1 - 1) * dx
+    y1 = 0
+    y2 = (nx2 - 1) * dx
+    z1 = 0
+    z2 = (nx3 - 1) * dx
+    box = [x1, x2, y1, y2, z1, z2]    
+    return box
+
+  # -----------------------------------------------------------------------------
+  
+  def box2dims(self, box, dx, **kwargs):
+    """
+    Add:
+    Should be checking if it's really int.
+    """
+    x1, x2, y1, y2, z1, z2 = box
+    nx1 = int((x2 - x1) / dx) + 1 
+    nx2 = int((y2 - y1) / dx) + 1  
+    nx3 = int((z2 - z1) / dx) + 1     
+    dims = (nx1, nx2, nx3)
+    return dims
+
+  # -----------------------------------------------------------------------------
+    
+  def _retain_receivers(self, receivers_csv=None, **kwargs): # FIXME:DEL
+    """
+    Find the receivers that are contained 
+    in the box.
+    
+    Notes
+    -----
+    It makes RawSeis.txt contain as few data 
+    files as possible. This is essential 
+    for SegyPrep runs not to be 
+    ridiculuously slow (as they are 
+    for ~100 huge receiver files)
+    
+    It takes advantage of pre-prepared 
+    lists of all sources and receivers 
+    (within the box used by Ben as of 15.05.2019)
+    
+    """
+    from pandas import read_csv
+    from fullwavepy.ndat.arrays import list2str
+    
+    if receivers_csv is None:
+      self.__log.warning('No receivers_csv file provided. Returning none.')
+      return
+    
+    df = read_csv(receivers_csv)
+    
+    retained = []
+    
+    for i in df.index: 
+      x = float(df['x'][i])
+      y = float(df['y'][i])
+      
+      if (x > self.proj.box[0]) and (x < self.proj.box[1]):
+        if (y > self.proj.box[2]) and (y < self.proj.box[3]):
+          retained.append(df['id'][i])
+    
+    n = len(retained)
+    self.__log.info('List of ' + str(n) + ' retained receivers: ' + 
+                    list2str(retained))    
+    
+    if n == 0:
+      raise ValueError('No receivers contained in the box!')
+    
+    self.proj.r_retained = retained
+    
+  # -----------------------------------------------------------------------------
+  
 
 # -------------------------------------------------------------------------------
 
@@ -379,314 +687,5 @@ class ProjSegyMapp(object):
     self.hw = hw
   
   
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class ProjGeometry(object): # FIXME: CLEAN
-  """
-  Class storing information on the geometry 
-  of the project i.e.:
-  - grid geometry (dimensions, interval)
-  - acquisition geometry (sources and receivers positions
-    of the experiment as a whole)
-  
-  """  
-
-  # -----------------------------------------------------------------------------  
-  
-  def __init__(self, proj, reciprocity=True, **kwargs):  
-    """
-    
-    """
-    self.proj = proj
-    
-    # FOLD OUT geom IN kwargs IF IT'S PROVIDED AS A SUBDIR OF KWARGS
-    if 'geom' in kwargs:
-      geom = kwargs['geom']
-      assert isinstance(geom, dict)
-      del kwargs['geom']
-      kwargs = {**kwargs, **geom}
-    
-    
-    for f in [proj.inp.sp, proj.inp.runfile]:
-      if exists(f.fname):
-        # THIS SHOULD CREATE f.params DICTIONARY
-        f.read()
-      else:
-        self.__log.warn(f.fname + ' not found.')
-    
-    self._set_discret(**kwargs)
-    self._extend_grid(**kwargs)
-    self.__log.debug('Double-check _retain_rreceivers')
-    #self._retain_receivers(**kwargs)
-    
-    if self.proj.dims[1] == 1:
-      self.proj.dim = '2d'
-    
-    # PRINT INFO
-    box_attrs = ['x1', 'x2', 'y1', 'y2', 'z1', 'z2']
-    box_values = self.proj.box
-    attrs = ['dx', 'nx1', 'nx2', 'nx3', 'nn', 'ttime', 'dt', 'ns']
-    values = [getattr(self.proj, attr) for attr in attrs]
-    attrs = box_attrs + attrs
-    values = box_values + values
-    # WIDTH = 41 = 20 + 20 + 1 (colon)
-    self.__log.info('\n' + '{:-^41}'.format('') + '\nProject geometry' + 
-                    '\n' + '{:-^41}'.format('') + 
-                    ''.join(['\n' + '{:<20}'.format(key) + ':' + '{:>20}'.format(value) 
-                    for key, value in zip(attrs, values)]))     
-
-  # -----------------------------------------------------------------------------
-  
-  def _set_discret(self, **kwargs):
-    """
-    Set discretization params for both 
-    space and time.
-    
-    Notes
-    -----
-    Time discretisation can be read only
-    from data files and/or segyprep.key.
-    Parsing data files is not added yet.
-
-    In SI units (metres, seconds).    
-    
-    """  
-    from functools import reduce
-    
-    proj = self.proj
-    
-    sources = [type('Kwargs', (object,), 
-                    {'fname' : 'kwargs', 'params': kwargs}),
-               proj.inp.sp, proj.inp.runfile]
-    
-    self.__log.debug('Searching for grid dimensions in ' +
-                    ', '.join([i.fname for i in sources]))
-    
-    # SEARCH FOR PARAMS IN VARIOUS PLACES
-    for param in ['dx', 'box', 'dims', 'nx1', 'nx2', 'nx3', 'dt', 'dtms', 'ttime', 'ns']:
-      val = None
-      for source in sources:
-        if val is None: # OVERWRITE ONLY IF NOT FOUND PREVIOUSLY
-          val = kw(param, None, source.params)
-          setattr(proj, param, val)
-    
-    # DEAL WITH TIME-DISCR. READ FROM SP.key
-    if getattr(proj, 'dt') is None:
-      if getattr(proj, 'dtms') is None:
-        raise TypeError('Neither dt nor dtms found in any of: ' + 
-                      ', '.join([i.fname for i in sources]))
-      else:
-        setattr(proj, 'dt', float(getattr(proj, 'dtms')))
-
-    if getattr(proj, 'ns') is None:
-      dt = getattr(proj, 'dt')
-      ttime = getattr(proj, 'ttime')
-      if dt is not None and ttime is not None:
-        ns = int(float(ttime) / (float(dt) * 1000))
-        setattr(proj, 'ns', ns)
-    
-    # SET THE PRIMARY PARAMS
-    for param in ['dx', 'dt', 'ns']:
-      if getattr(proj, param) is None:
-        raise TypeError(param+str(' not found in any of: ' + 
-                      ', '.join([i.fname for i in sources])))
-      else:
-        setattr(proj, param, float(getattr(proj, param)))
-    
-    param = 'ns'
-    setattr(proj, param, int(getattr(proj, param)))
-    
-    if proj.box is not None:
-      self.__log.debug('Setting proj.dims based on the box provided.')
-      proj.dims = self.box2dims(proj.box, proj.dx)
-    
-    elif proj.dims is not None:
-      self.__log.debug('Setting proj.box based on the dims provided.')
-      proj.box = self.dims2box(proj.dims, proj.dx)
-    
-    elif ((proj.nx1 is not None) and (proj.nx2 is not None) and 
-          (proj.nx3 is not None)):
-      self.__log.debug('Setting proj.box and proj.dims based on' + 
-                       ' the nx1, nx2, nx3 provided.')
-      proj.dims = [int(i) for i in [proj.nx1, proj.nx2, proj.nx3]]
-      proj.box = self.dims2box(proj.dims, proj.dx)
-    
-    else:
-      raise IOError('Grid dimensions not specified correctly. Provide' +
-                    ' a box, dims or all nx1, nx2, nx3 in any of: ' + 
-                    ', '.join([i.fname for i in sources]))
-      
-    proj.nx1, proj.nx2, proj.nx3 = proj.dims
-    proj.nn = reduce((lambda x, y: x * y), proj.dims) # TOTAL NO. OF NODES
-    proj.ttime = proj.ns * proj.dt
-    
-    if proj.nx2 == 1:
-      proj.dim = '2d' # FIXME HERE?
-    
-    
-  # ----------------------------------------------------------------------------- 
- 
-  def _extend_grid(self, **kwargs):
-    """
-    (by e nodes, see the runfile).
-    
-    Parameters
-    ----------
-    Returns
-    -------
-    etop : float 
-      No. of e nodes added to the top edge.
-    eleft  : float 
-      No. of e nodes added to the left edge.
-    efront  : float 
-      No. of e nodes added to the front edge.
-      
-    Notes
-    -----
-    It must be consistent with what Fullwave3D does!
-    It should also be synced with io_mod.f90/Set_Aux_Variables.
-    
-    """
-    runfile = self.proj.inp.runfile
-    
-    if not exists(runfile.fname):
-      self.__log.warn(runfile.fname + ' not found. Cannot read extra nodes.')
-      return
-    
-    err = False
-    params = ['btop', 'bbot', 'bleft', 'bright',
-              'etop', 'ebot', 'elef', 'erig',]
-    
-    if self.proj.dim == '3d':
-      params += ['bfront', 'bback', 
-                 'efro', 'ebac']
-    
-    for param in params:    
-      try:
-        val = int(runfile.params[param])
-        setattr(self.proj, param, val)
-      except KeyError:
-        err = True
-        self.__log.warn(param + ' missing from ' + runfile.fname)
-        
-    if err:    
-      self.__log.warn('Failed to extend_grid. Some of the boundaries info missing.')
-    else:
-      if (self.proj.btop == 0) and (self.proj.etop < 2):
-        self.proj.etop += 2
-      if (self.proj.bbot == 0) and (self.proj.ebot < 2):
-        self.proj.ebot += 2
-      if (self.proj.bleft == 0) and (self.proj.elef < 2):
-        self.proj.elef += 2
-      if (self.proj.bright == 0) and (self.proj.erig < 2):
-        self.proj.erig += 2
-      
-      self.proj.enx1 = self.proj.nx1 + self.proj.elef + self.proj.erig
-      self.proj.enx3 = self.proj.nx3 + self.proj.etop + self.proj.ebot
-      
-      if self.proj.dim == '3d':
-        if (self.proj.bfront == 0) and (self.proj.efro < 2):
-          self.proj.efro += 2
-        if (self.proj.bback == 0) and (self.proj.ebac < 2):
-          self.proj.ebac += 2    
-      
-        self.proj.enx2 = self.proj.nx2 + self.proj.efro + self.proj.ebac
-      else:
-        self.proj.enx2 = self.proj.nx2
-    
-    
-    
-    
-    if self.proj.dim == '2d': # FIXME AD-HOC
-      self.proj.enx2 = 1
-    
-    #if verbos > 1:
-      #print(this_func, 'etop, eleft, efront', etop, eleft, efront)  
-      #print(this_func, 'ebot, eright, eback', ebot, eright, eback)  
- 
-  # -----------------------------------------------------------------------------
-  
-  def dims2box(self, dims, dx, **kwargs):
-    """
-    
-    """
-    nx1, nx2, nx3 = [int(i) for i in dims]
-    x1 = 0
-    x2 = (nx1 - 1) * dx
-    y1 = 0
-    y2 = (nx2 - 1) * dx
-    z1 = 0
-    z2 = (nx3 - 1) * dx
-    box = [x1, x2, y1, y2, z1, z2]    
-    return box
-
-  # -----------------------------------------------------------------------------
-  
-  def box2dims(self, box, dx, **kwargs):
-    """
-    Add:
-    Should be checking if it's really int.
-    """
-    x1, x2, y1, y2, z1, z2 = box
-    nx1 = int((x2 - x1) / dx) + 1 
-    nx2 = int((y2 - y1) / dx) + 1  
-    nx3 = int((z2 - z1) / dx) + 1     
-    dims = (nx1, nx2, nx3)
-    return dims
-
-  # -----------------------------------------------------------------------------
-    
-  def _retain_receivers(self, receivers_csv=None, **kwargs): # FIXME:DEL
-    """
-    Find the receivers that are contained 
-    in the box.
-    
-    Notes
-    -----
-    It makes RawSeis.txt contain as few data 
-    files as possible. This is essential 
-    for SegyPrep runs not to be 
-    ridiculuously slow (as they are 
-    for ~100 huge receiver files)
-    
-    It takes advantage of pre-prepared 
-    lists of all sources and receivers 
-    (within the box used by Ben as of 15.05.2019)
-    
-    """
-    from pandas import read_csv
-    from fullwavepy.ndat.arrays import list2str
-    
-    if receivers_csv is None:
-      self.__log.warning('No receivers_csv file provided. Returning none.')
-      return
-    
-    df = read_csv(receivers_csv)
-    
-    retained = []
-    
-    for i in df.index: 
-      x = float(df['x'][i])
-      y = float(df['y'][i])
-      
-      if (x > self.proj.box[0]) and (x < self.proj.box[1]):
-        if (y > self.proj.box[2]) and (y < self.proj.box[3]):
-          retained.append(df['id'][i])
-    
-    n = len(retained)
-    self.__log.info('List of ' + str(n) + ' retained receivers: ' + 
-                    list2str(retained))    
-    
-    if n == 0:
-      raise ValueError('No receivers contained in the box!')
-    
-    self.proj.r_retained = retained
-    
-  # -----------------------------------------------------------------------------
-  
-
 # -------------------------------------------------------------------------------
 

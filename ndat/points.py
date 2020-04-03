@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.ndat.arrays import Arr
+from fullwavepy.ndat.arrays import Arr3d
 
 
 @traced
@@ -104,7 +104,7 @@ class Point(np.ndarray):
 
 @traced
 @logged
-class Points(Arr):
+class Points(Arr3d):
   """
   """
   def info():
@@ -113,6 +113,10 @@ class Points(Arr):
     raise NotImplementedError
   def compare_subplots():
     raise NotImplementedError  
+  #def scatter
+  def plot(self, **kwargs):
+    kwargs['cmap'] = kw('cmap', 'magma_r', kwargs)
+    super().plot(**kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -121,9 +125,22 @@ class Points(Arr):
 @traced
 @logged
 class Nodes(Points):
-  pass # check if all int
+  """
+  Array of grid nodes (=> integer coords)
   
+  check if all int
+  """
+  def _set_extent(obj, **kwargs):
+    """
+    Overwrite standard extent to account for the fact
+    that 0th element of a gird is a node no. 1!
+    
+    """
+    func = lambda dim : [1, dim] # NOT [0, dim-1]
+    return super()._set_extent(func, **kwargs) # PASSING obj NOT ALLOWED FOR SOME REASON
+
 
 # -------------------------------------------------------------------------------
+
 
 

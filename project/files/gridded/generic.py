@@ -10,9 +10,11 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 
-from fullwavepy.project.files.generic import ArrayProjFile
+from fullwavepy.ndat.arrays import Arr3d
+from fullwavepy.ndat.points import Nodes
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
+from fullwavepy.project.files.generic import ArrayProjFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 
 
@@ -121,32 +123,18 @@ class InextFile(ExtendedGridFile):
   
   # -----------------------------------------------------------------------------
   
-  def read(self, verbos, **kwargs):
+  def read(self, **kwargs):
     from fullwavepy.ioapi.generic import read_txt
-    c = read_txt(self.fname, **kwargs)
-    en1, en2, en3 = c[0]
-    en1, en2, en3 = [int(i) for i in [en1, en2, en3]]
-    data = c[1: ]
-  
-    flags = np.ones((en1, en2, en3)) * 33333 # FOR DEBUGG.
-    i = 0
-    for x in range(en3):
-      for y in range(en2):
-        for z in range(en1):
-          #print this_func, 'data', data#[i]
-          flag = int(data[i][-1])
-          flags[x, y, z] = flag
-          i += 1
-  
-    if verbos > 4:
-      from lib_generic_PLOTT import Plot_Slices_XYZ
-      Plot_Slices_XYZ(vols=[flags], minn=-2, maxx=2)
- 
-    return flags
+    c = read_txt(self.fname)
+    c = [[float(i) for i in j] for j in c]
+    h = [int(i) for i in c[0]]
+    d = np.array(c[1: ])
+    self.points = Nodes(d.reshape(h + [4])[:,:,:,-1])
+    return self.points
   
   # -----------------------------------------------------------------------------  
-
-
+  
+  
 # -------------------------------------------------------------------------------
 
 
