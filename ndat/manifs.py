@@ -67,7 +67,7 @@ class Plane(SurfZ):
   def __new__(cls, dims, z0, tilt_angle, tilt_azim=0, **kwargs):
     """
     """
-    from fullwavepy.import import linear
+    from fullwavepy.math.funcs import linear
     assert len(dims) == 3
     if dims[-1] != 1:
       cls.__log.warn('Replacing nz=%s with nz=1' % dims[-1])

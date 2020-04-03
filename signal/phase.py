@@ -53,7 +53,7 @@ def extract_phase(A, picks, dt, freq, **kwargs):
   
   """
   from fullwavepy.plot.generic import plot
-  from fullwavepy.import import dft
+  from fullwavepy.math.fourier import dft
   
   A, _ = _window_data(A, picks, **kwargs)
   phase = np.zeros(picks.shape)
@@ -121,7 +121,7 @@ def _gauss_window(nsamp, center, gauss_alpha=80, **kwargs):
   -----
   
   """
-  from fullwavepy.import import gauss
+  from fullwavepy.math.funcs import gauss
   
   sigma = gauss_alpha / np.sqrt(2)  
   win = np.arange(nsamp)

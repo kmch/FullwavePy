@@ -42,7 +42,7 @@ class Point(np.ndarray):
     to be the last and thus fastest-changing (np.arrays are row-major) index.
     
     """
-    from fullwavepy.import import neighs1d
+    from fullwavepy.math.generic import neighs1d
 
     ranges = []
     for i in self:

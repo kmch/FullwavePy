@@ -289,7 +289,7 @@ def plot_image_OLD(image, **kwargs):
   
   # SET CORRECT Y-AXIS FOR SPECTRAL PLOTS
   if 'spect' in kwargs:
-    from fullwavepy.import import dft_freqs
+    from fullwavepy.math.fourier import dft_freqs
     nsamps, ntraces = imageT.shape
     y = dft_freqs(nsamps, which='positive', **kwargs)
     imageT = np.array(imageT[ :len(y)])

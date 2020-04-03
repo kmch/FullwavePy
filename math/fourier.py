@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
-from fullwavepy.math.const import epsi, pi
+from fullwavepy.math.const import *
+from fullwavepy.math.generic import *
 
 
 @traced

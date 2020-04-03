@@ -93,7 +93,7 @@ def plot_line(line, line2=0, **kwargs):
     line2 = np.zeros(len(line))
   
   if 'spect' in kwargs:
-    from fullwavepy.import import dft_freqs
+    from fullwavepy.math.fourier import dft_freqs
     x = dft_freqs(len(line), which='positive', **kwargs)
     line = np.array(line[ :len(x)])
     line2 = np.array(line2[ :len(x)])

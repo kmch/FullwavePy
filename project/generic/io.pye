@@ -265,7 +265,7 @@ class ProjInput(ProjThroughput):
   # ----------------------------------------------------------------------------- 
   
   def check_stability(self, **kwargs):
-    from fullwavepy.solver.checks import check_stability
+    from fullwavepy.fd.checks import check_stability
     
     assert self.proj.equation == 'acoustic' # DOES ProjSynAIT MAKE SENSE?
     vp = self.proj.inp.truevp.read()
@@ -278,7 +278,7 @@ class ProjInput(ProjThroughput):
   # -----------------------------------------------------------------------------
   
   def check_accuracy(self, **kwargs):
-    from fullwavepy.solver.checks import check_accuracy
+    from fullwavepy.fd.checks import check_accuracy
     from fullwavepy.signal.wavelet import find_passband
     
     # READ SOURCE'S AMP. SPECTRUM
@@ -297,7 +297,7 @@ class ProjInput(ProjThroughput):
   # -----------------------------------------------------------------------------
   
   def check_propag_dists(self, **kwargs): 
-    from fullwavepy.solver.checks import check_propag_dists
+    from fullwavepy.fd.checks import check_propag_dists
     from fullwavepy.signal.wavelet import find_passband
     
     # READ SOURCE'S AMP. SPECTRUM

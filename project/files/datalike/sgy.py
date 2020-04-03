@@ -362,7 +362,7 @@ class RawSignFile(DataFileSgy):
         array = ricker(fpeak, self.proj.ns, self.proj.dt)
       
       elif wavelet == 'gauss':
-        from fullwavepy.import import gauss
+        from fullwavepy.math.funcs import gauss
         self.__log.warn('Actually fpeak is WRONG, it is tpeak')
         sigma = kw('sigma', 1, kwargs)
         self.__log.info('Assuming sigma=%s' % sigma)
