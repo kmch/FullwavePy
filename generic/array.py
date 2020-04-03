@@ -59,13 +59,15 @@ class Arr(np.ndarray):
   def _read(source, **kwargs):
     """
     """
+    from fullwavepy.seismic.data import Data
     from fullwavepy.ndat.manifs import Surf, SurfZ
+    
     if (type(source) == type(np.array([])) or 
         type(source) == Arr or
         type(source) == Arr1d or
         type(source) == Arr2d or
         type(source) == Arr3d or
-        type(source) == WigglyData or
+        type(source) == Data or
         type(source) == Surf or
         type(source) == SurfZ or
         type(source) == np.memmap):
@@ -341,27 +343,6 @@ class Arr3d(Arr):
 
 
 # -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class WigglyData(Arr3d):
-  def interleave(self, othe, **kwargs):
-    return super().interleave(othe, slice_at='y', node=0, **kwargs)
-
-  def compare(self, *args, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
-    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    super().compare(*args, **kwargs)
-  
-  def plot(self, *args, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
-    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    super().plot(*args, **kwargs)
-  
-
-# -------------------------------------------------------------------------------
-
 
 
 

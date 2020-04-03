@@ -188,11 +188,11 @@ class ProjInput(ProjThroughput):
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
     from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile
-    from fullwavepy.project.files.ghost import GhostDataFileBin, GhostDataFileTxt
-    from fullwavepy.project.files.geom import SourcesFile, ReceiversFile
-    from fullwavepy.project.files.misc import RawSeisTxtFile, JobInfoFile
-    from fullwavepy.project.files.runfiles import SegyPrepFile, Runfile, Skeleton
-    from fullwavepy.project.files.submit import BashFile
+    from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt
+    from fullwavepy.project.files.text.srcrec import SourcesFile, ReceiversFile
+    from fullwavepy.project.files.text.misc import RawSeisTxtFile, JobInfoFile
+    from fullwavepy.project.files.text.runfiles import SegyPrepFile, Runfile, Skeleton
+    from fullwavepy.project.files.text.submit import BashFile
     from fullwavepy.project.lists.basic import JobFileList 
     from fullwavepy.ioapi.cx1 import PbsFileCx1
     
@@ -388,8 +388,8 @@ class ProjOutput(ProjThroughput):
     proj.inp so they must be called 
     AFTER the constructor, not from it.
     """    
-    from fullwavepy.project.qc import JobStats
-    from fullwavepy.project.files.logs import (OutLogFile, ErrLogFile, 
+    from fullwavepy.project.generic.qc import JobStats
+    from fullwavepy.project.files.text.logs import (OutLogFile, ErrLogFile, 
                                                JobOutLogFile, JobErrLogFile)
     
     from fullwavepy.project.lists.basic import JobFileList

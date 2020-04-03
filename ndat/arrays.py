@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw
-#from fullwavepy.generic.array import Arr
 
 
 # FIXME: MOVE generic.array here

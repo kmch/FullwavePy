@@ -12,9 +12,6 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.files.generic import AsciiProjFile
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class SRFile(AsciiProjFile):

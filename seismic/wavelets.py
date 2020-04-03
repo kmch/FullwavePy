@@ -9,13 +9,12 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
-
-#from fullwavepy.generic.array import Arr3d
+from fullwavepy.seismic.data import Data
 
 
 @traced
 @logged
-class Wavelet(object):
+class Wavelet(Data):
   pass
 
 

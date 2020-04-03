@@ -10,8 +10,6 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 
-#from fullwavepy.generic.array import Arr3d
-
 
 @traced
 @logged

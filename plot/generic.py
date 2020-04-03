@@ -12,48 +12,6 @@ from fullwavepy.generic.parse import kw
 
 @traced
 @logged
-def flipy(ax=plt.gca(), **kwargs):
-  ax.invert_yaxis()
-
-
-# -------------------------------------------------------------------------------
-
-@traced
-@logged
-def autect(ax=plt.gca(), **kwargs):
-  ax.set_aspect('auto')
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-def aspeqt(ax=plt.gca(), **kwargs):
-  ax.set_aspect('equal')
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-def new_figure(**kwargs):
-  """
-  Apparently one has to create a new figure INSIDE 
-  a function passed to interact. 
-  This is the code that has to be put in every 
-  function decorated with @widgets then.
-  """
-  figsize = (kw('figsize_x', 6, kwargs), kw('figsize_y', 6, kwargs))
-  return plt.figure(figsize=figsize)
-    
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
 def compare(arg1, arg2, **kwargs):
   """
   Compare two arrays of data.
@@ -102,41 +60,32 @@ def compare(arg1, arg2, **kwargs):
 
 @traced
 @logged
-def plot(*args, **kwargs): #FIXME DEL
+def new_figure(**kwargs):
   """
-  A framework to plot (any number of) 
-  arrays (possibly from files). 
-  
-  Parameters
-  ----------
-  *args : see below 
-    List of string/arrays.
-    If string, it is assumed to 
-    stand for a file name (incl.
-    the path if file is outside './'),
-    otherwise it must be an array.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  None
-  
-  Notes
-  -----
-  You can mix files and arrays defined ad hoc
-  in the notebook which may come in handy.
-  
-  There is no 'interaction' between args, one 
-  arg is.plotted after another.
-  
+  Apparently one has to create a new figure INSIDE 
+  a function passed to interact. 
+  This is the code that has to be put in every 
+  function decorated with @widgets then.
   """
-  from fullwavepy.ioapi.generic import read_arrays
-  
-  arrays = read_arrays(*args, **kwargs)
-  
-  for A in arrays:
-    plot_array(A, **kwargs)
+  figsize = (kw('figsize_x', 6, kwargs), kw('figsize_y', 6, kwargs))
+  return plt.figure(figsize=figsize)
+    
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def flipy(ax=plt.gca(), **kwargs):
+  ax.invert_yaxis()
+
+
+# -------------------------------------------------------------------------------
+
+@traced
+@logged
+def autect(ax=plt.gca(), **kwargs):
+  ax.set_aspect('auto')
 
 
 # -------------------------------------------------------------------------------
@@ -144,40 +93,9 @@ def plot(*args, **kwargs): #FIXME DEL
 
 @traced
 @logged
-def plot_array(A, **kwargs): #FIXME DEL
-  """
-  Plot 1D/2D array.
-  
-  Parameters
-  ----------
-  A : array
-    1D/2D array.
+def aspeqt(ax=plt.gca(), **kwargs):
+  ax.set_aspect('equal')
 
-  **kwargs : keyword arguments (optional)
-      
-  Returns
-  -------
-  None
-  
-  Notes
-  -----
-  Just a simple framework.
-  
-  """    
-  from fullwavepy.plot.oned import plot_1d
-  from fullwavepy.plot.twod import plot_2d
-  
-  ndims = len(A.shape)
-  
-  if ndims == 1:
-    plot_1d(lines=[A], **kwargs)
-
-  elif ndims == 2:
-    plot_2d(images=[A], **kwargs)
-    
-  else:
-    raise ValueError('Wrong array shape: %s' % ndims)
-    
 
 # -------------------------------------------------------------------------------
 

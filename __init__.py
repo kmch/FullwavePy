@@ -18,15 +18,14 @@ from fullwavepy.logging_config import *
 
 from fullwavepy.generic.system import get_files
 from fullwavepy.generic.parse import strip, exten
-from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array, WigglyData
+from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array
 from fullwavepy.generic.math import *
-
 
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
 from fullwavepy.ioapi.fw3d import TtrFile, VtrFile, read_vtr, save_vtr
 from fullwavepy.ioapi.segy import SgyFile
 
-from fullwavepy.plot.generic import plot, compare, new_figure, aspeqt
+from fullwavepy.plot.generic import *
 from fullwavepy.plot.oned import colors
 from fullwavepy.plot.twod import plot_image
 from fullwavepy.plot.misc import time_freq
@@ -34,5 +33,7 @@ from fullwavepy.plot.misc import time_freq
 from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv
 from fullwavepy.project.types.deriv import ProjInvSyn
 from fullwavepy.project.types.extra import ProjFsQC
+
+from fullwavepy.seismic.data import Data
 
 from fullwavepy.signal.su import su_filter

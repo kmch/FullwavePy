@@ -7,7 +7,7 @@ import numpy as np
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
-from fullwavepy.project.files.submit import PbsFile
+from fullwavepy.project.files.text.submit import PbsFile
 
 
 #FIXME REPLACE WITH CONTIGUOUS STRING

@@ -13,9 +13,6 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class ProjObj(object):

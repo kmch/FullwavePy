@@ -11,18 +11,11 @@ from fullwavepy.generic.parse import kw, strip
 from fullwavepy.generic.decor import widgets
 
 
-# ------------------------------------------------------------------------------- 
-
-
 @traced
 @logged
 class Functional(object):
   """
-  
   """
-
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, **kwargs):
     """
     
@@ -195,9 +188,6 @@ class JobStats(object):
   in subsequent runs.
   
   """
-  
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, proj, **kwargs):
     """
     """
@@ -232,6 +222,7 @@ class JobStats(object):
       plt.plot(run_ids, [stats[run_id][key] for run_id in run_ids]) 
      
   # -----------------------------------------------------------------------------  
+
 
 # -------------------------------------------------------------------------------
 

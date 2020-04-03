@@ -6,17 +6,16 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 import numpy as np
 from autologging import logged, traced
 
-from fullwavepy.generic.parse import kw, del_kw, exten, strip
+from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.array import Arr3d 
 
 # TRY Devito EVENTUALLY
 
 
 @traced
 @logged
-class Solver(object):
+class Stencil(object):
   """
   """
   def __init__(self, c, dx, ns, dt, rsg, srcs, recs, **kwargs):
@@ -63,7 +62,7 @@ class Solver(object):
 
 @traced
 @logged
-class Solver2d_2t2x(Solver):
+class Stencil2d_2t2x(Stencil):
   """
   Second-order in time, second-order in space.
   

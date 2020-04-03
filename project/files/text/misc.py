@@ -13,12 +13,10 @@ from fullwavepy.ioapi.generic import CsvFile
 from fullwavepy.project.files.generic import AsciiProjFile
 
 
-# -------------------------------------------------------------------------------
-
 
 @traced
 @logged
-class MetaDataProjFile(CsvFile, AsciiProjFile):
+class MetaDataProjFile(CsvFile, AsciiProjFile): # IS IT USED AT ALL?
   """
   
   csv is MUCH faster for Panda's read/write than json.
