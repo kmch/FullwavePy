@@ -18,9 +18,6 @@ from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class SurfaceFile(ArrayProjFile, VtrFile):
@@ -173,7 +170,6 @@ class TopographyFile(SurfaceFile):
 
 # -------------------------------------------------------------------------------  
 
-
 @traced
 @logged
 class FsFile(SurfaceFile, GridFile):
@@ -236,10 +232,18 @@ class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
     #dx = self.proj.dx
     #ex1 = self.proj.box[0] - self.proj.elef * dx
     #ex2 = self.proj.box[1] + self.proj.erig * dx
-    x = np.arange(-self.proj.elef, ex2+dx, dx)
+    
+    x = np.arange(-p.elef, p.enx1)
+    z = p.i.fse.read()[:,p.enx2//2,0]
+    plt.plot(x,z)    
+    
+    x = np.arange(-self.proj.elef, self.proj.ex2+1)
     z = self.array[:,0,0]
     #plt.plot(x, z)
-    plt.plot(z)
+    #plt.plot(z)
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced
@@ -249,152 +253,6 @@ class InterpolFsFile(ExtendedFsFile):
     suffix = 'FreeSurf_exten_interp'
     super().__init__(proj, path, suffix, **kwargs)
 
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class GhostDataFileBin(BinaryProjFile):
-  """
-  """
-  def __init__(self, proj, path, **kwargs):
-    super().__init__(proj, path, **kwargs)
-    self.name = self.pname + '-GhostData.bin'
-    self.fname = self.path + self.name
-
 
 # -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class GhostDataFileTxt(AsciiProjFile):
-  """
-  """
-  def __init__(self, proj, path, **kwargs):
-    super().__init__(proj, path, **kwargs)
-    self.name = self.pname + '-GhostData.txt'
-    self.fname = self.path + self.name
-    
-  # -----------------------------------------------------------------------------   
-  
-  def read(self, **kwargs):
-    """
-    Read all the information contained 
-    in a GhostData.txt file.
-    
-    Return
-    -------
-    ghosts : list
-    intersects : list
-    ficts : list
-    auxs : list
-    weights : list
-    
-    """
-    ct = super().read(**kwargs)
-    
-    header = ct[0]
-    data = ct[1: ]
-    fict_no, auxs_no = [int(i) for i in header]
-    
-    ghosts_no, intersects_no = 1, 1
-    ghosts, intersects, ficts, auxs, weights = [], [], [], [], []
-    
-    j = 0
-    while j < len(data):
-      ghosts.append(data[j])
-      j += 1
-      intersects.append(data[j])
-      j += 1
-      
-      fcs = []
-      for f in range(fict_no):
-        fcs.append(data[j])
-        j += 1
-      ficts.append(fcs)
-      
-      fcs_auxs = []
-      for f in range(fict_no):
-        f_auxs = []
-        for ax in range(auxs_no):
-          f_auxs_x = []
-          for ay in range(auxs_no):
-            f_auxs_x.append(data[j])
-            j += 1
-          f_auxs.append(f_auxs_x)
-        fcs_auxs.append(f_auxs)  
-      auxs.append(fcs_auxs)
-      
-      fcs_weights = []
-      for f in range(fict_no):
-        f_weights = []
-        for w in range(2 * auxs_no):
-          f_weights.append(data[j])
-          j += 1
-        fcs_weights.append(f_weights)
-      weights.append(fcs_weights)
-     
-    ghosts = [[float(i) for i in j] for j in ghosts]
-    intersects = [[float(i) for i in j] for j in intersects]
-    ficts = [[[float(i) for i in j] for j in k] for k  in ficts]
-    auxs = [[[[[float(i) for i in j] for j in k] for k in l] for l in m] for m in auxs]  
-    weights = [[[[float(i) for i in j] for j in k] for k in l] for l in weights]
-    
-    self.ghosts = Ghosts(np.array(ghosts)).astype(int)
-    self.isects = intersects
-    self.ficts = ficts
-    self.auxs = auxs
-    self.weights = weights
-    
-    #return ghosts, intersects, ficts, auxs, weights    
-
-  # ----------------------------------------------------------------------------- 
-  
-
-# -------------------------------------------------------------------------------
-
-@traced
-@logged
-class Points(Arr):
-  """
-  """
-  def info():
-    raise NotImplementedError
-  def compare():
-    raise NotImplementedError
-  def compare_subplots():
-    raise NotImplementedError  
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Nodes(Points):
-  pass # check if all int
-  
-  
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Ghosts(Nodes):
-  """
-  for fancier subarray-ing check out np.ix_
-  """
-  def split_lvls(self, nlvls, **kwargs):
-    ilvl = 4 # FIXME MAKE IT GLOBAL IN class Ghost(Node)
-    self.lvl = {}
-    for lvl in range(1, nlvls+1):
-      self.lvl[lvl] = self[self[:,ilvl] == lvl]
-      
-  #def plot(self, **kwargs):
-    
-  
-# -------------------------------------------------------------------------------
-
-
 

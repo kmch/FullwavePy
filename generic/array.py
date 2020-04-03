@@ -14,9 +14,6 @@ from fullwavepy.plot.generic import new_figure
 from fullwavepy.plot.twod import plot_image
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class Arr(np.ndarray):
@@ -62,6 +59,7 @@ class Arr(np.ndarray):
   def _read(source, **kwargs):
     """
     """
+    from fullwavepy.ndat.manifs import Surf, SurfZ
     if (type(source) == type(np.array([])) or 
         type(source) == Arr or
         type(source) == Arr1d or
@@ -69,7 +67,7 @@ class Arr(np.ndarray):
         type(source) == Arr3d or
         type(source) == WigglyData or
         type(source) == Surf or
-        type(source) == SurfFunc or
+        type(source) == SurfZ or
         type(source) == np.memmap):
       A = source    
 
@@ -365,62 +363,6 @@ class WigglyData(Arr3d):
 # -------------------------------------------------------------------------------
 
 
-@traced
-@logged
-class Surf(Arr3d):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class SurfFunc(Surf):
-  """
-  Surface of the form z = z(x,y).
-  
-  """
-  def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', [], kwargs)
-    self.plot_slice(slice_at='z', **kwargs)
-    #self.array = self.read(**kwargs)
-    #shape = self.array.shape
-    #self.array = 
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class SurfParam(Surf):
-  """
-  Surface in a parametric form
-  X, Y, Z.
-
-  E.g. a torus:
-  angle = np.linspace(0, 2 * np.pi, 32)
-  theta, phi = np.meshgrid(angle, angle)
-  r, R = .25, 1.
-  X = (R + r * np.cos(phi)) * np.cos(theta)
-  Y = (R + r * np.cos(phi)) * np.sin(theta)
-  Z = r * np.sin(phi)
-  
-  """
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Metadata(object):
-  def plotly(self, **kwargs):
-    pass
-
-
 
 
 
@@ -482,74 +424,6 @@ def interleave_arrays(A1, A2, **kwargs):
 
   return A
 
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-def slice_array(A, **kwargs):
-  """
-  
-  Parameters
-  ----------
-  A : array 
-   3D array, although other shapes
-   should be handled too (work in progress).
-   
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  2D or 1D array (special case).
-  
-  Notes
-  -----
-  
-  """
-  scoord = kw('scoord', 'y', kwargs)
-  dims = A.shape
-
-  # 1D ARRAY CONTAINING A SINGLE 1D TIME-SERIES
-  if len(dims) == 1:
-    slice_array._log.warn('1D array detected. Passing it on intact')
-    return A
-  
-  # 3D ARRAY CONTAINING A SINGLE 1D TIME-SERIES
-  if (dims[0] == 1) and (dims[1] == 1):
-    return A[0][0]
-  
-  # SURFACES
-  if (dims[-1] == 1):
-    return A[..., 0]
-  
-  if scoord == 'x':
-    svalue = kw('svalue', len(A)//2, kwargs)
-    A = A[svalue]
-  
-  elif scoord == 'y':
-    svalue = kw('svalue', len(A[0])//2, kwargs)
-    A = [i[svalue] for i in A]
-  
-  elif scoord == 'z':
-    svalue = kw('svalue', len(A[0][0])//2, kwargs)
-    A = [[j[svalue] for j in i] for i in A]
-  
-  elif scoord is None:
-    slice_array._log.warn('No slicing applied')
-  
-  else:
-    raise ValueError('Wrong slice coord: ' + scoord)
-  
-  if scoord is not None:
-    slice_array._log.info('Sliced at svalue=' + str(svalue) + ' node ' + 
-                          'of scoord=' + scoord + ' axis')
-  
-  A = np.array(A)
-  
-  return A
-  
 
 # -------------------------------------------------------------------------------
 

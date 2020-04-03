@@ -1,5 +1,5 @@
 """
-(c) 2019 Kajetan Chrapkiewicz.
+(c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
@@ -16,9 +16,6 @@ from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 from fullwavepy.project.files.gridded.generic import ExtendedGridFile
 from fullwavepy.project.files.gridded.models import ModelFileVtr
-
-
-# -------------------------------------------------------------------------------
 
 
 @traced
@@ -73,21 +70,13 @@ class WavefieldFile(ExtendedGridFile, ModelFileVtr):
   
   # -----------------------------------------------------------------------------
   
-  #def _slice_coords(self, **kwargs):
-    #xyz = self.inp.s.read(unit='metres')[self.sid]
-
-  #def _zoom_at_shot(self, **kwargs):
-  
-  # -----------------------------------------------------------------------------  
-  
   def plot(self, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) # BrBG (PALER)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
     super().plot(**kwargs)
 
   # -----------------------------------------------------------------------------
-  
-  
+
 
 # ------------------------------------------------------------------------------- 
 
@@ -105,4 +94,20 @@ class ForwardWavefieldFile(WavefieldFile):
 
 
 # -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class BackproWavefieldFile(WavefieldFile):
+  """
+  Backropagated wavefield.
+  
+  """
+  def __init__(self, proj, ts, sid, it, **kwargs):
+    file_id = 'bw'
+    super().__init__(proj, file_id, ts, sid, it, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
 

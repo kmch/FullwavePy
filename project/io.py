@@ -16,9 +16,6 @@ from fullwavepy.generic.system import bash
 from fullwavepy.generic.parse import kw
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class ProjThroughput(object):
@@ -190,7 +187,8 @@ class ProjInput(ProjThroughput):
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
-    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile, GhostDataFileBin, GhostDataFileTxt
+    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile
+    from fullwavepy.project.files.ghost import GhostDataFileBin, GhostDataFileTxt
     from fullwavepy.project.files.geom import SourcesFile, ReceiversFile
     from fullwavepy.project.files.misc import RawSeisTxtFile, JobInfoFile
     from fullwavepy.project.files.runfiles import SegyPrepFile, Runfile, Skeleton

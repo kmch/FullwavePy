@@ -18,7 +18,7 @@ from fullwavepy.logging_config import *
 
 from fullwavepy.generic.system import get_files
 from fullwavepy.generic.parse import strip, exten
-from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array, WigglyData, SurfFunc, Surf, SurfParam
+from fullwavepy.generic.array import Arr, Arr3d, Arr2d, Arr1d, tseries2array, WigglyData
 from fullwavepy.generic.math import *
 
 
