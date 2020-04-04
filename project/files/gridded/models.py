@@ -9,40 +9,28 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import ArrayProjFile
+from fullwavepy.project.files.gridded.generic import GridProjFile
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
-from fullwavepy.project.files.gridded.generic import GridFile
 
 
-# -------------------------------------------------------------------------------
-
+# KEEP ONLY SPECIFIC?
+#class TrueVp(ArrayProjFile):
+  #def read():
+    #from seismic.models import Model
+    #self.array = Model(self.read())
+  
 
 @traced
 @logged
-class ModelFile(GridFile):
+class ModelFile(GridProjFile):
   """
   File containing a property 
   defined on the model grid.
   
   """
-  def dupl(self, source, cmd='cp',  *args, **kwargs): 
-    """
-    Standard file-duplication + resizing 
-    to conform to the project-box.
-    
-    """
-    super().dupl(source, cmd=cmd, **kwargs)
-    
-    if 'geom' in dir(self.proj):
-      #self.resize(*args, **kwargs)
-      self.__log.warn('Resize disabled until debugged')
-    else:
-      self.__log.warn('proj.geom not yet set.' + self.fname + 
-                      ' will not be resized')
-
-  # -----------------------------------------------------------------------------  
+  pass
   
 
 # -------------------------------------------------------------------------------

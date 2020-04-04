@@ -7,7 +7,7 @@ import numpy as np
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw
+from fullwavepy.generic.parse import kw, strip
 from fullwavepy.generic.system import exists
 from fullwavepy.ioapi.generic import ArrayFile
 
@@ -23,8 +23,8 @@ class VtrFile(ArrayFile):
   """
   
   """
-  pass
-
+  def create(self, array, **kwargs):
+    save_vtr(array , strip(self.fname) + '.vtr')
 
   # -----------------------------------------------------------------------------  
 
@@ -189,11 +189,16 @@ class TtrFile(ArrayFile):
   def plot(self, **kwargs):
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
     super().plot(**kwargs)
-  
+
+
 # -------------------------------------------------------------------------------
 
 
 #save_ttr
+
+
+# -------------------------------------------------------------------------------
+
 
 @traced
 @logged

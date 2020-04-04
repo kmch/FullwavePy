@@ -68,6 +68,10 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     vmax = None
     center_cmap = False
     
+  # THIS CENTERS CELLS AT INTEGERS AGAIN WHICH WAS OVERWRITTEN BY CUSTOM EXTENT
+  if extent is not None:
+    extent = np.array(extent) - .5 
+  
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)

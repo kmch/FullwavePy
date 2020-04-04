@@ -17,9 +17,6 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.plot.generic import new_figure
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class Proj(object):
@@ -55,8 +52,6 @@ class Proj(object):
                                                ProjEnv, ProjSegyMapp, ProjBox)
     from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.text.runfiles import Runfile
-    from fullwavepy.project.files.gridded.surfaces import TopographyFile
-        
 
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
@@ -94,9 +89,6 @@ class Proj(object):
     self.out = ProjOutput(self, **kwargs)
     self.o = self.out # ALIAS
     self.out.init(**kwargs)
-    
-    topo = kw('topo', None, kwargs)
-    self.topo = TopographyFile(self, self.inp.path, dupl=topo, **kwargs)  
     
   # -----------------------------------------------------------------------------
   

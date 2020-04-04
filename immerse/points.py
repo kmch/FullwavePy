@@ -9,12 +9,12 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.ndat.points import Nodes
+from fullwavepy.ndat.arrays import Grid
 
 
 @traced
 @logged
-def NodesIn(Nodes):
+def NodesIn(Grid):
   pass
 
 
@@ -23,7 +23,7 @@ def NodesIn(Nodes):
   
 @traced
 @logged
-class Ghosts(Nodes):
+class Ghosts(Grid):
   """
   for fancier subarray-ing check out np.ix_
   """

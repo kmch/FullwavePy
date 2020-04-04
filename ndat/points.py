@@ -122,25 +122,5 @@ class Points(Arr3d):
 # -------------------------------------------------------------------------------
 
 
-@traced
-@logged
-class Nodes(Points):
-  """
-  Array of grid nodes (=> integer coords)
-  
-  check if all int
-  """
-  def _set_extent(obj, **kwargs):
-    """
-    Overwrite standard extent to account for the fact
-    that 0th element of a gird is a node no. 1!
-    
-    """
-    func = lambda dim : [1, dim] # NOT [0, dim-1]
-    return super()._set_extent(func, **kwargs) # PASSING obj NOT ALLOWED FOR SOME REASON
-
-
-# -------------------------------------------------------------------------------
-
 
 

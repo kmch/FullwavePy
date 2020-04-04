@@ -167,9 +167,6 @@ class ProjInput(ProjThroughput):
   AFTER the constructor (__init__), not from it.  
   
   """  
-  
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, proj, **kwargs):
     super(ProjInput, self).__init__(proj, **kwargs)
     self.path = proj.path + '/inp/'
@@ -188,8 +185,8 @@ class ProjInput(ProjThroughput):
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
     
-    from fullwavepy.project.files.gridded.generic import InextFile
-    from fullwavepy.project.files.gridded.surfaces import FsFile, ExtendedFsFile, InterpolFsFile
+    from fullwavepy.project.files.gridded.misc import InextFile
+    from fullwavepy.project.files.gridded.surfaces import TopoFile, FsFile, ExtendedFsFile, InterpolFsFile
     from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt
     from fullwavepy.project.files.text.srcrec import SourcesFile, ReceiversFile
     from fullwavepy.project.files.text.misc import RawSeisTxtFile, JobInfoFile
@@ -218,6 +215,9 @@ class ProjInput(ProjThroughput):
       raise ValueError('Wrong io: ' + self.proj.io)    
     self.sgn = self.signature
     
+    
+    topo = kw('topo', None, kwargs)
+    self.topo = TopoFile(self.proj, self.path, dupl=topo, **kwargs)  
     self.fs = FsFile(self.proj, self.path, **kwargs)
     self.fse = ExtendedFsFile(self.proj, self.path, **kwargs)
     self.fsi = InterpolFsFile(self.proj, self.path, **kwargs)

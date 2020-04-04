@@ -8,11 +8,10 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
-from fullwavepy.generic.parse import kw, del_kw, exten, strip
-from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.parse import kw, del_kw
+from fullwavepy.generic.system import bash
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.files.generic import ArrayProjFile
-from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
 
 
 @traced
@@ -73,7 +72,7 @@ class SurfaceFile(ArrayProjFile, VtrFile):
 
 @traced
 @logged
-class TopographyFile(SurfaceFile):
+class TopoFile(SurfaceFile):
   """
   Topography of the topmost rock layer:
   seafloor and/or land surface.
@@ -194,7 +193,7 @@ class TopographyFile(SurfaceFile):
 
 @traced
 @logged
-class FsFile(SurfaceFile, GridFile):
+class FsFile(SurfaceFile):
   """
   Free surface
   
@@ -234,7 +233,7 @@ class FsFile(SurfaceFile, GridFile):
 
 @traced
 @logged
-class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
+class ExtendedFsFile(SurfaceFile):
   def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   

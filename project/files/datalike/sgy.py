@@ -346,8 +346,6 @@ class RawSignFile(DataFileSgy):
     """
     from fullwavepy.ioapi.segy import array2sgy
     
-    super().create(**kwargs)
-    
     if type(wavelet) == type(np.array([])):
       array = wavelet
     

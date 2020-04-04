@@ -45,24 +45,26 @@ class Arr(np.ndarray):
     """
     from fullwavepy.seismic.data import Data
     from fullwavepy.ndat.manifs import Surf, SurfZ, Plane
-    from fullwavepy.ndat.points import Points, Nodes
+    from fullwavepy.ndat.points import Points
     
     if (type(source) == type(np.array([])) or 
         type(source) == Arr or
         type(source) == Arr1d or
         type(source) == Arr2d or
         type(source) == Arr3d or
+        type(source) == Grid or
         type(source) == Data or
         type(source) == Surf or
         type(source) == SurfZ or
         type(source) == Plane or
         type(source) == Points or
-        type(source) == Nodes or
         type(source) == np.memmap):
       A = source    
 
     elif isinstance(source, str):
       from fullwavepy.ioapi.generic import read_any
+      if hasattr(source, 'shape'): # FOR EFFICIENCY (SEE read_any)
+        kwargs['shape'] = self.shape
       A = read_any(source, **kwargs)
 
     else:
@@ -80,19 +82,23 @@ class Arr(np.ndarray):
     if 'extent' in kwargs:
       obj.__log.debug('Using extent from kwargs, even if it means overwriting')
       obj.extent = kwargs['extent']
+    
     elif hasattr(obj, 'extent'):
       obj.__log.debug('obj.extent already set and not provided in kwargs')
       pass
+    
     else:
       obj.__log.debug('Setting extent to default.')
       obj.extent = []
       for dim in obj.shape:
         obj.extent.append(func(dim))
+    
     return obj
 
   # -----------------------------------------------------------------------------
   
   #def _set_shape(obj, shape=None, **kwargs):
+    #self.shape = None
    
   # -----------------------------------------------------------------------------
 
@@ -369,7 +375,8 @@ class Arr3d(Arr):
 
 #@traced
 #@logged
-#class Grid3d(Arr3d):
+#class Grid(Arr3d):
+  #pass
     #def _extent(self, **kwargs):
     #"""
     #"""
@@ -381,6 +388,26 @@ class Arr3d(Arr):
     #self.__log.debug('extent: %s' % str(extent))    
     #return extent
 
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Grid(Arr3d):
+  """
+  """
+  #def _set_extent(obj, **kwargs):
+    #"""
+    #Overwrite standard extent to account for the fact
+    #that 0th element of a gird is a node no. 1!
+    
+    #"""
+    #func = lambda dim : [1, dim] # NOT [0, dim-1]
+    #return super()._set_extent(func, **kwargs) # PASSING obj NOT ALLOWED FOR SOME REASON
+  pass
+   
+# -------------------------------------------------------------------------------
 
 
 @traced

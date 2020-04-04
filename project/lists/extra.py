@@ -20,9 +20,6 @@ from fullwavepy.project.lists.deriv import SchedFileList, SlaveFileList
 # DERIVED TYPES SHOULD SUFFICE
 
 
-# -------------------------------------------------------------------------------  
-
-
 @traced
 @logged
 class CPFileList(SchedFileList):
