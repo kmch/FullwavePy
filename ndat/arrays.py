@@ -38,27 +38,8 @@ class Arr(np.ndarray):
     
     return obj # NECESSARY!
 
-  # -----------------------------------------------------------------------------   
-  
-  def _set_extent(obj, func=None, **kwargs):    
-    if func is None:
-      func = lambda dim : [0, dim-1]
-    
-    if 'extent' in kwargs:
-      obj.extent = kwargs['extent']
-    else:
-      obj.extent = []
-      for dim in obj.shape:
-        obj.extent.append(func(dim))
-    return obj
-
   # -----------------------------------------------------------------------------
-
-  def __array_finalize__(self, obj):
-    if obj is None: return
-  
-  # -----------------------------------------------------------------------------  
-  
+ 
   def _read(source, **kwargs):
     """
     """
@@ -90,8 +71,36 @@ class Arr(np.ndarray):
                      type(source))
     return A
   
+  # -----------------------------------------------------------------------------   
+  
+  def _set_extent(obj, func=None, **kwargs):    
+    if func is None:
+      func = lambda dim : [0, dim-1]
+    
+    if 'extent' in kwargs:
+      obj.__log.debug('Using extent from kwargs, even if it means overwriting')
+      obj.extent = kwargs['extent']
+    elif hasattr(obj, 'extent'):
+      obj.__log.debug('obj.extent already set and not provided in kwargs')
+      pass
+    else:
+      obj.__log.debug('Setting extent to default.')
+      obj.extent = []
+      for dim in obj.shape:
+        obj.extent.append(func(dim))
+    return obj
+
+  # -----------------------------------------------------------------------------
+  
+  #def _set_shape(obj, shape=None, **kwargs):
+   
   # -----------------------------------------------------------------------------
 
+  def __array_finalize__(self, obj):
+    if obj is None: return
+  
+  # -----------------------------------------------------------------------------  
+ 
   def save(self, fname, **kwargs):
     from fullwavepy.ioapi.fw3d import save_vtr
     save_vtr(self, fname)
@@ -358,7 +367,19 @@ class Arr3d(Arr):
 # -------------------------------------------------------------------------------
 
 
-
+#@traced
+#@logged
+#class Grid3d(Arr3d):
+    #def _extent(self, **kwargs):
+    #"""
+    #"""
+    #box = self.proj.box
+    #extent = np.array([box[ :2], box[2:4], box[4: ]])
+    ## CENTER VOXELS AT INTEGERS! ONLY IF unit='node'! FIXME
+    #extent += 0.5 times dx possibly
+    
+    #self.__log.debug('extent: %s' % str(extent))    
+    #return extent
 
 
 

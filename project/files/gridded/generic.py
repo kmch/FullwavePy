@@ -31,6 +31,25 @@ class GridFile(ArrayProjFile):
   is assumed to be known a priori.
   
   """
+  def _shape(self, **kwargs):
+    shape = kw('shape', (self.proj.nx1, self.proj.nx2, self.proj.nx3), kwargs)
+    return shape 
+ 
+  # ----------------------------------------------------------------------------- 
+  
+  #def _extent(self, **kwargs):
+    #"""
+    #"""
+    #box = self.proj.box
+    #extent = np.array([box[ :2], box[2:4], box[4: ]])
+    ## CENTER VOXELS AT INTEGERS! ONLY IF unit='node'! FIXME
+    #extent += 0.5 times dx possibly
+    
+    #self.__log.debug('extent: %s' % str(extent))    
+    #return extent
+
+  # -----------------------------------------------------------------------------
+  
   def create(self, array, **kwargs): # FIXME MOVE TO VTR
     from fullwavepy.ioapi.fw3d import save_vtr
     super().create(**kwargs)
@@ -55,13 +74,13 @@ class GridFile(ArrayProjFile):
 
   # ----------------------------------------------------------------------------- 
   
-  def read(self, **kwargs):
-    self.array = super().read(**kwargs)
-    self.array.extent = np.array([self.proj.box[ :2], 
-                                  self.proj.box[2:4],
-                                  self.proj.box[4: ]])
-    return self.array
-  
+  #def read(self, **kwargs):
+    #self.array = super().read(**kwargs)
+    #self.__log.debug('self.array.extent %s' % str(self.array.extent))
+    #self.array.extent = self._extent(**kwargs)
+    
+    #return self.array
+ 
   # -----------------------------------------------------------------------------
   
   def resize(self, **kwargs):
@@ -93,19 +112,34 @@ class ExtendedGridFile(GridFile):
   (i.e. with extra nodes).
   
   """
-  def read(self, **kwargs):
+  def _shape(self, **kwargs):
+    shape = kw('shape', (self.proj.enx1, self.proj.enx2, self.proj.enx3), kwargs)
+    return shape
+  
+  # -------------------------------------------------------------------------------
+
+  def _extent(self, **kwargs):
     """
-  #  #kwargs['scoord'] = None
-  #  A = super().read(**kwargs)
-  #  #if self.proj.dim == '3D':
-  #  #  A = A[self.proj.eleft:-self.proj.eright, self.proj.efront:-self.proj.eback, self.proj.etop:-self.proj.ebot]
-  #  #else:
-  #  #  A = A[self.proj.eleft:-self.proj.eright, :, self.proj.etop:-self.proj.ebot]
-  #  return A    
+    
     """
-    kwargs['shape'] = kw('shape', (self.proj.enx1, self.proj.enx2, self.proj.enx3), kwargs)
-    A = super().read(**kwargs)
-    return A
+    x1 = float(-self.proj.elef)
+    x2 = float(x1 + self.proj.enx1)
+    y1 = float(-self.proj.efro)
+    y2 = float(y1 + self.proj.enx2)
+    z1 = float(-self.proj.etop)
+    z2 = float(z1 + self.proj.enx3)
+    
+    if self.proj.nx2 == 1:
+      y1 = 1
+      y2 = 1
+    
+    extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
+    # CENTER VOXELS AT INTEGERS! ONLY IF unit='node'! FIXME
+    extent += 0.5
+    self.__log.debug('extent: %s' % str(extent))
+    return extent
+
+  # -------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------  
@@ -115,6 +149,9 @@ class ExtendedGridFile(GridFile):
 @logged
 class InextFile(ExtendedGridFile):
   """
+  Interior/exterior nodes of 
+  extended grid.
+  
   """
   def __init__(self, proj, path, **kwargs):
     self.name = proj.name + '-InextNodes.txt'
@@ -129,8 +166,9 @@ class InextFile(ExtendedGridFile):
     c = [[float(i) for i in j] for j in c]
     h = [int(i) for i in c[0]]
     d = np.array(c[1: ])
-    self.points = Nodes(d.reshape(h + [4])[:,:,:,-1])
-    return self.points
+    self.array = Nodes(d.reshape(h + [4])[:,:,:,-1])
+    self.array.extent = self._extent(**kwargs)
+    return self.array
   
   # -----------------------------------------------------------------------------  
   

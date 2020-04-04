@@ -105,9 +105,6 @@ class ArrayFile(File):
   wrapper around np.ndarray.
   
   """
-  
-  # -----------------------------------------------------------------------------    
-
   def read(self, fname=None, overwrite=True, **kwargs):
     """
   
