@@ -40,10 +40,12 @@ class SurfZ(Arr2d):
   Surface of the form z = f(x,y).
   
   """
-  def read(self, **kwargs):
-    arr3d = Arr3d(super().read(**kwargs))
-    self = Arr2d(arr2d.slice(slice_at='z', node=0, **kwargs))
-    return self
+  def __new__(cls, source, **kwargs):
+    super().__new__(cls, source, **kwargs)
+  #def read(self, **kwargs):
+    #arr3d = Arr3d(super().read(**kwargs))
+    #self = Arr2d(arr2d.slice(slice_at='z', node=0, **kwargs))
+    #return self
   #def plot2d(self, **kwargs):
     #self.plot_slice(slice_at='z', **kwargs)
 

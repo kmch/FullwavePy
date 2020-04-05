@@ -17,7 +17,7 @@ from fullwavepy.project.files.gridded.generic import GridProjFile, ExtenGridProj
 
 @traced
 @logged
-class SurfaceFile(ArrayProjFile, VtrFile):
+class SurfZFile(ArrayProjFile, VtrFile):
   """
   File storing a model boundary (e.g. free surface) 
   or interface.
@@ -46,8 +46,7 @@ class SurfaceFile(ArrayProjFile, VtrFile):
   
   def read(self, **kwargs):
     from fullwavepy.ndat.manifs import SurfZ
-    self.array = super().read(**kwargs)
-    self.array = SurfZ(self.array)
+    self.array = SurfZ(super().read(**kwargs))
     return self.array
     
   # -----------------------------------------------------------------------------
@@ -78,8 +77,8 @@ class SurfaceFile(ArrayProjFile, VtrFile):
 
 
 @traced
-@logged
-class TopoFile(SurfaceFile):
+@logged # IT HAS TO BE DEFINE
+class TopoFile(SurfZFile):
   """
   Topography of the topmost rock layer:
   seafloor and/or land surface.
@@ -200,7 +199,7 @@ class TopoFile(SurfaceFile):
 
 @traced
 @logged
-class FsFile():
+class FsFile(SurfZFile, GridProjFile):
   """
   Free surface
   
@@ -209,15 +208,16 @@ class FsFile():
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
   
-  def read(self, **kwargs): 
+  #def read(self, **kwargs):
+    
     #self.shape = (self.proj.nx1, self.proj.nx2, 1) # not necesseraliy nz=1...
     #kwargs['shape'] = self.shape # TO BE SURE...    
     # NO BENEFIT OF INHERITANCE...
-    from fullwavepy.ndat.manifs import SurfZ # FIXME: UNTIL GENERALIZED
-    array = GridProjFile.read(self, **kwargs)
-    self.array = SurfZ(array)
-    self.array.extent = array.extent
-    return self.array
+    #from fullwavepy.ndat.manifs import SurfZ # FIXME: UNTIL GENERALIZED
+    #array = GridProjFile.read(self, **kwargs)
+    #self.array = SurfZ(array)
+    #self.array.extent = array.extent
+    #return self.array
     
   #def create(self, *args, **kwargs):
     #super().create(*args, **kwargs)
@@ -242,7 +242,7 @@ class FsFile():
 
 @traced
 @logged
-class ExtendedFsFile(SurfaceFile, ExtenGridProjFile):
+class ExtendedFsFile(SurfZFile, ExtenGridProjFile):
   def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   

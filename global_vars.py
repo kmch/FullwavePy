@@ -13,14 +13,14 @@ from fullwavepy.generic.system import get_files
 path = '/home/kmc3817/heavy_PhD/'
 path_dataobs = path + 'DATA/Santorini_2015/seismic/OBS/segy_local_coords/'
 path_datalan = path + 'DATA/Santorini_2015/seismic/land/Santorini/segy_local_coords/'
-dataobs_hy = get_files(path_dataobs, '*4.sgy')
-dataobs_vz = get_files(path_dataobs, '*1.sgy')
-datalan_vz = get_files(path_datalan, '*1.sgy')
+#dataobs_hy = get_files(path_dataobs, '*4.sgy')
+#dataobs_vz = get_files(path_dataobs, '*1.sgy')
+#datalan_vz = get_files(path_datalan, '*1.sgy')
 
 metadataobs = path_dataobs + 'metadata.csv'
 metadatalan = path_datalan + 'metadata.csv'
 metadata = path + 'metadata/proteus_metadata.csv' # CONCAT. OF ABOVE
-md = pd.read_csv(metadata)
+#md = pd.read_csv(metadata)
 
 startvp_jm = path + 'start_mods/jm_inversecheck-StartVp.sgy'
 startvp_bh = path + 'start_mods/Ben_whole_model_18-04-24_sea-clipped.sgy'
@@ -40,6 +40,6 @@ exe = {'fullwave':       '~/PhD/fullwave3D/rev690/bin/fullwave3D.exe',
 # -----------------------------------------------------------------------------
 # ARRAYS
 # -----------------------------------------------------------------------------
-from fullwavepy.ioapi.generic import read_any
-topo = Arr3d(read_any(topography, shape=(3201,1601,1)))
+#from fullwavepy.ioapi.generic import read_any
+#topo = Arr3d(read_any(topography, shape=(3201,1601,1)))
 #topo = topo[...,0]

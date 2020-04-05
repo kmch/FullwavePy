@@ -54,6 +54,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   from matplotlib.colors import LogNorm
   
   ax = kw('ax', plt.gca(), kwargs)
+  title = kw('title', None, kwargs)
   cmap = kw('cmap', 'twilight', kwargs)
   ncolors = kw('ncolors', None, kwargs)  
   vmin = kw('vmin', np.min(image), kwargs)
@@ -70,8 +71,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     
   # THIS CENTERS CELLS AT INTEGERS AGAIN WHICH WAS OVERWRITTEN BY CUSTOM EXTENT
   if extent is not None:
-    extent = np.array(extent) - .5 
-  
+    extent = np.array(extent) - .5
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
@@ -87,6 +87,9 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     
   if center_cmap:
     vmin, vmax = _center_around_zero(vmin, vmax)
+  
+  if title is not None:
+    ax.set_title(title)
   
   #ax = fig.add_subplot()
   im = ax.imshow(image.T, cmap=cmap, extent=extent, 

@@ -21,7 +21,7 @@ class Arr(np.ndarray):
   Wrapper around numpy's array.
   
   """
-  def __new__(cls, source, **kwargs):
+  def __new__(cls, source, ndims=None, **kwargs):
     """
     Init by reading from source.
     
@@ -35,6 +35,9 @@ class Arr(np.ndarray):
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
+    
+    if ndims is not None:
+      assert len(obj.shape) == ndims
     
     return obj # NECESSARY!
 
@@ -76,9 +79,6 @@ class Arr(np.ndarray):
   # -----------------------------------------------------------------------------   
   
   def _set_extent(obj, func=None, **kwargs):    
-    if func is None:
-      func = lambda dim : [0, dim-1]
-    
     if 'extent' in kwargs:
       obj.__log.debug('Using extent from kwargs, even if it means overwriting')
       obj.extent = kwargs['extent']
@@ -89,12 +89,25 @@ class Arr(np.ndarray):
     
     else:
       obj.__log.debug('Setting extent to default.')
-      obj.extent = []
-      for dim in obj.shape:
-        obj.extent.append(func(dim))
+      obj.extent = obj._default_extent(func, **kwargs)
     
     return obj
-
+  
+  # -----------------------------------------------------------------------------  
+  
+  def _default_extent(obj, func=None, **kwargs):
+    """
+    Redefined in child classes to account for vertical axis flipping 
+    when plotting with imshow.
+    
+    """
+    if func is None:
+      func = lambda dim : [0, dim-1]
+    extent = []
+    for dim in obj.shape:
+      extent.append(func(dim))
+    return extent
+  
   # -----------------------------------------------------------------------------
   
   #def _set_shape(obj, shape=None, **kwargs):
@@ -127,8 +140,6 @@ class Arr(np.ndarray):
     else:
       raise ValueError(mode)
     
-   # -----------------------------------------------------------------------------
-
   # -----------------------------------------------------------------------------
   
   def compare_subplots(self, **kwargs):
@@ -165,15 +176,18 @@ class Arr(np.ndarray):
 class Arr1d(Arr):
   """
   """
-  
+  def __new__(cls, source, **kwargs):
+    return super().__new__(cls, source, ndims=1, **kwargs)
+    
   # -----------------------------------------------------------------------------
 
   def plot(self, **kwargs):
     """
     """
-    from fullwavepy.plot.oned import plot_1d
-    assert len(self.shape) == 1 # FIXME: SHOULD PUT IT IN INIT
-    plt.plot(self)
+    #from fullwavepy.plot.oned import plot_1d
+    x1, x2 = self.extent 
+    x = np.linspace(x1, x2, len(self))
+    plt.plot(x, self)
 
   # -----------------------------------------------------------------------------
 
@@ -187,11 +201,42 @@ class Arr2d(Arr):
   """
   
   """
+  def __new__(cls, source, **kwargs):
+    return super().__new__(cls, source, ndims=2, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  #@widgets('slice_at', 'node')
+  def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
+    """
+    """
+    di = {'x': 0, 'y': 1} # TRANSLATE slice_at INTO AXIS NO.
+    axis = di[slice_at]
+    A = Arr1d(np.take(self, indices=node, axis=axis))
+    
+    assert len(self.extent) == 2
+    extent1d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+    
+    A.extent = extent1d
+    
+    return A
+
+  # -----------------------------------------------------------------------------
+                    
   def interleave(self, othe, **kwargs):
     self.interleaved = interleave_arrays(self, othe, **kwargs)
     return self.interleaved
   
   # -----------------------------------------------------------------------------
+
+  @widgets('cmap', 'slice_at', 'node')
+  def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
+    """
+    """
+    arr1d = self.slice(slice_at, node, widgets=False, **kwargs)
+    arr1d.plot(**kwargs)
+    #if slice_at == 'z':
+      #plt.gca().invert_yaxis()
 
   def plot(self, wiggle=False, **kwargs):
     """
@@ -225,6 +270,11 @@ class Arr3d(Arr):
   3D array.
   
   """
+  def __new__(cls, source, **kwargs):
+    return super().__new__(cls, source, ndims=3, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
   @widgets('slice_at', 'node')
   def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
@@ -233,6 +283,7 @@ class Arr3d(Arr):
     axis = di[slice_at]
     A = Arr2d(np.take(self, indices=node, axis=axis))
     
+    assert len(self.extent) == 3
     extent2d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
     
     if axis != 2:
@@ -260,8 +311,9 @@ class Arr3d(Arr):
     """
     """
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
+    kwargs['title'] = 'slice at %s=%s' % (slice_at, node)
     arr2d.plot(**kwargs)
-    if slice_at == 'z':
+    if slice_at == 'z': # DISABLE?
       plt.gca().invert_yaxis()
   
   # -----------------------------------------------------------------------------
