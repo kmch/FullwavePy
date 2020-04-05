@@ -215,21 +215,8 @@ class FsFile(SurfZFile, GridProjFile):
   
   def read(self, **kwargs):
     self.array = SurfZFile.read(self, **kwargs)
-    self.array.extent = GridProjFile._extent(self, **kwargs)
+    self.array.extent = GridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
     return self.array
-    
-    #self.shape = (self.proj.nx1, self.proj.nx2, 1) # not necesseraliy nz=1...
-    #kwargs['shape'] = self.shape # TO BE SURE...    
-    # NO BENEFIT OF INHERITANCE...
-    #from fullwavepy.ndat.manifs import SurfZ # FIXME: UNTIL GENERALIZED
-    #array = GridProjFile.read(self, **kwargs)
-    #self.array = SurfZ(array)
-    #self.array.extent = array.extent
-    #return self.array
-    
-  #def create(self, *args, **kwargs):
-    #super().create(*args, **kwargs)
-  
   
   def run(self, **kwargs):
     """
@@ -251,47 +238,28 @@ class FsFile(SurfZFile, GridProjFile):
 @traced
 @logged
 class ExtendedFsFile(SurfZFile, ExtenGridProjFile):
+  """
+  Extended-grid free surface
+  
+  """  
   def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   
   def read(self, **kwargs):
-    # NO BENEFIT OF INHERITANCE...
-    from fullwavepy.ndat.manifs import SurfZ
-    #self.shape = (self.proj.enx1, self.proj.enx2, 1) # not necesseraliy nz=1...
-    #kwargs['shape'] = self.shape # TO BE SURE...
-    array = ExtenGridProjFile.read(self, **kwargs)
-    self.array = SurfZ(array)
-    self.array.extent = array.extent
+    self.array = SurfZFile.read(self, **kwargs) - self.proj.etop # COORECT THE Z-VALUE!
+    self.array.extent = ExtenGridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
     return self.array
   
-  #def plot2d(self, **kwargs):
-    #self.array = self.read(**kwargs)
-    #p = self.proj
-    #shift = 0
-    #x1 = -p.elef + shift
-    #x2 = x1 + p.enx1
-    #y1 = -p.etop + shift
-    #y2 = y1 + p.enx3
-    ##dx = self.proj.dx
-    ##ex1 = self.proj.box[0] - self.proj.elef * dx
-    ##ex2 = self.proj.box[1] + self.proj.erig * dx
-    
-    #x = np.arange(-p.elef, p.enx1)
-    #z = p.i.fse.read()[:,p.enx2//2,0]
-    #plt.plot(x,z)    
-    
-    #x = np.arange(-self.proj.elef, self.proj.ex2+1)
-    #z = self.array[:,0,0]
-    ##plt.plot(x, z)
-    ##plt.plot(z)
-
-
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class InterpolFsFile(ExtendedFsFile):
+  """
+  Free surface interpolated on extended-grid.
+  
+  """    
   def __init__(self, proj, path, **kwargs):
     suffix = 'FreeSurf_exten_interp'
     super().__init__(proj, path, suffix, **kwargs)

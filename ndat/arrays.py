@@ -186,8 +186,9 @@ class Arr1d(Arr):
     """
     #from fullwavepy.plot.oned import plot_1d
     x1, x2 = self.extent 
-    x = np.linspace(x1, x2, len(self))
-    plt.plot(x, self)
+    #self.__log.debug('Will not work for units other than node')
+    x = np.arange(x1, x2)
+    plt.plot(x, self, 'o')
 
   # -----------------------------------------------------------------------------
 
@@ -229,20 +230,18 @@ class Arr2d(Arr):
   
   # -----------------------------------------------------------------------------
 
-  @widgets('cmap', 'slice_at', 'node')
+  #@widgets('cmap', 'slice_at', 'node')
   def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
     arr1d = self.slice(slice_at, node, widgets=False, **kwargs)
     arr1d.plot(**kwargs)
-    #if slice_at == 'z':
-      #plt.gca().invert_yaxis()
 
-  def plot(self, wiggle=False, **kwargs):
+  # -----------------------------------------------------------------------------
+
+  def plot_full(self, wiggle=False, **kwargs):
     """
     """
-    from fullwavepy.plot.twod import plot_image, plot_wiggl
-    
     kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
     
     # IT SHOULDN'T BE APPLIED TWICE!
@@ -251,7 +250,18 @@ class Arr2d(Arr):
     if wiggle:
       plot_wiggl(self, **kwargs)
     else:
-      plot_image(self, **kwargs)     
+      plot_image(self, **kwargs) 
+
+  # -----------------------------------------------------------------------------
+  
+  def plot(self, *args, **kwargs):
+    """
+    """
+    if 'slice_at' in kwargs:
+      self.plot_slice(*args, **kwargs)
+    else:
+      self.plot_full(*args, **kwargs)
+    
   
   # -----------------------------------------------------------------------------
 
@@ -275,7 +285,7 @@ class Arr3d(Arr):
 
   # -----------------------------------------------------------------------------
 
-  @widgets('slice_at', 'node')
+  #@widgets('slice_at', 'node')
   def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
@@ -312,6 +322,7 @@ class Arr3d(Arr):
     """
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     kwargs['title'] = 'slice at %s=%s' % (slice_at, node)
+    del_kw('slice_at', kwargs) # JUST IN CASE
     arr2d.plot(**kwargs)
     if slice_at == 'z': # DISABLE?
       plt.gca().invert_yaxis()

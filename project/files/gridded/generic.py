@@ -32,12 +32,16 @@ class GridProjFile(ArrayProjFile):
     before params like proj.nx1 are known (they need input 
     files to be initialized already).
     
+    VERY IMPORTANT
+    x2, y2 and z2 are NOT physical (too large by 1 node)
+    but this is the ONLY way it is plot correctly both in 2D and 1D.
+    
     """
     node1 = 1 # plot_image WILL SUBTRACT 0.5 TO CENTER AT INTEGERS AGAIN
     x1 = node1
     x2 = x1 + self.proj.nx1
     y1 = node1
-    y2 = y1 + self.proj.nx2
+    y2 = y1 + self.proj.nx2 
     z1 = node1
     z2 = z1 + self.proj.nx3
     self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
@@ -69,10 +73,9 @@ class ExtenGridProjFile(GridProjFile):
     y1 -= self.proj.efro
     z1 -= self.proj.etop
     
-    x2 += self.proj.erig
-    y2 += self.proj.ebac
-    z2 += self.proj.ebot
-    
+    x2 = x1 + self.proj.enx1
+    y2 = y1 + self.proj.enx2
+    z2 = z1 + self.proj.enx3
     
     if self.proj.nx2 == 1:
       y1 = 1

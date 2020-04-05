@@ -71,7 +71,17 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     
   # THIS CENTERS CELLS AT INTEGERS AGAIN WHICH WAS OVERWRITTEN BY CUSTOM EXTENT
   if extent is not None:
+    plot_image._log.debug('extent before: %s' % extent)
     extent = np.array(extent) - .5
+    plot_image._log.debug('extent after: %s' % extent)
+    # APPROACH BELOW IS WRONG BECAUSE IT STRETCHES THE CELLS
+    #x1, x2, y1, y2 = extent
+    #x1 -= .5
+    #x2 += .5
+    #y1 -= .5
+    #y2 += .5 
+    #extent = [x1, x2, y1, y2]
+
   
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
