@@ -22,7 +22,7 @@ class GridProjFile(ArrayProjFile):
   (grid start with node no. 1)
   
   """
-  def _set_extent(self, **kwargs):
+  def _extent(self, **kwargs):
     """
     Nodes are numbered as 1, 2, ...
     
@@ -41,12 +41,15 @@ class GridProjFile(ArrayProjFile):
     z1 = node1
     z2 = z1 + self.proj.nx3
     self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
+    return self.extent
   
   # -----------------------------------------------------------------------------  
   
   def read(self, *args, **kwargs):
-    self._set_extent(**kwargs)
-    return super().read(*args, **kwargs)
+    extent = self._extent(**kwargs)
+    self.array = super().read(*args, **kwargs)
+    self.array.extent = extent
+    return self.array
 
   # -----------------------------------------------------------------------------
 
@@ -58,8 +61,8 @@ class GridProjFile(ArrayProjFile):
 class ExtenGridProjFile(GridProjFile):
   """
   """
-  def _set_extent(self, **kwargs):
-    super()._set_extent(**kwargs)
+  def _extent(self, **kwargs):
+    super()._extent(**kwargs)
     [[x1, x2], [y1, y2], [z1, z2]] = self.extent
     
     x1 -= self.proj.elef
@@ -75,7 +78,8 @@ class ExtenGridProjFile(GridProjFile):
       y1 = 1
       y2 = 1
     
-    self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]]) 
+    self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
+    return self.extent
 
 
 # -------------------------------------------------------------------------------

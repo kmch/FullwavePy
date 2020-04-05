@@ -44,13 +44,19 @@ class InextFile(ExtenGridProjFile):
     h = [int(i) for i in c[0]]
     d = np.array(c[1: ])
     self.array = Grid(d.reshape(h + [4])[:,:,:,-1])
-    self._set_extent()
+    self._extent()
     self.array.extent = self.extent
     self.__log.debug('self.array.extent %s' % str(self.array.extent))
     return self.array
   
   # -----------------------------------------------------------------------------  
   
+  def plot(self, *args, **kwargs):
+    kwargs['cmap'] = kw('cmap', 'magma_r', kwargs)
+    super().plot(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+    
   
 # -------------------------------------------------------------------------------
 

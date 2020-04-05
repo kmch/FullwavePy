@@ -136,7 +136,7 @@ class ArrayFile(File):
       self.__log.debug('{}.array does not exist and will be read.'.format(type(self)))
       self.array = Arr3d(self.fname, **kwargs)
     
-    # PASS ESSENTIAL INFO FOR PLOTTING FROM FILE TO ARRAY
+    # PASS extent (ESSENTIAL FOR PLOTS) FOR PLOTTING FROM FILE TO ARRAY
     if hasattr(self, 'extent'):
       self.array.extent = self.extent 
     return self.array

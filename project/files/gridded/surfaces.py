@@ -12,6 +12,7 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.files.generic import ArrayProjFile
+from fullwavepy.project.files.gridded.generic import GridProjFile, ExtenGridProjFile
 
 
 @traced
@@ -45,26 +46,32 @@ class SurfaceFile(ArrayProjFile, VtrFile):
   
   def read(self, **kwargs):
     from fullwavepy.ndat.manifs import SurfZ
-    self.array = SurfZ(super().read(**kwargs))
+    self.array = super().read(**kwargs)
+    self.array = SurfZ(self.array)
     return self.array
     
   # -----------------------------------------------------------------------------
   
-  def plot(self, *args, **kwargs):
-    self.plot2d(*args, **kwargs)
+  #def plot(self, *args, **kwargs):
+    #self.plot2d(*args, **kwargs)
 
-  # -----------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
   
-  def plot2d(self, **kwargs):
-    self.array = self.read(**kwargs)
-    #x1, x2 = self.proj.box[ :2]
-    #dx = self.proj.dx
-    #x = np.arange(x1, x2+dx, dx)
-    x = np.arange(0, len(self.array))
-    z = self.array[:,0,0]
-    plt.plot(x, z)
+  #def plot2d(self, **kwargs):
+    #self.array = self.read(**kwargs)
+    ##x1, x2 = self.proj.box[ :2]
+    ##dx = self.proj.dx
+    ##x = np.arange(x1, x2+dx, dx)
+    ##x = np.arange(0, len(self.array))
+    ##z = self.array[:,0,0]
+    ##plt.plot(x, z)
+    #return self.array
 
-  # -----------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
+  #def plot3d(self, **kwargs):
+    #from mpl_toolkits.mplot3d import Axes3D
+    #ax = plt.gca(projection='3d')
+    #ax.plot_surface(self.array)
 
 
 # -------------------------------------------------------------------------------  
@@ -193,7 +200,7 @@ class TopoFile(SurfaceFile):
 
 @traced
 @logged
-class FsFile(SurfaceFile):
+class FsFile():
   """
   Free surface
   
@@ -202,9 +209,16 @@ class FsFile(SurfaceFile):
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
   
-  #def read(self, **kwargs): # FIXME: ONLY 2D
-    #shape = kw('shape', (self.proj.dims[0], 
-  
+  def read(self, **kwargs): 
+    #self.shape = (self.proj.nx1, self.proj.nx2, 1) # not necesseraliy nz=1...
+    #kwargs['shape'] = self.shape # TO BE SURE...    
+    # NO BENEFIT OF INHERITANCE...
+    from fullwavepy.ndat.manifs import SurfZ # FIXME: UNTIL GENERALIZED
+    array = GridProjFile.read(self, **kwargs)
+    self.array = SurfZ(array)
+    self.array.extent = array.extent
+    return self.array
+    
   #def create(self, *args, **kwargs):
     #super().create(*args, **kwargs)
   
@@ -222,46 +236,46 @@ class FsFile(SurfaceFile):
     if len(e) > 0:
       self.__log.warn(e)
   
-  def plot3d(self, **kwargs):
-    from mpl_toolkits.mplot3d import Axes3D
-    ax = plt.gca(projection='3d')
-    ax.plot_surface(self.array)
-
 
 # -------------------------------------------------------------------------------  
 
 
 @traced
 @logged
-class ExtendedFsFile(SurfaceFile):
+class ExtendedFsFile(SurfaceFile, ExtenGridProjFile):
   def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   
   def read(self, **kwargs):
-    kwargs['shape'] = (self.proj.enx1, self.proj.enx2, 1)
-    A = super().read(**kwargs)
-    return A  
+    # NO BENEFIT OF INHERITANCE...
+    from fullwavepy.ndat.manifs import SurfZ
+    #self.shape = (self.proj.enx1, self.proj.enx2, 1) # not necesseraliy nz=1...
+    #kwargs['shape'] = self.shape # TO BE SURE...
+    array = ExtenGridProjFile.read(self, **kwargs)
+    self.array = SurfZ(array)
+    self.array.extent = array.extent
+    return self.array
   
-  def plot2d(self, **kwargs):
-    self.array = self.read(**kwargs)
-    p = self.proj
-    shift = 0
-    x1 = -p.elef + shift
-    x2 = x1 + p.enx1
-    y1 = -p.etop + shift
-    y2 = y1 + p.enx3
-    #dx = self.proj.dx
-    #ex1 = self.proj.box[0] - self.proj.elef * dx
-    #ex2 = self.proj.box[1] + self.proj.erig * dx
+  #def plot2d(self, **kwargs):
+    #self.array = self.read(**kwargs)
+    #p = self.proj
+    #shift = 0
+    #x1 = -p.elef + shift
+    #x2 = x1 + p.enx1
+    #y1 = -p.etop + shift
+    #y2 = y1 + p.enx3
+    ##dx = self.proj.dx
+    ##ex1 = self.proj.box[0] - self.proj.elef * dx
+    ##ex2 = self.proj.box[1] + self.proj.erig * dx
     
-    x = np.arange(-p.elef, p.enx1)
-    z = p.i.fse.read()[:,p.enx2//2,0]
-    plt.plot(x,z)    
+    #x = np.arange(-p.elef, p.enx1)
+    #z = p.i.fse.read()[:,p.enx2//2,0]
+    #plt.plot(x,z)    
     
-    x = np.arange(-self.proj.elef, self.proj.ex2+1)
-    z = self.array[:,0,0]
-    #plt.plot(x, z)
-    #plt.plot(z)
+    #x = np.arange(-self.proj.elef, self.proj.ex2+1)
+    #z = self.array[:,0,0]
+    ##plt.plot(x, z)
+    ##plt.plot(z)
 
 
 # -------------------------------------------------------------------------------

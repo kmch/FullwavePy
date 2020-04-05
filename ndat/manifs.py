@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.ndat.arrays import Arr3d
+from fullwavepy.ndat.arrays import Arr3d, Arr2d
 
 
 @traced
@@ -35,13 +35,17 @@ class Surf(Arr3d):
 
 @traced
 @logged
-class SurfZ(Surf):
+class SurfZ(Arr2d):
   """
   Surface of the form z = f(x,y).
   
   """
-  def plot(self, **kwargs):
-    self.plot_slice(slice_at='z', **kwargs)
+  def read(self, **kwargs):
+    arr3d = Arr3d(super().read(**kwargs))
+    self = Arr2d(arr2d.slice(slice_at='z', node=0, **kwargs))
+    return self
+  #def plot2d(self, **kwargs):
+    #self.plot_slice(slice_at='z', **kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -49,7 +53,7 @@ class SurfZ(Surf):
 
 @traced
 @logged
-class Plane(SurfZ):
+class Plane(Surf):
   """
   Plane dipping along X.
   
