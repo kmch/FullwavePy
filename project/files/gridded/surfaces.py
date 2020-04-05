@@ -11,6 +11,7 @@ from fullwavepy.generic.decor import widgets
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash
 from fullwavepy.ioapi.fw3d import VtrFile
+from fullwavepy.ndat.manifs import SurfZ
 from fullwavepy.project.files.generic import ArrayProjFile
 from fullwavepy.project.files.gridded.generic import GridProjFile, ExtenGridProjFile
 
@@ -45,8 +46,12 @@ class SurfZFile(ArrayProjFile, VtrFile):
   # -----------------------------------------------------------------------------
   
   def read(self, **kwargs):
-    from fullwavepy.ndat.manifs import SurfZ
-    self.array = SurfZ(super().read(**kwargs))
+    from fullwavepy.ioapi.generic import read_any
+    A = np.array(read_any(self.fname))
+    assert len(A.shape) == 3
+    assert A.shape[-1] == 1
+    Az = A[:,:,0]
+    self.array = SurfZ(Az)
     return self.array
     
   # -----------------------------------------------------------------------------
@@ -208,7 +213,10 @@ class FsFile(SurfZFile, GridProjFile):
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
   
-  #def read(self, **kwargs):
+  def read(self, **kwargs):
+    self.array = SurfZFile.read(self, **kwargs)
+    self.array.extent = GridProjFile._extent(self, **kwargs)
+    return self.array
     
     #self.shape = (self.proj.nx1, self.proj.nx2, 1) # not necesseraliy nz=1...
     #kwargs['shape'] = self.shape # TO BE SURE...    

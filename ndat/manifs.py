@@ -41,7 +41,7 @@ class SurfZ(Arr2d):
   
   """
   def __new__(cls, source, **kwargs):
-    super().__new__(cls, source, **kwargs)
+    return super().__new__(cls, source, **kwargs)
   #def read(self, **kwargs):
     #arr3d = Arr3d(super().read(**kwargs))
     #self = Arr2d(arr2d.slice(slice_at='z', node=0, **kwargs))
