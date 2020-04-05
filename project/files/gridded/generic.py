@@ -33,8 +33,10 @@ class GridProjFile(ArrayProjFile):
     files to be initialized already).
     
     VERY IMPORTANT
-    x2, y2 and z2 are NOT physical (too large by 1 node)
-    but this is the ONLY way it is plot correctly both in 2D and 1D.
+    x2, y2 and z2 seem NOT physical,
+    e.g. if nx = 10, (x1,x2) one could think the correct 
+    extent in X is (1,10), but instead here is (1,11).
+    This is the ONLY way it is plot correctly both in 2D and 1D.
     
     """
     node1 = 1 # plot_image WILL SUBTRACT 0.5 TO CENTER AT INTEGERS AGAIN
@@ -56,6 +58,7 @@ class GridProjFile(ArrayProjFile):
     return self.array
 
   # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 

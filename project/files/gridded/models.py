@@ -12,15 +12,7 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.files.gridded.generic import GridProjFile
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
-from fullwavepy.project.lists.basic import ShotFileList, TimestepFileList
 
-
-# KEEP ONLY SPECIFIC?
-#class TrueVp(ArrayProjFile):
-  #def read():
-    #from seismic.models import Model
-    #self.array = Model(self.read())
-  
 
 @traced
 @logged

@@ -102,10 +102,14 @@ class Arr(np.ndarray):
     
     """
     if func is None:
-      func = lambda dim : [0, dim-1]
+      func = lambda dim : [0, dim]
     extent = []
     for dim in obj.shape:
       extent.append(func(dim))
+    
+    if len(obj.shape) == 1:
+      extent = extent[0]
+    
     return extent
   
   # -----------------------------------------------------------------------------
@@ -184,11 +188,16 @@ class Arr1d(Arr):
   def plot(self, **kwargs):
     """
     """
+    plot_kwargs = {}
+    if 'c' in kwargs:
+      plot_kwargs['c'] = kwargs['c']
+    #c = kw('c', 'b', kwargs)
     #from fullwavepy.plot.oned import plot_1d
+    self.__log.debug('self.extent' + str(self.extent))
     x1, x2 = self.extent 
     #self.__log.debug('Will not work for units other than node')
     x = np.arange(x1, x2)
-    plt.plot(x, self, 'o')
+    plt.plot(x, self, **plot_kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -452,24 +461,6 @@ class Arr3d(Arr):
     #return extent
 
 
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Grid(Arr3d):
-  """
-  """
-  #def _set_extent(obj, **kwargs):
-    #"""
-    #Overwrite standard extent to account for the fact
-    #that 0th element of a gird is a node no. 1!
-    
-    #"""
-    #func = lambda dim : [1, dim] # NOT [0, dim-1]
-    #return super()._set_extent(func, **kwargs) # PASSING obj NOT ALLOWED FOR SOME REASON
-  pass
-   
 # -------------------------------------------------------------------------------
 
 

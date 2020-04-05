@@ -11,44 +11,6 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.ndat.arrays import Grid
-
-@traced
-@logged
-class ProjGrid(Grid): # CLEAN
-  """
-  """
-  def __init__(self, proj, **kwargs):
-    self.proj = proj
-    shape = kw('shape', (self.proj.nx1, self.proj.nx2, self.proj.nx3), kwargs)
-    #return shape 
-
-  def _shape(self, **kwargs):
-    shape = kw('shape', (self.proj.enx1, self.proj.enx2, self.proj.enx3), kwargs)
-    return shape
-  
-  # -------------------------------------------------------------------------------
-
-  def _extent(self, **kwargs):
-    """
-    
-    """
-    x1 = float(-self.proj.elef)
-    x2 = float(x1 + self.proj.enx1)
-    y1 = float(-self.proj.efro)
-    y2 = float(y1 + self.proj.enx2)
-    z1 = float(-self.proj.etop)
-    z2 = float(z1 + self.proj.enx3)
-    
-    if self.proj.nx2 == 1:
-      y1 = 1
-      y2 = 1
-    
-    extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
-    # CENTER VOXELS AT INTEGERS! ONLY IF unit='node'! FIXME
-    extent += 0.5
-    self.__log.debug('extent: %s' % str(extent))
-    return extent
 
 
 # -------------------------------------------------------------------------------

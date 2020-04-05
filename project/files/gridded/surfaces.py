@@ -82,7 +82,7 @@ class SurfZFile(ArrayProjFile, VtrFile):
 
 
 @traced
-@logged # IT HAS TO BE DEFINE
+@logged
 class TopoFile(SurfZFile):
   """
   Topography of the topmost rock layer:

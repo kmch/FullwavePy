@@ -118,29 +118,6 @@ def plot_line(line, line2=0, **kwargs):
 
 @traced
 @logged
-def slice_points(points, scoord, **kwargs):
-  """
-  Project points onto 1 of the planes.
-
-  """
-  if scoord == 'x':
-    X1, X2 = [[i[1] for i in points], [i[2] for i in points]]
-  elif scoord == 'y':
-    X1, X2 = [[i[0] for i in points], [i[2] for i in points]]
-  elif scoord == 'z':
-    X1, X2 = [[i[0] for i in points], [i[1] for i in points]]
-  else:
-    raise ValueError('Wrong slice coord: %s' % scoord)
-  
-  points2d = list(zip(X1, X2))
-  return points2d
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
 def plot_points(scatt, **kwargs):
   """
   Plot points either as y(x) or x(y).

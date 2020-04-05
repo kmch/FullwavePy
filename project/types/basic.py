@@ -270,7 +270,8 @@ class ProjSyn(Proj):
     gs_tvp = gs[1:, :].subgridspec(2,2)
     kwargs['fig'] = fig
     kwargs['gs'] = gs_tvp
-    self.i.tvp.plot_3slices(**kwargs) 
+    kwargs['nslices'] = 3
+    self.i.tvp.plot(**kwargs) 
     
     #if kwargs['sources']:
       #print('sources on')

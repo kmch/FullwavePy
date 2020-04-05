@@ -13,7 +13,7 @@ from fullwavepy.ndat.arrays import Arr3d
 
 @traced
 @logged
-class Point(np.ndarray):
+class GenericPoint(np.ndarray):
   """
   """
   def __new__(cls, xyz, **kwargs):
@@ -104,21 +104,109 @@ class Point(np.ndarray):
 
 @traced
 @logged
-class Points(Arr3d):
+class Points(dict):
   """
-  """
-  def info():
-    raise NotImplementedError
-  def compare():
-    raise NotImplementedError
-  def compare_subplots():
-    raise NotImplementedError  
-  #def scatter
-  def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'magma_r', kwargs)
-    super().plot(**kwargs)
+  dict stores ids (keys) and coords (values)
+  ids can annotate plots
+  
+  __new__ is not necessary to redefine, unlike nd.array
+  
+  """  
+  #def __new__(cls, source, ndims=None, **kwargs):
+  pass
 
 
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Points3d(Points):
+  """
+  """    
+  def slice(self, slice_at='y', **kwargs):
+    if slice_at == 'x':
+      i1, i2 = 1, 2
+    elif slice_at == 'y':
+      i1, i2 = 0, 2
+    elif slice_at == 'z':
+      i1, i2 = 0, 1
+    else:
+      raise ValueError('Wrong slice coord: %s' % slice_at)      
+    for key, val in self.items():
+      #assert len(val) == 3 # IT CAN HAVE METADATA
+      self[key] = np.array([val[i1], val[i2]])
+  
+  def plot_slice(self, ax=None, **kwargs):
+    """
+    """
+    annotate = kw('annotate', False, kwargs)
+    annoffset = kw('annoffset', 0, kwargs)
+    alpha = kw('alpha', 0.7, kwargs)
+    marker = kw('marker', '.', kwargs)
+    markersize = kw('markersize', 5, kwargs)
+    markeredgecolor = kw('markeredgecolor', 'k', kwargs)
+    markerfacecolor = kw('markerfacecolor', 'none', kwargs) # EMPTY MARKERS
+    if ax is None:
+      ax = plt.gca()
+    
+    self.slice(**kwargs)
+    
+    if annotate: 
+      for key, val in self.items():
+        ax.annotate(key, (val[0]+annoffset, val[1]+annoffset), clip_on=True) # clip_on IS REQUIRED
+    
+    ax.plot([i[0] for i in self.values()], [i[1] for i in self.values()], 
+            '.',
+            alpha=alpha, 
+            marker=marker, 
+            markersize=markersize, 
+            markeredgecolor=markeredgecolor,
+            markerfacecolor=markerfacecolor,
+           )
+  
+  # -----------------------------------------------------------------------------   
+  
+  def plot_3slices(self, fig, **kwargs): # LEGACY
+    d = self.read(**dict(kwargs, unit='node'))
+    
+    s3 = kw('slice', 'y', kwargs) #FIXME: THIS MUST BE MERGED WITH arr3d
+    s1, s2 = [i for i in ['x', 'y', 'z'] if i != s3]
+    s = [s1, s2, s3]
+    
+    for i in range(3):
+      self.plot_slice(s[i], fig.axes[i])
+
+  
+  def plot(self, *args, **kwargs):
+    #if 'slice_at' in kwargs:
+    self.plot_slice(*args, **kwargs)
+    #else:
+     
+  # -----------------------------------------------------------------------------
+  
+  def plotly(self, fig=None, **kwargs): # LEGACY
+    """
+    """
+    import plotly.graph_objects as go    
+    color = kw('color', 'black', kwargs)
+    mode = kw('mode', 'markers', kwargs)
+    size = kw('size', 2, kwargs)
+    
+    di = self.read(unit='m')
+
+    if fig is None:
+      fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[i[0] for i in di.values()], 
+                             y=[i[1] for i in di.values()], 
+                             text=list(di.keys()), mode=mode,
+                             marker=dict(color=color, size=size),
+                             line=dict(color=color), showlegend=False))
+    
+    return fig       
+     
+  
+  
 # -------------------------------------------------------------------------------
 
 

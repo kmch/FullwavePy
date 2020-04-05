@@ -9,13 +9,14 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.ndat.points import Point
+from fullwavepy.ndat.points import GenericPoint, Points3d
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
 @traced
 @logged
-class SrcRec(Point):
+class PointSR(GenericPoint):
+  # aka multipole
   def check_fs_pos(self, **kwargs):
     pass  
   def plot(self, **kwargs):
@@ -27,7 +28,7 @@ class SrcRec(Point):
 
 @traced
 @logged
-class Monopole(SrcRec):
+class Monopole(PointSR):
   """
   """
   def spread(self, r, **kwargs):
@@ -41,7 +42,7 @@ class Monopole(SrcRec):
 
 @traced
 @logged
-class Dipole(SrcRec):
+class Dipole(PointSR):
   """
   axis : 0, 1 or 2
     corresponds to dipole along X, Y or Z axis respectively
@@ -69,9 +70,25 @@ class Dipole(SrcRec):
 # -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class DipoleX(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 0, **kwargs)  
 
 
+@traced
+@logged
+class DipoleY(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 1, **kwargs) 
 
+
+@traced
+@logged
+class DipoleZ(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 2, **kwargs) 
 
 
 # -------------------------------------------------------------------------------
@@ -79,13 +96,47 @@ class Dipole(SrcRec):
 
 @traced
 @logged
-class Src(SrcRec):
-  def spread_n_bounce(self, **kwargs):
-    pass
-  #def spread_factors(self, **kwargs):
-    #self.find_neighs()
-  def spread_bounce(self, **kwargs):
-    pass
+class SRs(Points3d):
+  def __new__(cls, dictio, **kwargs):
+    for key, val in dictio.items():
+      dictio[key] = PointSR(val)
+    return super().__new__(cls, dictio, **kwargs)
+
+  def set_type(self, srtype_ids, **kwargs):
+    """
+    it will be read from the file pgy / geo instead...?
+    
+    """
+    mapp = {0 : Monopole,
+            1 : DipoleZ,
+            2 : DipoleY,
+            3 : DipoleX,
+           }
+    
+    assert len(srtype_ids) == len(self)
+    for srtype_id, [k, v] in zip(srtype_ids, self.items()):
+      self[k] = mapp[srtype_id](v)
+  
+# -------------------------------------------------------------------------------  
+
+
+@traced
+@logged
+class Sources(SRs):
+  def plot(self, *args, **kwargs):
+    kwargs['marker'] = kw('marker', '*', kwargs)
+    kwargs['markersize'] = kw('markersize', 10, kwargs)
+    kwargs['markeredgecolor'] = kw('markeredgecolor', 'k', kwargs)
+    kwargs['markerfacecolor'] = kw('markerfacecolor', 'w', kwargs)
+    super().plot(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'black', kwargs)
+    kwargs['size'] = kw('size', 2, kwargs)
+    return super().plotly(*args, **kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -93,25 +144,23 @@ class Src(SrcRec):
 
 @traced
 @logged
-class SuperSrc(Src):
-  """
-  """
-  def check_fs_pos(self, **kwargs):
-    pass
+class Receivers(SRs):
+  def plot(self, **kwargs):
+    kwargs['annotate'] = False
+    kwargs['s'] = 1e-2
+    kwargs['c'] = 'gray'
+    kwargs['alpha'] = 1
+    super().plot(**kwargs)
   
-  def spread_factors(self, **kwargs):
-    nsrcs = []
-    while diverged:
-      for src in srcs:
-        nsrcs.append(src.spread_n_bounce())
-      srcs = nsrcs
-      self._check_convergence()
-  
-  def _check_convergence():
-    pass
-  
-  def inject(self, wf, **kwargs):
-    pass
+  # -----------------------------------------------------------------------------  
+
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'grey', kwargs)
+    kwargs['size'] = kw('size', 1, kwargs)
+    return super().plotly(*args, **kwargs)
+
+  # ----------------------------------------------------------------------------- 
 
 
 # -------------------------------------------------------------------------------
@@ -123,6 +172,46 @@ class SuperSrc(Src):
 
 
 
+
+
+#@traced
+#@logged
+#class Src(Multipole):
+#  def spread_n_bounce(self, **kwargs):
+#    pass
+#  #def spread_factors(self, **kwargs):
+#    #self.find_neighs()
+#  def spread_bounce(self, **kwargs):
+#    pass
+
+
+# -------------------------------------------------------------------------------
+
+
+#traced
+#logged
+#lass SuperSrc(Src):
+# """
+# """
+# def check_fs_pos(self, **kwargs):
+#   pass
+# 
+# def spread_factors(self, **kwargs):
+#   nsrcs = []
+#   while diverged:
+#     for src in srcs:
+#       nsrcs.append(src.spread_n_bounce())
+#     srcs = nsrcs
+#     self._check_convergence()
+# 
+# def _check_convergence():
+#   pass
+# 
+# def inject(self, wf, **kwargs):
+#   pass
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced
