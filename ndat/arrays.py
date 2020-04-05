@@ -35,6 +35,7 @@ class Arr(np.ndarray):
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
+    obj = cls._set_coords(obj, **kwargs)
     
     if ndims is not None:
       assert len(obj.shape) == ndims
@@ -46,34 +47,35 @@ class Arr(np.ndarray):
   def _read(source, **kwargs):
     """
     """
-    from fullwavepy.seismic.data import Data
-    from fullwavepy.ndat.manifs import Surf, SurfZ, Plane
-    from fullwavepy.ndat.points import Points
-    
-    if (type(source) == type(np.array([])) or 
-        type(source) == Arr or
-        type(source) == Arr1d or
-        type(source) == Arr2d or
-        type(source) == Arr3d or
-        type(source) == Grid or
-        type(source) == Data or
-        type(source) == Surf or
-        type(source) == SurfZ or
-        type(source) == Plane or
-        type(source) == Points or
-        type(source) == np.memmap):
-      A = source    
+    #from fullwavepy.seismic.data import Data
+    #from fullwavepy.ndat.manifs import Surf, SurfZ, Plane
+    #from fullwavepy.ndat.points import Points
+    #
+    #if (type(source) == type(np.array([])) or 
+    #    type(source) == Arr or
+    #    type(source) == Arr1d or
+    #    type(source) == Arr2d or
+    #    type(source) == Arr3d or
+    #    type(source) == Data or
+    #    type(source) == Surf or
+    #    type(source) == SurfZ or
+    #    type(source) == Plane or
+    #    type(source) == Points or
+    #    type(source) == np.memmap):
+    #  A = source    
 
-    elif isinstance(source, str):
+    if isinstance(source, str):
       from fullwavepy.ioapi.generic import read_any
       if hasattr(source, 'shape'): # FOR EFFICIENCY (SEE read_any)
         kwargs['shape'] = self.shape
       A = read_any(source, **kwargs)
-
     else:
-     raise TypeError('Arguments need to be either ' + 
-                     'file-names or arrays or np.memmap, NOT: %s' %
-                     type(source))
+      A = source
+      
+    #else:
+    # raise TypeError('Arguments need to be either ' + 
+    #                 'file-names or arrays or np.memmap, NOT: %s' %
+    #                 type(source))
     return A
   
   # -----------------------------------------------------------------------------   
@@ -102,7 +104,7 @@ class Arr(np.ndarray):
     
     """
     if func is None:
-      func = lambda dim : [0, dim]
+      func = lambda dim : [0, dim] # NOT dim-1; SEE GridProjFile ETC.
     extent = []
     for dim in obj.shape:
       extent.append(func(dim))
@@ -113,6 +115,13 @@ class Arr(np.ndarray):
     return extent
   
   # -----------------------------------------------------------------------------
+  
+  def _set_coords(obj, **kwargs):
+    obj.__log.debug('obj.extent' + str(obj.extent))
+    obj.__log.warn('Setting coords to None. Fill it with actual code')
+    obj.coords = None
+    
+    return obj
   
   #def _set_shape(obj, shape=None, **kwargs):
     #self.shape = None

@@ -55,7 +55,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   ax = kw('ax', plt.gca(), kwargs)
   title = kw('title', None, kwargs)
-  cmap = kw('cmap', 'twilight', kwargs)
+  cmap = kw('cmap', 'Greys', kwargs)
   ncolors = kw('ncolors', None, kwargs)  
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)

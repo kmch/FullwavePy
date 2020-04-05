@@ -9,6 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
+from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ndat.points import GenericPoint, Points3d
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
@@ -16,11 +17,53 @@ from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 @traced
 @logged
 class PointSR(GenericPoint):
+  """
+  
+  """
+  def spread(self, *args, **kwargs):
+    vol = super().spread(*args, **kwargs)
+    self.__log.debug('vol.extent' + str(vol.extent))
+    self.vol = VolumeSR(vol)
+    self.vol.extent = vol.extent
+    self.vol.coords = vol.coords
+    return self.vol
+    
+    
   # aka multipole
   def check_fs_pos(self, **kwargs):
+    # not that trivial probably
     pass  
   def plot(self, **kwargs):
     pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class VolumeSR(Arr3d): # FIXME: WE NEED COORDINATES OF ARRAY ELEMENTS (JUST CORNERS?)
+  """
+  """
+  def split(self, **kwargs):
+    pass
+# def check_fs_pos(self, **kwargs):
+#   pass
+# 
+# def spread_factors(self, **kwargs):
+#   nsrcs = []
+#   while diverged:
+#     for src in srcs:
+#       nsrcs.append(src.spread_n_bounce())
+#     srcs = nsrcs
+#     self._check_convergence()
+# 
+# def _check_convergence():
+#   pass
+# 
+# def inject(self, wf, **kwargs):
+#   pass
+
 
 
 # -------------------------------------------------------------------------------
@@ -77,11 +120,17 @@ class DipoleX(Dipole):
     return super().__new__(cls, xyz, 0, **kwargs)  
 
 
+# -------------------------------------------------------------------------------
+
+
 @traced
 @logged
 class DipoleY(Dipole):
   def __new__(cls, xyz, **kwargs):
     return super().__new__(cls, xyz, 1, **kwargs) 
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced
@@ -106,9 +155,11 @@ class SRs(Points3d):
     """
     it will be read from the file pgy / geo instead...?
     
+    PROTEUS convention of naming data components.
+    
     """
     mapp = {0 : Monopole,
-            1 : DipoleZ,
+            1 : DipoleZ, # NOT X!
             2 : DipoleY,
             3 : DipoleX,
            }

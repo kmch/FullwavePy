@@ -82,15 +82,38 @@ class GenericPoint(np.ndarray):
     # APPLY ALONG TUPLE AXIS, I.E. TAKE POINTS COORDS AS AN ARGUMENT
     coord_axis = -1
     # DEAL WITH ONE COORDINATE AT A TIME
+    extent = []
     for i, func in enumerate(funcs):
       # WRAPPER TO ACT ON A SINGLE COORDINATE OF AN ND-POINT
       func_of_xyz = lambda point : func(point[i])
       vol *= np.apply_along_axis(func_of_xyz, coord_axis, dists)
     
-    self.vol = vol
+    
+    #nshape = np.array(cube.shape)
+    #nshape[-1] += 1 # INCREASE THE LAST DIM TO INCLUDE VALUE -> (x,y,z,val)
+    #
+    #self.vol = np.zeros(nshape)
+    #self.vol[..., :-1] = cube
+    #self.vol[..., -1] = vol
+    
+    self.vol = Arr3d(vol)
+    self.vol.extent = self.cube_extent(cube, **kwargs)
+    #self.vol._set_coords()
+    self.__log.debug('self.vol.extent' + str(self.vol.extent))
+    self.vol.coords = cube
     return self.vol
 
   # -----------------------------------------------------------------------------
+  
+  def cube_extent(self, cube, **kwargs):
+    if len(cube.shape) == 4:
+      x1, y1, z1 = cube[0,0,0]
+      x2, y2, z2 = cube[-1,-1,-1] + 1
+      extent = [[x1, x2], [y1, y2], [z1, z2]]
+    else:
+      raise ValueError('cube.shape ' + str(cube.shape))
+    
+    return extent
   
   def interp(self, **kwargs):
     pass
