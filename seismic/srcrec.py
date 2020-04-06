@@ -214,7 +214,12 @@ class VolumeSR(Arr3d):
   """
   def split(self, *args, **kwargs):
     flags = self.flag(*args, **kwargs)
-    self.outside = self.coords[flags == self.ext_flag] 
+    indices = flags == self.ext_flag
+    coords = self.coords[indices]
+    values = self[indices]
+    self.outside = np.zeros(list(values.shape) + [4])
+    self.outside[...,0:3] = coords
+    self.outside[...,3] = values
 
   # -----------------------------------------------------------------------------    
 
@@ -263,8 +268,36 @@ class VolumeSR(Arr3d):
 
   # -----------------------------------------------------------------------------
 
-  def bounce_off(self, **kwargs):
-    pass
+  def bounce_off(self, ghs, iss, elef, efro, etop, **kwargs):
+    """
+    ghs : list of ghosts
+    iss : list of corresponding intersects (same len)
+    """
+    assert len(ghs) == len(iss)
+    
+    vout = np.copy(self.outside)
+    vout[:, 0] += elef
+    vout[:, 1] += efro
+    vout[:, 2] += etop
+
+    aghs = np.array(ghs)
+
+    reflected = []
+    for vo in vout:
+      x, y, z, A = vo
+      G = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))][0]
+      I = np.array(iss[ghs.index(list(G))])
+      G = G[:3]
+      R = np.zeros(4) # WE HAVE TO CREATE IT EVERY TIME
+      R[:3] = 2 * I - G
+      R[3] = -A
+      reflected.append(R)
+      #print('O', vo)
+      #print('G', G)
+      #print('I', I)
+      #print('R', R)
+      #print()   
+    return np.array(reflected)
 
   # -----------------------------------------------------------------------------
   
@@ -272,6 +305,8 @@ class VolumeSR(Arr3d):
     kwargs['slice_at'] = kw('slice_at', 'y', kwargs)
     kwargs['node'] = kw('node', self.shape[1]//2, kwargs)
     super().plot(**kwargs)
+
+  # -----------------------------------------------------------------------------
     
 
 # -------------------------------------------------------------------------------

@@ -14,8 +14,14 @@ from fullwavepy.ndat.arrays import Arr3d, Arr
 
 @traced
 @logged
-def NodesIn(Arr3d):
-  pass
+def Ghost(object):
+  def __init__(self, x, y, z, w, lvl, flag, **kwargs):
+    self.x = x
+    self.y = y
+    self.z = z
+    self.w =  w
+    self.lvl = lvl
+    self.flag = flag
 
 
 # -------------------------------------------------------------------------------
@@ -23,7 +29,7 @@ def NodesIn(Arr3d):
   
 @traced
 @logged
-class Ghosts(Arr):
+class Ghosts(list):
   """
   for fancier subarray-ing check out np.ix_
   """

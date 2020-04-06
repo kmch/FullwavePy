@@ -13,6 +13,25 @@ from fullwavepy.math.const import *
 
 @traced
 @logged
+def round_to_int(x):
+  """
+  Round to nearest int if it's 
+  close enough.
+  
+  """
+  threshold = 1e-6
+  
+  c = np.ceil(x)
+  f = np.floor(x)
+  
+  return np.where(abs(x - f) < threshold, f, 
+                  np.where(abs(x - c) < threshold, c, x))
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 def deg2rad(angle):
   """
   Convert degrees to radians.
