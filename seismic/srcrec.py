@@ -117,8 +117,11 @@ class PointSR(GenericPoint):
   # -----------------------------------------------------------------------------
   
   def spread(self, *args, **kwargs):
+    """
+    """
     vol = super().spread(*args, **kwargs)
     self.__log.debug('vol.extent' + str(vol.extent))
+
     self.vol = VolumeSR(vol)
     self.vol.extent = vol.extent
     self.vol.coords = vol.coords
@@ -209,15 +212,27 @@ class DipoleZ(Dipole):
 class VolumeSR(Arr3d):
   """
   """
-  def split(self, ine, *args, **kwargs):
+  def split(self, *args, **kwargs):
+    flags = self.flag(*args, **kwargs)
+    self.outside = self.coords[flags == self.ext_flag] 
+
+  # -----------------------------------------------------------------------------    
+
+  def flag(self, ine, *args, **kwargs):
     """
-    array of in/acc/ext nodes
+    ine: array of in/acc/ext nodes
     """
     self.indices = self._grid_coords_2_egrid_indices(*args, **kwargs)
-    self.ine = Arr3d(ine[self.indices])
-    self.ine.extent = self.extent
-    return self.ine
-
+    
+    self.flgs = Arr3d(ine[self.indices])
+    self.flgs.extent = self.extent
+    
+    self.in_flag = ine.in_flag
+    self.acc_flag = ine.acc_flag
+    self.ext_flag = ine.ext_flag
+    
+    return self.flgs
+  
   # -----------------------------------------------------------------------------
 
   def _grid_coords_2_egrid_indices(self, elef, efro, etop, **kwargs):

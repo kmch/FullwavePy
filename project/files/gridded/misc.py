@@ -45,16 +45,17 @@ class InextFile(ExtenGridProjFile):
     """
     in_flag = 0                ! FLAG FOR INTERIOR NODE
     integer, parameter         :: acc_flag = -1             ! FLAG FOR NODE LYING EXACTLY (WITHIN ACCURACY) ON FS
-    integer, parameter         :: ext_flag = int(err_value)    
+    integer, parameter         :: ext_flag = int(err_value)   
+        #better plots? mapp = {-666.0 :  1,
+    #          -1.0 :  0,
+    #           0.0 : -1,
+    #       }
     """
     
     from fullwavepy.ioapi.generic import read_txt
     from fullwavepy.ndat.arrays import Arr3d
     
-    #mapp = {-666.0 :  1,
-    #          -1.0 :  0,
-    #           0.0 : -1,
-    #       }
+
             
     
     c = read_txt(self.fname)
@@ -68,6 +69,10 @@ class InextFile(ExtenGridProjFile):
     self.array = Arr3d(d.reshape(h + [4])[:,:,:,-1])
     self._extent()
     self.array.extent = self.extent
+    self.array.in_flag = self.in_flag
+    self.array.acc_flag = self.acc_flag
+    self.array.ext_flag = self.ext_flag
+    
     self.__log.debug('self.array.extent %s' % str(self.array.extent))
     
     return self.array
