@@ -16,7 +16,8 @@ from fullwavepy.ndat.arrays import Arr3d
 class GenericPoint(np.ndarray):
   """
   """
-  def __new__(cls, xyz, **kwargs):
+  def __new__(cls, xyz, value=1, **kwargs):
+    cls.value = value
     return np.asarray(xyz).view(cls)
 
   # -----------------------------------------------------------------------------
@@ -96,7 +97,7 @@ class GenericPoint(np.ndarray):
     #self.vol[..., :-1] = cube
     #self.vol[..., -1] = vol
     
-    self.vol = Arr3d(vol)
+    self.vol = Arr3d(vol) * self.value # SCALING WITH VALUE !!!!!!!!!
     self.vol.extent = self.cube_extent(cube, **kwargs)
     #self.vol._set_coords()
     self.__log.debug('self.vol.extent' + str(self.vol.extent))

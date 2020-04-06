@@ -15,6 +15,9 @@ from fullwavepy.math.const import epsi
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
+clip_at = 1e-9
+
+
 @traced
 @logged
 class SRs(Points3d):
@@ -140,7 +143,7 @@ class HyperPointSR(object):
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
     psrs_to_spread = [self.pointsr]
-    i_max = 4
+    i_max = 1
     i = 0
     self.snapshots = []
     while i < i_max:
@@ -155,8 +158,14 @@ class HyperPointSR(object):
         self.snapshots.append(np.copy(self.vol))
         
         reflected = psr_to_spread.vol.bounce_off(ghs, iss, elef, efro, etop)
+        
+        
+        return reflected
+        
+        
+        
         new_psrs_to_spread.append(reflected)
-      psrs_to_spread = reflected
+      psrs_to_spread = new_psrs_to_spread
 
   # -----------------------------------------------------------------------------
   
@@ -165,9 +174,10 @@ class HyperPointSR(object):
       #self.__log.info('node_in ' + str(node_in))
       xyz = node_in[:3]
       amp = node_in[3]
-      #if abs(amp) < epsi: # skip numerical zeroes
-      if abs(amp) < 1e-8:
-        continue
+      if abs(amp) < clip_at: # skip tiny factors for speed and compactness of volume
+        self.__log.debug('Skipping inside node %s with small ampl %s' % (str(xyz), str(amp)))
+        continue      
+      
       ijk = xyz - self.origin
       ijk = tuple((int(n) for n in ijk))
       prv = self.vol[ijk][-1]
@@ -179,8 +189,7 @@ class HyperPointSR(object):
                                                              str(amp), 
                                                              str(prv),
                                                              str(now)))
-    
-  
+
 
 # -------------------------------------------------------------------------------
 
@@ -196,11 +205,17 @@ class PointSR(GenericPoint):
     self.vol = self.spread(r)
     #self.bounce_off
 
-  
   # -----------------------------------------------------------------------------
   
   def spread(self, *args, **kwargs):
     """
+    args are just passed from children to parent.
+    this is especially useful here since the funcs
+    used by the parent
+    are defined in children under the hood.
+    that's why we couldn't spread an instance
+    of PointSR without providing them.
+    
     """
     vol = super().spread(*args, **kwargs)
     self.__log.debug('vol.extent' + str(vol.extent))
@@ -211,80 +226,6 @@ class PointSR(GenericPoint):
     return self.vol
 
   # -----------------------------------------------------------------------------    
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Monopole(PointSR):
-  """
-  """
-  def spread(self, r, **kwargs):
-    func = lambda x : kaiser(x, r) * sinc(x)
-    funcs = [func for i in range(len(self))]
-    return super().spread(r, funcs, **kwargs)
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Dipole(PointSR):
-  """
-  axis : 0, 1 or 2
-    corresponds to dipole along X, Y or Z axis respectively
-  
-  """
-  def __new__(cls, xyz, axis, **kwargs):
-    assert axis in [0, 1, 2]
-    cls.axis = axis
-    return super().__new__(cls, xyz, **kwargs)
-  
-  # -----------------------------------------------------------------------------
-  
-  def spread(self, r, **kwargs):
-    func1 = lambda x : kaiser(x, r) * sinc(x) 
-    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
-    
-    funcs = [func1 for i in range(len(self))]
-    funcs[self.axis] = func2
-    
-    return super().spread(r, funcs, **kwargs)
-
-  # -----------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class DipoleX(Dipole):
-  def __new__(cls, xyz, **kwargs):
-    return super().__new__(cls, xyz, 0, **kwargs)  
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class DipoleY(Dipole):
-  def __new__(cls, xyz, **kwargs):
-    return super().__new__(cls, xyz, 1, **kwargs) 
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class DipoleZ(Dipole):
-  def __new__(cls, xyz, **kwargs):
-    return super().__new__(cls, xyz, 2, **kwargs) 
 
 
 # -------------------------------------------------------------------------------
@@ -378,21 +319,29 @@ class VolumeSR(Arr3d):
 
     reflected = []
     for vo in vout:
-      x, y, z, A = vo
+      x, y, z, amp = vo
+      if abs(amp) < clip_at: # skip tiny factors for speed and compactness of volume
+        self.__log.debug('Skipping outside node %s with small ampl %s' % (str([x,y,z]), str(amp)))
+        continue
       G = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))][0]
       I = np.array(iss[ghs.index(list(G))])
       G = G[:3]
       R = np.zeros(4) # WE HAVE TO CREATE IT EVERY TIME
-      R[:3] = 2 * I - G
-      R[3] = -A
-      #R = Monopole(
+      #R[:3] = 2 * I - G
+      #R[3] = -amp
+      
+      # ATTENTION my theory is we should always inject secondary (reflected) sources  
+      # as monopoles regardless of the type of the primary source
+      R = Monopole(2 * I - G) 
+      R.value = -amp # reflect with flipped polarity
+      
       reflected.append(R)
       #print('O', vo)
       #print('G', G)
       #print('I', I)
       #print('R', R)
       #print()   
-    return np.array(reflected)
+    return reflected #np.array(reflected)
 
   # -----------------------------------------------------------------------------
   
@@ -406,6 +355,79 @@ class VolumeSR(Arr3d):
 
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged
+class Monopole(PointSR):
+  """
+  """
+  def spread(self, r, **kwargs):
+    func = lambda x : kaiser(x, r) * sinc(x)
+    funcs = [func for i in range(len(self))]
+    return super().spread(r, funcs, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Dipole(PointSR):
+  """
+  axis : 0, 1 or 2
+    corresponds to dipole along X, Y or Z axis respectively
+  
+  """
+  def __new__(cls, xyz, axis, **kwargs):
+    assert axis in [0, 1, 2]
+    cls.axis = axis
+    return super().__new__(cls, xyz, **kwargs)
+  
+  # -----------------------------------------------------------------------------
+  
+  def spread(self, r, **kwargs):
+    func1 = lambda x : kaiser(x, r) * sinc(x) 
+    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
+    
+    funcs = [func1 for i in range(len(self))]
+    funcs[self.axis] = func2
+    
+    return super().spread(r, funcs, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class DipoleX(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 0, **kwargs)  
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class DipoleY(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 1, **kwargs) 
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class DipoleZ(Dipole):
+  def __new__(cls, xyz, **kwargs):
+    return super().__new__(cls, xyz, 2, **kwargs) 
+
+
+# -------------------------------------------------------------------------------
 
 
 #@traced
