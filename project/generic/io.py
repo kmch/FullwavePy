@@ -104,7 +104,7 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------
   
-  #@widgets#FIXME
+  ###@widgets#FIXME
   #def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
   #  #FIXME BOILERPLATE
   #  if widgets: 

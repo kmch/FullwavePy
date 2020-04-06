@@ -65,7 +65,7 @@ def new_figure(**kwargs):
   Apparently one has to create a new figure INSIDE 
   a function passed to interact. 
   This is the code that has to be put in every 
-  function decorated with @widgets then.
+  function decorated with ##@widgets then.
   """
   figsize = (kw('figsize_x', 6, kwargs), kw('figsize_y', 6, kwargs))
   return plt.figure(figsize=figsize)

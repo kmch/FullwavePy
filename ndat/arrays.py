@@ -35,7 +35,7 @@ class Arr(np.ndarray):
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
-    obj = cls._set_coords(obj, **kwargs)
+    #obj = cls._set_coords(obj, **kwargs)
     
     if ndims is not None:
       assert len(obj.shape) == ndims
@@ -118,7 +118,7 @@ class Arr(np.ndarray):
   
   def _set_coords(obj, **kwargs):
     obj.__log.debug('obj.extent' + str(obj.extent))
-    obj.__log.warn('Setting coords to None. Fill it with actual code')
+    obj.__log.debug('Setting coords to None. Fill it with actual code')
     obj.coords = None
     
     return obj
@@ -145,7 +145,7 @@ class Arr(np.ndarray):
 
   # -----------------------------------------------------------------------------
   
-  #@widgets()
+  ###@widgets()
   def compare(self, othe, mode='interleave', **kwargs): #fig, gs=None, widgets=False, 
     if mode == 'interleave':
       A = self.interleave(othe, **kwargs)
@@ -225,7 +225,7 @@ class Arr2d(Arr):
 
   # -----------------------------------------------------------------------------
 
-  #@widgets('slice_at', 'node')
+  ###@widgets('slice_at', 'node')
   def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
@@ -248,7 +248,7 @@ class Arr2d(Arr):
   
   # -----------------------------------------------------------------------------
 
-  #@widgets('cmap', 'slice_at', 'node')
+  ###@widgets('cmap', 'slice_at', 'node')
   def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
@@ -303,7 +303,7 @@ class Arr3d(Arr):
 
   # -----------------------------------------------------------------------------
 
-  #@widgets('slice_at', 'node')
+  ###@widgets('slice_at', 'node')
   def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
@@ -325,7 +325,7 @@ class Arr3d(Arr):
   
   # -----------------------------------------------------------------------------
   
-  #@widgets('chunk_size')
+  ###@widgets('chunk_size')
   def interleave(self, othe, *args, **kwargs):
     A1 = self.slice(*args, **kwargs)
     A2 = othe.slice(*args, **kwargs)
@@ -334,7 +334,7 @@ class Arr3d(Arr):
 
   # -----------------------------------------------------------------------------
   
-  @widgets('cmap', 'slice_at', 'node')
+  ##@widgets('cmap', 'slice_at', 'node')
   def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
     """
@@ -347,7 +347,7 @@ class Arr3d(Arr):
   
   # -----------------------------------------------------------------------------
   
-  #@widgets('cmap', 'slice', 'x', 'y', 'z')
+  ###@widgets('cmap', 'slice', 'x', 'y', 'z')
   def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
     """
     """
@@ -411,7 +411,7 @@ class Arr3d(Arr):
 
   def plot(self, nslices=1, *args, **kwargs):
     """
-    Note, it doesn't need to have @widgets!
+    Note, it doesn't need to have ##@widgets!
     
     """
     if nslices == 1:

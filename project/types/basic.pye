@@ -17,9 +17,6 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.plot.generic import new_figure
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class Proj(object):
@@ -55,8 +52,6 @@ class Proj(object):
                                                ProjEnv, ProjSegyMapp, ProjBox)
     from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.text.runfiles import Runfile
-    from fullwavepy.project.files.gridded.surfaces import TopographyFile
-        
 
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
@@ -94,9 +89,6 @@ class Proj(object):
     self.out = ProjOutput(self, **kwargs)
     self.o = self.out # ALIAS
     self.out.init(**kwargs)
-    
-    topo = kw('topo', None, kwargs)
-    self.topo = TopographyFile(self, self.inp.path, dupl=topo, **kwargs)  
     
   # -----------------------------------------------------------------------------
   
@@ -244,7 +236,7 @@ class ProjSyn(Proj):
 
   # -----------------------------------------------------------------------------
       
-  @widgets('cmap', 'x', 'y', 'z')  
+  #@widgets('cmap', 'x', 'y', 'z')  
   def plot_input(self, widgets=False, **kwargs):
     """
   
@@ -278,7 +270,8 @@ class ProjSyn(Proj):
     gs_tvp = gs[1:, :].subgridspec(2,2)
     kwargs['fig'] = fig
     kwargs['gs'] = gs_tvp
-    self.i.tvp.plot_3slices(**kwargs) 
+    kwargs['nslices'] = 3
+    self.i.tvp.plot(**kwargs) 
     
     #if kwargs['sources']:
       #print('sources on')
@@ -490,7 +483,7 @@ class ProjInv(Proj):
    
   # -----------------------------------------------------------------------------    
   
-  @widgets('cmap', 'sids', 'run_ids', 'it')
+  #@widgets('cmap', 'sids', 'run_ids', 'it')
   def plot_output(self, widgets=False, **kwargs):
     """
     """

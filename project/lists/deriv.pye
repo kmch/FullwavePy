@@ -53,7 +53,7 @@ class SchedFileList(IterFileList):
       except FileNotFoundError as err:
         self.__log.warn(err)    
   
-  @widgets('iter')
+  #@widgets('iter')
   def plot(self, **kwargs):
     pass
   

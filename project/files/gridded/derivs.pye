@@ -9,18 +9,13 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.gridded.generic import ExtendedGridFile
-from fullwavepy.project.files.gridded.models import ModelFileVtr
-
-
-# -------------------------------------------------------------------------------  
+from fullwavepy.project.files.gridded.generic import ExtenGridProjFile
 
 
 @traced
 @logged
-class GradFile(ExtendedGridFile, ModelFileVtr):
+class GradFile(ExtenGridProjFile):
   def plot(self, **kwargs):
-    #from fullwavepy.plot.generic import plot# FIXME add mmp merge
     kwargs['cmap'] = kwargs.get('cmap', 'seismic')
     kwargs['center_cmap'] = kwargs.get('center_cmap', True)
     super().plot(**kwargs) 
@@ -31,7 +26,7 @@ class GradFile(ExtendedGridFile, ModelFileVtr):
 
 @traced
 @logged
-class PrecFile(ExtendedGridFile, ModelFileVtr):
+class PrecFile(ExtenGridProjFile):
   pass
 
 

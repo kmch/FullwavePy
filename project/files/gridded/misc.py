@@ -32,21 +32,44 @@ class InextFile(ExtenGridProjFile):
   def __init__(self, proj, path, **kwargs):
     self.name = proj.name + '-InextNodes.txt'
     self.fname = path + self.name
+    
+    self.in_flag = 0
+    self.acc_flag = -1
+    self.ext_flag = -666
+    
     super().__init__(proj, path, **kwargs) 
     
   # -----------------------------------------------------------------------------
   
   def read(self, **kwargs):
+    """
+    in_flag = 0                ! FLAG FOR INTERIOR NODE
+    integer, parameter         :: acc_flag = -1             ! FLAG FOR NODE LYING EXACTLY (WITHIN ACCURACY) ON FS
+    integer, parameter         :: ext_flag = int(err_value)    
+    """
+    
     from fullwavepy.ioapi.generic import read_txt
-    from fullwavepy.ndat.arrays import Grid
+    from fullwavepy.ndat.arrays import Arr3d
+    
+    #mapp = {-666.0 :  1,
+    #          -1.0 :  0,
+    #           0.0 : -1,
+    #       }
+            
+    
     c = read_txt(self.fname)
-    c = [[float(i) for i in j] for j in c]
+    #c = [[float(i) for i in j] for j in c]
     h = [int(i) for i in c[0]]
-    d = np.array(c[1: ])
-    self.array = Grid(d.reshape(h + [4])[:,:,:,-1])
+    d = [[float(i) for i in j] for j in c[1: ]]
+    #d = np.array(c[1: ])
+    
+    d = np.array(d)
+    
+    self.array = Arr3d(d.reshape(h + [4])[:,:,:,-1])
     self._extent()
     self.array.extent = self.extent
     self.__log.debug('self.array.extent %s' % str(self.array.extent))
+    
     return self.array
   
   # -----------------------------------------------------------------------------  

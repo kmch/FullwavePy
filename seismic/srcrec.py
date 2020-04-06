@@ -16,25 +16,64 @@ from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 @traced
 @logged
-class PointSR(GenericPoint):
+class SRs(Points3d):
   """
-  
   """
-  def spread(self, *args, **kwargs):
-    vol = super().spread(*args, **kwargs)
-    self.__log.debug('vol.extent' + str(vol.extent))
-    self.vol = VolumeSR(vol)
-    self.vol.extent = vol.extent
-    self.vol.coords = vol.coords
-    return self.vol
+  def __new__(cls, dictio, **kwargs):
+    for key, val in dictio.items():
+      dictio[key] = PointSR(val)
+    return super().__new__(cls, dictio, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def set_type(self, srtype_ids, **kwargs):
+    """
+    it will be read from the file pgy / geo instead...?
     
+    PROTEUS convention of naming data components.
     
-  # aka multipole
-  def check_fs_pos(self, **kwargs):
-    # not that trivial probably
-    pass  
-  def plot(self, **kwargs):
-    pass
+    """
+    mapp = {0 : Monopole,
+            1 : DipoleZ, # NOT X!
+            2 : DipoleY,
+            3 : DipoleX,
+           }
+    
+    assert len(srtype_ids) == len(self)
+    for srtype_id, [k, v] in zip(srtype_ids, self.items()):
+      self[k] = mapp[srtype_id](v)
+ 
+  # ----------------------------------------------------------------------------- 
+ 
+  def spread_factors(self, srtype_ids, **kwargs):
+    self.set_type(srtype_ids, **kwargs)
+    for srid, sr in self.items():
+      self.__log.info('Calculating spread_factors for SRID ' + str(srid)) 
+      sr.spread_factors(**kwargs)
+      
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------  
+
+
+@traced
+@logged
+class Sources(SRs):
+  def plot(self, *args, **kwargs):
+    kwargs['marker'] = kw('marker', '*', kwargs)
+    kwargs['markersize'] = kw('markersize', 10, kwargs)
+    kwargs['markeredgecolor'] = kw('markeredgecolor', 'k', kwargs)
+    kwargs['markerfacecolor'] = kw('markerfacecolor', 'w', kwargs)
+    super().plot(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'black', kwargs)
+    kwargs['size'] = kw('size', 2, kwargs)
+    return super().plotly(*args, **kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -42,28 +81,50 @@ class PointSR(GenericPoint):
 
 @traced
 @logged
-class VolumeSR(Arr3d): # FIXME: WE NEED COORDINATES OF ARRAY ELEMENTS (JUST CORNERS?)
-  """
-  """
-  def split(self, **kwargs):
-    pass
-# def check_fs_pos(self, **kwargs):
-#   pass
-# 
-# def spread_factors(self, **kwargs):
-#   nsrcs = []
-#   while diverged:
-#     for src in srcs:
-#       nsrcs.append(src.spread_n_bounce())
-#     srcs = nsrcs
-#     self._check_convergence()
-# 
-# def _check_convergence():
-#   pass
-# 
-# def inject(self, wf, **kwargs):
-#   pass
+class Receivers(SRs):
+  def plot(self, **kwargs):
+    kwargs['annotate'] = False
+    kwargs['s'] = 1e-2
+    kwargs['c'] = 'gray'
+    kwargs['alpha'] = 1
+    super().plot(**kwargs)
+  
+  # -----------------------------------------------------------------------------  
 
+  def plotly(self, *args, **kwargs):
+    kwargs['mode'] = kw('mode', 'markers', kwargs)
+    kwargs['color'] = kw('color', 'grey', kwargs)
+    kwargs['size'] = kw('size', 1, kwargs)
+    return super().plotly(*args, **kwargs)
+
+  # ----------------------------------------------------------------------------- 
+
+
+# -------------------------------------------------------------------------------
+
+
+
+@traced
+@logged
+class PointSR(GenericPoint):
+  """
+  
+  """
+  def spread_factors(self, **kwargs):
+    r = 3 # SAME AS IN FULLWAVE3D
+    self.spread(r)
+  
+  # -----------------------------------------------------------------------------
+  
+  def spread(self, *args, **kwargs):
+    vol = super().spread(*args, **kwargs)
+    self.__log.debug('vol.extent' + str(vol.extent))
+    self.vol = VolumeSR(vol)
+    self.vol.extent = vol.extent
+    self.vol.coords = vol.coords
+    return self.vol
+
+  # -----------------------------------------------------------------------------    
 
 
 # -------------------------------------------------------------------------------
@@ -145,83 +206,60 @@ class DipoleZ(Dipole):
 
 @traced
 @logged
-class SRs(Points3d):
-  def __new__(cls, dictio, **kwargs):
-    for key, val in dictio.items():
-      dictio[key] = PointSR(val)
-    return super().__new__(cls, dictio, **kwargs)
-
-  def set_type(self, srtype_ids, **kwargs):
+class VolumeSR(Arr3d):
+  """
+  """
+  def split(self, ine, *args, **kwargs):
     """
-    it will be read from the file pgy / geo instead...?
-    
-    PROTEUS convention of naming data components.
-    
+    array of in/acc/ext nodes
     """
-    mapp = {0 : Monopole,
-            1 : DipoleZ, # NOT X!
-            2 : DipoleY,
-            3 : DipoleX,
-           }
-    
-    assert len(srtype_ids) == len(self)
-    for srtype_id, [k, v] in zip(srtype_ids, self.items()):
-      self[k] = mapp[srtype_id](v)
-  
-# -------------------------------------------------------------------------------  
-
-
-@traced
-@logged
-class Sources(SRs):
-  def plot(self, *args, **kwargs):
-    kwargs['marker'] = kw('marker', '*', kwargs)
-    kwargs['markersize'] = kw('markersize', 10, kwargs)
-    kwargs['markeredgecolor'] = kw('markeredgecolor', 'k', kwargs)
-    kwargs['markerfacecolor'] = kw('markerfacecolor', 'w', kwargs)
-    super().plot(*args, **kwargs)
+    self.indices = self._grid_coords_2_egrid_indices(*args, **kwargs)
+    self.ine = Arr3d(ine[self.indices])
+    self.ine.extent = self.extent
+    return self.ine
 
   # -----------------------------------------------------------------------------
 
-  def plotly(self, *args, **kwargs):
-    kwargs['mode'] = kw('mode', 'markers', kwargs)
-    kwargs['color'] = kw('color', 'black', kwargs)
-    kwargs['size'] = kw('size', 2, kwargs)
-    return super().plotly(*args, **kwargs)
+  def _grid_coords_2_egrid_indices(self, elef, efro, etop, **kwargs):
+    """
+    Rationale
+    ---------
+    use vol.coords to pick subarray from inext-nodes array etc
+    
+    convert coords (x,y,z) of grid:
+     x = 1, 2, ... nx1 
+     
+    (coords is an array as vol.coords laid out with 
+    x  assumed to be the slowest and z the fastest index)
+     
+    to indices (!) of the array storing whole extended (!) grid 
+     i = 0, ..., enx1
+     ...
+    order of indices as in coords  
+     
+    """
+    grid = np.copy(self.coords.T.swapaxes(1,-1))
+    grid[0] += elef
+    grid[1] += efro
+    grid[2] += etop
+    indices = np.copy(grid-1) # subtract  1 to convert array indices!!!!!!
+    indices = tuple(indices) # CRUCIAL, OTHERWISE SLICING WOULDN'T WORK
+    return indices
 
+  # -----------------------------------------------------------------------------
 
-# -------------------------------------------------------------------------------
+  def bounce_off(self, **kwargs):
+    pass
 
-
-@traced
-@logged
-class Receivers(SRs):
-  def plot(self, **kwargs):
-    kwargs['annotate'] = False
-    kwargs['s'] = 1e-2
-    kwargs['c'] = 'gray'
-    kwargs['alpha'] = 1
-    super().plot(**kwargs)
+  # -----------------------------------------------------------------------------
   
-  # -----------------------------------------------------------------------------  
-
-  def plotly(self, *args, **kwargs):
-    kwargs['mode'] = kw('mode', 'markers', kwargs)
-    kwargs['color'] = kw('color', 'grey', kwargs)
-    kwargs['size'] = kw('size', 1, kwargs)
-    return super().plotly(*args, **kwargs)
-
-  # ----------------------------------------------------------------------------- 
-
+  def plot(self, **kwargs):
+    kwargs['slice_at'] = kw('slice_at', 'y', kwargs)
+    kwargs['node'] = kw('node', self.shape[1]//2, kwargs)
+    super().plot(**kwargs)
+    
 
 # -------------------------------------------------------------------------------
-
-
-
-
-
-
-
 
 
 

@@ -93,7 +93,7 @@ def neighs_of_float(a, r):
   r=1, a=2.5   returns (2,3)
   r=2, a=2.5   returns (1,2,3,4)
   
-  """  
+  """
   return np.arange(np.ceil(a)-r, np.ceil(a)+r)
 
 
@@ -132,6 +132,7 @@ def neighs1d(a, r):
   else:
     n = neighs_of_float(a, r)
   
+  n = np.array([int(i) for i in n])
   neighs1d._log.debug('nodal-neighbours of %s within r=%s are: %s' % (a, r, n))
   return n
   #

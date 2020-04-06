@@ -37,7 +37,7 @@ def compare_2d(A1, A2, **kwargs):
 
 @traced
 @logged
-@widgets('cmap')
+##@widgets('cmap')
 def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   """
   Wrapper around plt.imshow. 

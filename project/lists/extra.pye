@@ -20,9 +20,6 @@ from fullwavepy.project.lists.deriv import SchedFileList, SlaveFileList
 # DERIVED TYPES SHOULD SUFFICE
 
 
-# -------------------------------------------------------------------------------  
-
-
 @traced
 @logged
 class CPFileList(SchedFileList):
@@ -68,7 +65,7 @@ class CPFileList(SchedFileList):
       
   # -----------------------------------------------------------------------------
   
-  @widgets('it', 'slice_at', 'node', 'cmap')
+  #@widgets('it', 'slice_at', 'node', 'cmap')
   def plot(self, wdg=False, **kwargs):
     it = kw('it', 1, kwargs)
     self.it[it].plot(**kwargs)

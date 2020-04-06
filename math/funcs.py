@@ -213,10 +213,10 @@ def kaiser(x, r=3, dipole=False, **kwargs):
     b = kw('b', b_optim_mono[r], kwargs)
 
   if r != 3:
-    kaiser._log.warn('Using r=%s, not 3 as in Fullwave3D.' % r)
+    kaiser._log.debug('Using r=%s, not 3 as in Fullwave3D.' % r)
   
   if r == 3 and b != 4.14:
-    kaiser._log.warn('Using b=%s, not 4.14 as in Fullwave3D.' % b)
+    kaiser._log.debug('Using b=%s, not 4.14 as in Fullwave3D.' % b)
   
   bessel = 'py'
   if bessel == 'py':

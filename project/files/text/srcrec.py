@@ -62,14 +62,16 @@ class SRFile(AsciiProjFile):
       raise ValueError('Unknown io: ' + io)
     
     self.d = SRs(sr)
-    
     return self.d
   
+  # -----------------------------------------------------------------------------  
   
-  #def add_type_info(self, types, **kwargs):
-    #self.read(**kwargs)
-    #for 
-  
+  def spread_factors(self, *args, **kwargs):
+    """
+    """
+    sr = self.read(**kwargs)
+    sr.spread_factors(*args, **kwargs)
+
   # -----------------------------------------------------------------------------  
   
   def plot(self, *args, **kwargs): # GENERALIZE FOR ASCII PROJ FILE?

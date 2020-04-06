@@ -117,7 +117,7 @@ class Functional(object):
   
   # ----------------------------------------------------------------------------- 
   
-  @widgets('sids', 'run_ids')
+  ##@widgets('sids', 'run_ids')
   def plot(self, widgets=False, **kwargs):
     """
     

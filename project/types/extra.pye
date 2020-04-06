@@ -16,8 +16,7 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.types.basic import ProjSyn
 
-
-# -------------------------------------------------------------------------------
+# extra -> case_study?
 
 
 @traced

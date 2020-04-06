@@ -8,16 +8,17 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
-from fullwavepy.generic.parse import kw, del_kw, exten, strip
-from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.parse import kw, del_kw
+from fullwavepy.generic.system import bash
 from fullwavepy.ioapi.fw3d import VtrFile
+from fullwavepy.ndat.manifs import SurfZ
 from fullwavepy.project.files.generic import ArrayProjFile
-from fullwavepy.project.files.gridded.generic import GridFile, ExtendedGridFile
+from fullwavepy.project.files.gridded.generic import GridProjFile, ExtenGridProjFile
 
 
 @traced
 @logged
-class SurfaceFile(ArrayProjFile, VtrFile):
+class SurfZFile(ArrayProjFile, VtrFile):
   """
   File storing a model boundary (e.g. free surface) 
   or interface.
@@ -45,27 +46,36 @@ class SurfaceFile(ArrayProjFile, VtrFile):
   # -----------------------------------------------------------------------------
   
   def read(self, **kwargs):
-    from fullwavepy.ndat.manifs import SurfZ
-    self.array = SurfZ(super().read(**kwargs))
+    from fullwavepy.ioapi.generic import read_any
+    A = np.array(read_any(self.fname))
+    assert len(A.shape) == 3
+    assert A.shape[-1] == 1
+    Az = A[:,:,0]
+    self.array = SurfZ(Az)
     return self.array
     
   # -----------------------------------------------------------------------------
   
-  def plot(self, *args, **kwargs):
-    self.plot2d(*args, **kwargs)
+  #def plot(self, *args, **kwargs):
+    #self.plot2d(*args, **kwargs)
 
-  # -----------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
   
-  def plot2d(self, **kwargs):
-    self.array = self.read(**kwargs)
-    #x1, x2 = self.proj.box[ :2]
-    #dx = self.proj.dx
-    #x = np.arange(x1, x2+dx, dx)
-    x = np.arange(0, len(self.array))
-    z = self.array[:,0,0]
-    plt.plot(x, z)
+  #def plot2d(self, **kwargs):
+    #self.array = self.read(**kwargs)
+    ##x1, x2 = self.proj.box[ :2]
+    ##dx = self.proj.dx
+    ##x = np.arange(x1, x2+dx, dx)
+    ##x = np.arange(0, len(self.array))
+    ##z = self.array[:,0,0]
+    ##plt.plot(x, z)
+    #return self.array
 
-  # -----------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
+  #def plot3d(self, **kwargs):
+    #from mpl_toolkits.mplot3d import Axes3D
+    #ax = plt.gca(projection='3d')
+    #ax.plot_surface(self.array)
 
 
 # -------------------------------------------------------------------------------  
@@ -73,7 +83,7 @@ class SurfaceFile(ArrayProjFile, VtrFile):
 
 @traced
 @logged
-class TopographyFile(SurfaceFile):
+class TopoFile(SurfZFile):
   """
   Topography of the topmost rock layer:
   seafloor and/or land surface.
@@ -194,7 +204,7 @@ class TopographyFile(SurfaceFile):
 
 @traced
 @logged
-class FsFile(SurfaceFile, GridFile):
+class FsFile(SurfZFile, GridProjFile):
   """
   Free surface
   
@@ -203,12 +213,10 @@ class FsFile(SurfaceFile, GridFile):
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
   
-  #def read(self, **kwargs): # FIXME: ONLY 2D
-    #shape = kw('shape', (self.proj.dims[0], 
-  
-  #def create(self, *args, **kwargs):
-    #super().create(*args, **kwargs)
-  
+  def read(self, **kwargs):
+    self.array = SurfZFile.read(self, **kwargs)
+    self.array.extent = GridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
+    return self.array
   
   def run(self, **kwargs):
     """
@@ -223,54 +231,35 @@ class FsFile(SurfaceFile, GridFile):
     if len(e) > 0:
       self.__log.warn(e)
   
-  def plot3d(self, **kwargs):
-    from mpl_toolkits.mplot3d import Axes3D
-    ax = plt.gca(projection='3d')
-    ax.plot_surface(self.array)
-
 
 # -------------------------------------------------------------------------------  
 
 
 @traced
 @logged
-class ExtendedFsFile(SurfaceFile, ExtendedGridFile):
+class ExtendedFsFile(SurfZFile, ExtenGridProjFile):
+  """
+  Extended-grid free surface
+  
+  """  
   def __init__(self, proj, path, suffix='FreeSurf_exten', **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
   
   def read(self, **kwargs):
-    kwargs['shape'] = (self.proj.enx1, self.proj.enx2, 1)
-    A = super().read(**kwargs)
-    return A  
+    self.array = SurfZFile.read(self, **kwargs) - self.proj.etop # COORECT THE Z-VALUE!
+    self.array.extent = ExtenGridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
+    return self.array
   
-  def plot2d(self, **kwargs):
-    self.array = self.read(**kwargs)
-    p = self.proj
-    shift = 0
-    x1 = -p.elef + shift
-    x2 = x1 + p.enx1
-    y1 = -p.etop + shift
-    y2 = y1 + p.enx3
-    #dx = self.proj.dx
-    #ex1 = self.proj.box[0] - self.proj.elef * dx
-    #ex2 = self.proj.box[1] + self.proj.erig * dx
-    
-    x = np.arange(-p.elef, p.enx1)
-    z = p.i.fse.read()[:,p.enx2//2,0]
-    plt.plot(x,z)    
-    
-    x = np.arange(-self.proj.elef, self.proj.ex2+1)
-    z = self.array[:,0,0]
-    #plt.plot(x, z)
-    #plt.plot(z)
-
-
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class InterpolFsFile(ExtendedFsFile):
+  """
+  Free surface interpolated on extended-grid.
+  
+  """    
   def __init__(self, proj, path, **kwargs):
     suffix = 'FreeSurf_exten_interp'
     super().__init__(proj, path, suffix, **kwargs)
