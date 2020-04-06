@@ -11,6 +11,7 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ndat.points import GenericPoint, Points3d
+from fullwavepy.math.const import epsi
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
@@ -113,28 +114,73 @@ class HyperPointSR(object):
   """
   """
   def __init__(self, pointsr, **kwargs):
+    """
+    """
     self.rmax = 4
     self.pointsr = pointsr
     coords = self.pointsr.find_neighs(self.rmax, **kwargs)
-    sh = np.array(coords.shape)
-    sh[-1] += 1
+    self.origin = coords[0,0,0] # COORDINATES OF THE FIRST NODE 
+    
+    
     # THIS IS THE CUBOIDAL VOLUME OF SPREAD FACTORS 
     # IT WILL BE USED TO INJECT THE SOURCE INTO (OR INTERPOLATE RECEIVER)
     # THE WAVEVIELD
+    sh = np.array(coords.shape)
+    sh[-1] += 1
     self.vol = np.zeros(sh)
     self.vol[..., :3] = coords
     self.vol[..., 3] = 0.0 # this will store amplitude, i.e. sprd_fctrs
     
   # -----------------------------------------------------------------------------
   
-  def spread_factors(self, **kwargs):
-    #self.tospread = [
+  def spread_factors(self, ghs, iss, ine, elef, efro, etop, **kwargs):
+    """
+    Iterative 
+    """
+    self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
-    
-    return self.vol
+    psrs_to_spread = [self.pointsr]
+    i_max = 4
+    i = 0
+    self.snapshots = []
+    while i < i_max:
+      i += 1    
+      new_psrs_to_spread = []
+      for psr_to_spread in psrs_to_spread:
+        self.__log.info('psr_to_spread ' + str(psr_to_spread))
+        psr_to_spread.spread_factors()
+        psr_to_spread.vol.split(ine, elef, efro, etop)
+        
+        self._update_vol(np.copy(psr_to_spread.vol.ins))
+        self.snapshots.append(np.copy(self.vol))
+        
+        reflected = psr_to_spread.vol.bounce_off(ghs, iss, elef, efro, etop)
+        new_psrs_to_spread.append(reflected)
+      psrs_to_spread = reflected
 
   # -----------------------------------------------------------------------------
-
+  
+  def _update_vol(self, nodes_in, **kwargs):
+    for node_in in nodes_in:
+      #self.__log.info('node_in ' + str(node_in))
+      xyz = node_in[:3]
+      amp = node_in[3]
+      #if abs(amp) < epsi: # skip numerical zeroes
+      if abs(amp) < 1e-8:
+        continue
+      ijk = xyz - self.origin
+      ijk = tuple((int(n) for n in ijk))
+      prv = self.vol[ijk][-1]
+      now = prv + amp
+      self.vol[ijk][-1] = now
+      #if abs(amp) > 1e-4:
+      if True:
+        self.__log.info('Updated %s by %s from %s to %s ' % (str(ijk), 
+                                                             str(amp), 
+                                                             str(prv),
+                                                             str(now)))
+    
+  
 
 # -------------------------------------------------------------------------------
 
