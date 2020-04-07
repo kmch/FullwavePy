@@ -11,11 +11,10 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ndat.points import GenericPoint, Points3d
-from fullwavepy.math.const import epsi
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
-clip_at = 1e-9
+clip_at = 1e-9 # spread-factors smaller than this will be neglected
 
 
 @traced
@@ -45,21 +44,24 @@ class SRs(Points3d):
     
     assert len(srtype_ids) == len(self)
     for srtype_id, [k, v] in zip(srtype_ids, self.items()):
-      self[k] = mapp[srtype_id](v)
+      self[k] = mapp[srtype_id](v, **kwargs)
  
   # ----------------------------------------------------------------------------- 
  
-  def spread_factors(self, srtype_ids, **kwargs):
+  def spread_factors(self, srtype_ids, *args, **kwargs):
+    """
+    """
     self.set_type(srtype_ids, **kwargs)
     #self.sprd_fctrs = {}
     self.hyper = {}
 
     for srid, sr in self.items():
-      #self.__log.info('Calculating spread_factors for SRID ' + str(srid)) 
-      #self.sprd_fctrs[srid] = HyperPointSR(sr).spread_factors(**kwargs)
-      self.hyper[srid] = HyperPointSR(sr)
+      self.__log.info('Calculating spread-factors for SRID ' + str(srid)) 
+      self.hyper[srid] = HyperPointSR(sr, **kwargs)
+      self.hyper[srid].spread_factors(*args, **kwargs)
     
   # -----------------------------------------------------------------------------
+  
 
 
 # -------------------------------------------------------------------------------  
@@ -119,9 +121,17 @@ class HyperPointSR(object):
   def __init__(self, pointsr, **kwargs):
     """
     """
-    self.rmax = 4
     self.pointsr = pointsr
-    coords = self.pointsr.find_neighs(self.rmax, **kwargs)
+    self.r_hicks = kw('r_hicks', 3, kwargs)
+
+  # -----------------------------------------------------------------------------
+  
+  def find_vol(self, **kwargs):
+    """
+    """
+    rmax = kw('rmax', 10, kwargs)
+    
+    coords = self.pointsr.find_neighs(rmax, **kwargs)
     self.origin = coords[0,0,0] # COORDINATES OF THE FIRST NODE 
     
     
@@ -140,32 +150,38 @@ class HyperPointSR(object):
     """
     Iterative 
     """
+    self.find_vol(**kwargs)
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
     psrs_to_spread = [self.pointsr]
-    i_max = 1
+    i_max = 2
     i = 0
     self.snapshots = []
     while i < i_max:
       i += 1    
+      n_to_spread = len(psrs_to_spread)
+      self.__log.info('Iteration %s, no. of points to spread: %s' % (i, n_to_spread)) 
+
+      if n_to_spread == 0:
+        self.__log.info('No more points to spread. Returning.')
+        return
+      
+      self.__log.debug('psrs_to_spread' + str(psrs_to_spread))
       new_psrs_to_spread = []
       for psr_to_spread in psrs_to_spread:
-        self.__log.info('psr_to_spread ' + str(psr_to_spread))
-        psr_to_spread.spread_factors()
+        self.__log.debug('psr_to_spread ' + str(psr_to_spread))
+        psr_to_spread.spread_factors(r_hicks=self.r_hicks)
         psr_to_spread.vol.split(ine, elef, efro, etop)
         
         self._update_vol(np.copy(psr_to_spread.vol.ins))
-        self.snapshots.append(np.copy(self.vol))
+        
         
         reflected = psr_to_spread.vol.bounce_off(ghs, iss, elef, efro, etop)
-        
-        
-        return reflected
-        
-        
-        
-        new_psrs_to_spread.append(reflected)
-      psrs_to_spread = new_psrs_to_spread
+        if len(reflected) > 0:
+          new_psrs_to_spread += reflected # append would create a nested list (undesired)
+      
+      self.snapshots.append(np.copy(self.vol))
+      psrs_to_spread = list(new_psrs_to_spread)
 
   # -----------------------------------------------------------------------------
   
@@ -180,15 +196,23 @@ class HyperPointSR(object):
       
       ijk = xyz - self.origin
       ijk = tuple((int(n) for n in ijk))
-      prv = self.vol[ijk][-1]
+      try:
+        prv = self.vol[ijk][-1]
+      except IndexError:
+        self.__log.debug('Skipping inside (medium) node %s which is outside the volume' % (str(xyz)))
+        continue
+      
+      
       now = prv + amp
       self.vol[ijk][-1] = now
       #if abs(amp) > 1e-4:
       if True:
-        self.__log.info('Updated %s by %s from %s to %s ' % (str(ijk), 
+        self.__log.debug('Updated %s by %s from %s to %s ' % (str(ijk), 
                                                              str(amp), 
                                                              str(prv),
                                                              str(now)))
+
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------
@@ -198,12 +222,29 @@ class HyperPointSR(object):
 @logged
 class PointSR(GenericPoint):
   """
+  ATTENTION 
+  It is supposed to have coordinates in nodes 
+  of the regular (not extended!) grid.
+  NOTE
+  Left-front-top corner of the grid is (1,1,1)
+  Right-back-bottom corner of the grid is (nx1,nx2,nx3)
+  
+  Notes
+  -----
+  Is it really necessary?
+  Monopole etc. could just inherit from GenericPoint directly...
+  It is, provided VolumeSR is attribute of PointSR, not GenericPoint
+  (even if we rename it to GenericVolume?). And we DO NEED VolumeSR 
+  which has unique methods such as split and bounce_off.
   
   """
-  def spread_factors(self, **kwargs):
-    r = 3 # SAME AS IN FULLWAVE3D
-    self.vol = self.spread(r)
-    #self.bounce_off
+  def spread_factors(self, r_hicks, **kwargs):
+    """
+    This wrapper-class probably!  can't be avoided as it transmits
+    info between children and parent. (needs different name than spread)
+    """
+    self.__log.info('r_hicks ' + str(r_hicks))
+    self.vol = self.spread(r_hicks)
 
   # -----------------------------------------------------------------------------
   
@@ -251,7 +292,7 @@ class VolumeSR(Arr3d):
       arr = np.zeros(list(values.shape) + [4]) # must be neater syntax
       arr[..., 0:-1] = coords
       arr[..., -1] = values
-      self.__log.info('Found %s %s-nodes' % (len(arr), attr))
+      self.__log.debug('Found %s %s-nodes' % (len(arr), attr))
       setattr(self, attr, arr)
 
   # -----------------------------------------------------------------------------    
@@ -305,6 +346,12 @@ class VolumeSR(Arr3d):
     """
     ghs : list of ghosts
     iss : list of corresponding intersects (same len)
+    
+    ATTENTION 
+    all the calculation here is done in extended-grid coordinates.
+    But PointSR.spread assumes regular (not extended) grid, so we 
+    need to convert it back.
+    
     """
     assert len(ghs) == len(iss)
     
@@ -323,17 +370,37 @@ class VolumeSR(Arr3d):
       if abs(amp) < clip_at: # skip tiny factors for speed and compactness of volume
         self.__log.debug('Skipping outside node %s with small ampl %s' % (str([x,y,z]), str(amp)))
         continue
+      
+      Gs = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))]
+      
+      if len(Gs) == 1:
+        G = Gs[0]
+      elif len(Gs) > 1:
+        raise ValueError('More than one ghost found: ' + str(Gs))
+      else:
+        self.__log.warn('No ghost found for the outside node %s. Skipping it.' % str([x,y,z]))
+        continue
+      
       G = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))][0]
       I = np.array(iss[ghs.index(list(G))])
       G = G[:3]
-      R = np.zeros(4) # WE HAVE TO CREATE IT EVERY TIME
+      
       #R[:3] = 2 * I - G
       #R[3] = -amp
       
-      # ATTENTION my theory is we should always inject secondary (reflected) sources  
+
+      R = np.zeros(3) # WE HAVE TO CREATE IT EVERY TIME
+      R = 2 * I - G # FIND A REFLECTION OF G WITH RESPECT TO I
+
+      # NOTE return to not-extended-grid coordinates
+      R[0] -= elef
+      R[1] -= efro
+      R[2] -= etop
+      
+      # NOTE my theory is we should always inject secondary (reflected) sources  
       # as monopoles regardless of the type of the primary source
-      R = Monopole(2 * I - G) 
-      R.value = -amp # reflect with flipped polarity
+      R = Monopole(R)
+      R.value = -amp # flip the polarity as we reflect from a free surface (it will change for other boundaries!)
       
       reflected.append(R)
       #print('O', vo)
@@ -387,7 +454,7 @@ class Dipole(PointSR):
   
   def spread(self, r, **kwargs):
     func1 = lambda x : kaiser(x, r) * sinc(x) 
-    func2 = lambda x : kaiser(x, r) * dsinc_dx(x)
+    func2 = lambda x : kaiser(x, r, dipole=True) * dsinc_dx(x)
     
     funcs = [func1 for i in range(len(self))]
     funcs[self.axis] = func2
@@ -429,45 +496,6 @@ class DipoleZ(Dipole):
 
 # -------------------------------------------------------------------------------
 
-
-#@traced
-#@logged
-#class Src(Multipole):
-#  def spread_n_bounce(self, **kwargs):
-#    pass
-#  #def spread_factors(self, **kwargs):
-#    #self.find_neighs()
-#  def spread_bounce(self, **kwargs):
-#    pass
-
-
-# -------------------------------------------------------------------------------
-
-
-#traced
-#logged
-#lass SuperSrc(Src):
-# """
-# """
-# def check_fs_pos(self, **kwargs):
-#   pass
-# 
-# def spread_factors(self, **kwargs):
-#   nsrcs = []
-#   while diverged:
-#     for src in srcs:
-#       nsrcs.append(src.spread_n_bounce())
-#     srcs = nsrcs
-#     self._check_convergence()
-# 
-# def _check_convergence():
-#   pass
-# 
-# def inject(self, wf, **kwargs):
-#   pass
-
-
-# -------------------------------------------------------------------------------
 
 
 @traced

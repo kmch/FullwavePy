@@ -279,7 +279,7 @@ def kw(kwarg_name, default_value, kwargs):
     value = kwargs[kwarg_name]
   except KeyError:
     value = default_value 
-    kw._log.debug('Set ' + kwarg_name + ' to default: ' + str(default_value))
+    #kw._log.debug('Set ' + kwarg_name + ' to default: ' + str(default_value))
   
   return value
 
