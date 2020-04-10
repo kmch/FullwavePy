@@ -34,10 +34,11 @@ class Ghosts(list):
   for fancier subarray-ing check out np.ix_
   """
   def split_lvls(self, nlvls, **kwargs):
+    arr = np.array(self)
     ilvl = 4 # FIXME MAKE IT GLOBAL IN class Ghost(Node)
     self.lvl = {}
     for lvl in range(1, nlvls+1):
-      self.lvl[lvl] = self[self[:,ilvl] == lvl]
+      self.lvl[lvl] = np.copy(arr[arr[:,ilvl] == lvl])
       
   #def plot(self, **kwargs):
     

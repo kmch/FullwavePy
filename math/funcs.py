@@ -136,8 +136,7 @@ def gauss(x, mu=0, sigma=1):
   They are related through: alpha = sigma * sqrt(2)
   
   """
-  y = np.exp(-((x - mu)**2) / (2 * sigma**2))
-  return y
+  return np.exp(-((x - mu)**2) / (2 * sigma**2))
 
 
 # -------------------------------------------------------------------------------

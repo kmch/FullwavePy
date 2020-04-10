@@ -63,7 +63,6 @@ class SRs(Points3d):
   # -----------------------------------------------------------------------------
   
 
-
 # -------------------------------------------------------------------------------  
 
 
@@ -154,7 +153,7 @@ class HyperPointSR(object):
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
     psrs_to_spread = [self.pointsr]
-    i_max = 2
+    i_max = 3
     i = 0
     self.snapshots = []
     while i < i_max:
@@ -243,7 +242,6 @@ class PointSR(GenericPoint):
     This wrapper-class probably!  can't be avoided as it transmits
     info between children and parent. (needs different name than spread)
     """
-    self.__log.info('r_hicks ' + str(r_hicks))
     self.vol = self.spread(r_hicks)
 
   # -----------------------------------------------------------------------------

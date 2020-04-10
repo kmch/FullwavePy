@@ -433,13 +433,13 @@ class ProjDef(object):
     
     # LIST OF PROBLEM-DEFINING proj-ATTRIBUTES 
     attrs = ['problem', 'domain', 'dim', 'equation', 'anisotropy', 'kernel',
-             'io',
+             'io', 'units',
              'qp', 'qs', # NON-RUNFILE PARAMS, YET PROBLEM-DEFINING
             ]
     
     # DEFAULT VALUES OF attrs:
     defaults = ['synthetic', 'time', '3d', 'acoustic', 'none', 'low',
-                'sgy',
+                'sgy', 'metric',
                 False, False]
     
     for attr in attrs: 
