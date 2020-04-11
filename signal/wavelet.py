@@ -10,6 +10,41 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 
 
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def find_passband(A, dt, thresh=0.1, **kwargs):
+  """
+  Find frequency-range outside which
+  amplitude < thresh * max amplitude.
+  
+  Return
+  ------
+  fmin, fmax : in Hz
+  
+  Notes
+  -----
+  f_min, f_max are first and last frequencies of the passband.
+  Between them there might be other frequencies with zero ampl, 
+  but they don't matter here.
+  
+  """
+  freqs = np.fft.rfftfreq(len(A), dt)
+  ampls = np.abs(np.fft.rfft(A))
+  
+  fpeak = freqs[np.argmax(ampls)]
+  
+  passband = np.where(ampls >= thresh*np.max(ampls), 1, 0)
+
+  imin = np.argwhere(passband)[+0][0]
+  imax = np.argwhere(passband)[-1][0]
+  fmin = freqs[imin]
+  fmax = freqs[imax]
+  
+  return fmin, fmax
+
 
 # -------------------------------------------------------------------------------
 

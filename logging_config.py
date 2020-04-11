@@ -43,6 +43,8 @@ def log_lvl(lvl):
   logger = getLogger()
   logger.setLevel(lvl)
 
+def lll(lvl): # ALIAS
+  log_lvl(lvl)
 
 # -------------------------------------------------------------------------------
 # FILTERS

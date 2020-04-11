@@ -19,79 +19,89 @@ from fullwavepy.generic.system import exists, bash
 @traced
 @logged
 class File(object):
+  """
+  """
   def __init__(self, name, path, **kwargs):
     self.name = name
     self.path = path
     self.fname = path + '/' + name
-  #def __init__(self, fname, **kwargs):
-  #  self.fname = fname
 
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class AsciiFile(File):
-  """
-  File storing some meta data,
-  not directlfullwavepy.plottable as an array.
-  
-  """
-  
   # -----------------------------------------------------------------------------
   
-  def read(self, **kwargs):
+  def prepare(self, *args, **kwargs):
     """
-    
-    """
-    from fullwavepy.ioapi.generic import read_txt
-    return read_txt(self.fname, **kwargs)
-  
-  # -----------------------------------------------------------------------------
-
-  def cat(self, **kwargs):
-    """
-    Cat a content of a file (it assumes 
-    it is possible to do so, that is 
-    it is a an ASCII file.
+    Prepare means either duplicate 
+    (as long as a source file is provided, dupl=...) 
+    or create from scratch.
     
     Notes
     -----
-    Should be overwritten by NotIMplementedError 
-    in not-ASCII files.
+    The flow is a bit convoluted:
+    1. child.prepare calls this.
+    2. this calls child.dupl/child.create!
+    3. those can again call their parents
     
     """
-    fname = self.fname
-    o, e = bash('cat ' + fname)
-    print('Content of ', fname, ': ')
-    print(o, e)  
+    
+    dupl = kw('dupl', None, kwargs)
+    
+    if dupl is not None:
+      self.__log.debug('Using dupl='+dupl)
+      del_kw('dupl', kwargs)
+      self.dupl(dupl, *args, **kwargs)
+    else:
+      self.create(*args, **kwargs)
+    
+  def prep(self, *args, **kwargs):
+    self.prepare(*args, **kwargs)
+    
+  # -----------------------------------------------------------------------------
+
+  def create(self, *args, **kwargs):
+    raise NotImplementedError('Define in a child class.')
+    
+  # -----------------------------------------------------------------------------
+
+  def dupl(self, source, cmd='cp', **kwargs):
+    """
+    Duplicate (cp/mv/ln) a file.
+    
+    Notes
+    -----
+    
+    """
+    from fullwavepy.generic.parse import exten
+    from fullwavepy.generic.system import duplicate
+    
+    destination = self.fname
+    
+    if exten(source) != exten(destination):
+      raise IOError('Extension of source and destination must be the same.')    
+    
+    duplicate(source, destination, cmd)
+    
+  # -----------------------------------------------------------------------------
+  
+  def rm(self, cmd='trash', backup=True, **kwargs):
+    """
+    """
+    if backup:
+      bckp = self.fname + '_bckp'
+      self.__log.debug('Creating a backup ' + bckp)
+      o, e = bash('cp ' + self.fname + ' ' + bckp)
+    
+    self.__log.info('Removing ' + self.fname + '...')
+    o, e = bash(cmd + ' ' + self.fname)
+    
+  # -----------------------------------------------------------------------------
+
+  def compare(self, other_file, fig, gs=None, **kwargs):
+    arr1 = self.read(**kwargs)
+    arr2 = other_file.read(**kwargs)
+    arr1.compare(arr2, fig, gs, **kwargs)
 
   # -----------------------------------------------------------------------------
 
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class CsvFile(AsciiFile):
-  @timer
-  def read(self, **kwargs):
-    from pandas import read_csv
-    usecols = kw('usecols', None, kwargs)
-    df = read_csv(self.fname, usecols=usecols)
-    return df
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class BinaryFile(File):
-  pass
-  
 
 # -------------------------------------------------------------------------------
 
@@ -105,17 +115,14 @@ class ArrayFile(File):
   wrapper around np.ndarray.
   
   """
-  
-  # -----------------------------------------------------------------------------    
-
-  def read(self, fname=None, overwrite=True, **kwargs):
+  def read(self, overwrite=True, **kwargs):
     """
   
     Notes
     -----
     Overwrite=True by default because otherwise plots are not 
-    updated even though they are supposed (e.g. you are passing 
-    a different fname). They will be correct (updated) only
+    updated even though they are supposed. 
+    They will be correct (updated) only
     if you delete self.array variable, e.g. by restarting the 
     notebook kernel.
     Disable overwrite only for PERFORMANCE (e.g. interactive plot)
@@ -123,28 +130,36 @@ class ArrayFile(File):
     parameters.
     
     """
+    from fullwavepy.ndat.arrays import Arr3d
+    
     if (not hasattr(self, 'array')) or overwrite:
-      from fullwavepy.generic.array import Arr3d
-      self.__log.warn('{}.array does not exist and will be read.'.format(type(self)))
-      kwargs['scoord'] = kw('scoord', None, kwargs)
-      if fname is None:
-        fname = self.fname
-      self.array = Arr3d(fname, **kwargs)
+      self.__log.debug('{}.array does not exist and will be read.'.format(type(self)))
+      self.array = Arr3d(self.fname, **kwargs)
+    
+    # PASS extent (ESSENTIAL FOR PLOTS) FOR PLOTTING FROM FILE TO ARRAY
+    if hasattr(self, 'extent'):
+      self.array.extent = self.extent 
     return self.array
+
+  # ----------------------------------------------------------------------------
+
+  #def resize_array(self, **kwargs):
+    #pass  
   
-  # -----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
 
   def plot(self, **kwargs):
     """
-    We SHOULD self.read everytime, see its docstring for rationale.
+    We SHOULD self.read everytime, 
+    see its docstring for rationale.
     
     """
     array = self.read(**kwargs)
     array.plot(**kwargs)
     
-  # -----------------------------------------------------------------------------  
+  # ----------------------------------------------------------------------------  
 
-  def scroll(self, **kwargs):
+  def scroll(self, **kwargs): # MOVE TO Arr3d?
     """
     
     """
@@ -169,6 +184,74 @@ class ArrayFile(File):
     return tracker
     #return tracker.onscroll
 
+  # ----------------------------------------------------------------------------
+  
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class AsciiFile(File):
+  """
+  File storing some meta data,
+  not directlfullwavepy.plottable as an array.
+  
+  """
+  
+  # ----------------------------------------------------------------------------
+  
+  def read(self, **kwargs):
+    """
+    
+    """
+    from fullwavepy.ioapi.generic import read_txt
+    return read_txt(self.fname, **kwargs)
+  
+  # ----------------------------------------------------------------------------
+
+  def cat(self, **kwargs):
+    """
+    Cat a content of a file (it assumes 
+    it is possible to do so, that is 
+    it is a an ASCII file.
+    
+    Notes
+    -----
+    Should be overwritten by NotIMplementedError 
+    in not-ASCII files.
+    
+    """
+    fname = self.fname
+    o, e = bash('cat ' + fname)
+    print('Content of ', fname, ': ')
+    print(o, e)  
+
+  # ----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class CsvFile(AsciiFile):
+  @timer
+  def read(self, **kwargs):
+    from pandas import read_csv
+    usecols = kw('usecols', None, kwargs)
+    df = read_csv(self.fname, usecols=usecols)
+    return df
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class BinaryFile(File):
+  pass
+  
 
 # ------------------------------------------------------------------------------- 
 # FUNCTIONS
@@ -196,14 +279,14 @@ def read_any(fname, overwrite_mmp=False, **kwargs):
   fname_mmp = strip(fname) + '.mmp'
   
   if not exists(fname_mmp) or overwrite_mmp:
-    read_any._log.warn(fname_mmp+' does not exist. Reading ' + 
+    read_any._log.debug(fname_mmp+' does not exist. Reading ' + 
                        fname + ' instead...')
     A = read_any_format(fname, **kwargs)
     read_any._log.info('Saving ' + fname_mmp + '...')
     save_mmp(A, fname_mmp)
 
   elif shape is None:
-    read_any._log.warn('File ' + fname_mmp + ' exists, but you' +
+    read_any._log.debug('File ' + fname_mmp + ' exists, but you' +
                        ' need to provide its shape to read it. Reading ' + 
                        fname + ' instead...')
     A = read_any_format(fname, **kwargs) 
@@ -415,71 +498,3 @@ def save_txt(fname, lines, **kwargs):
     for line in lines:
       f.write(line + '\n')
 
-
-# -------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@timer
-@traced
-@logged
-def read_arrays(*args, **kwargs): #FIXME: DEL
-  """
-  Read data either from arrays
-  or files. Both types can appear
-  in *args.
-  
-  Parameters
-  ----------
-  *args : see below 
-    List of string/arrays.
-    If string, it is assumed to 
-    stand for a file name (incl.
-    the path if file is outside './'),
-    otherwise it must be an array.
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  Returns
-  -------
-  arrays : list
-    List of read arrays.
-  
-  Notes
-  -----
-  You can mix files and arrays defined ad hoc
-  in the notebook which may come in handy.
-  
-  """
-  from fullwavepy.generic.array import slice_array, modify_array
-  
-  arrays = []
-  for arg in args:
-    if isinstance(arg, str):
-      A = read_any(arg, **kwargs)
-    elif type(arg) == type(np.array([])) or type(arg) == np.memmap:
-      A = arg
-    else:
-      raise TypeError('Arguments need to be either ' + 
-                      'file-names or arrays or np.memmap.')
-      
-    A = slice_array(A, **kwargs)  
-    A = modify_array(A, **kwargs)
-    read_arrays._log.debug('Min of the array after modifs: ' + str(np.min(A)))
-    read_arrays._log.debug('Max of the array after modifs: ' + str(np.max(A)))
-    arrays.append(A)
-  return arrays

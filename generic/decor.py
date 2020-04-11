@@ -13,8 +13,6 @@ from ipywidgets import interact, fixed
 from fullwavepy.generic.parse import kw
 
 
-# -------------------------------------------------------------------------------
-
 
 def timer(func):
   """

@@ -7,7 +7,7 @@ import numpy as np
 from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
-from fullwavepy.project.files.submit import PbsFile
+from fullwavepy.project.files.text.submit import PbsFile
 
 
 #FIXME REPLACE WITH CONTIGUOUS STRING
@@ -195,7 +195,7 @@ class PbsFileCx1(PbsFile):
   # -----------------------------------------------------------------------------
   
   def _find_optimal_resources(self, optimize='idle', **kwargs):
-    from fullwavepy.generic.math import divisors_of, decimal
+    from fullwavepy.math.generic import divisors_of, decimal
     
     nshots = int(self.proj.inp.runfile.read()['ncomp'])
     self.__log.info('No. of shots in the runfile (ncomp): ' + str(nshots))

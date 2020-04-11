@@ -70,7 +70,7 @@ def su_decon(fname, d_inp, d_out, pnoise, **kwargs):
   
   """
   from fullwavepy.ioapi.su import array2su
-  from fullwavepy.generic.array import list2str
+  from fullwavepy.ndat.arrays import list2str
   from fullwavepy.ioapi.generic import read_txt
   
   if not exists(fname):
@@ -314,7 +314,7 @@ def su_mute(fname, picks, mode, ntaper, **kwargs):
     samples
     
   """
-  from fullwavepy.generic.array import list2str
+  from fullwavepy.ndat.arrays import list2str
   
   if not exists(fname):
     raise IOError(fname + ' not found.')    

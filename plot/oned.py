@@ -10,10 +10,6 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 from ipywidgets import interact, interactive, fixed, interact_manual
 
-# -------------------------------------------------------------------------------
-# PLOT 1D
-# -------------------------------------------------------------------------------
-
 
 @traced
 @logged
@@ -97,7 +93,7 @@ def plot_line(line, line2=0, **kwargs):
     line2 = np.zeros(len(line))
   
   if 'spect' in kwargs:
-    from fullwavepy.generic.math import dft_freqs
+    from fullwavepy.math.fourier import dft_freqs
     x = dft_freqs(len(line), which='positive', **kwargs)
     line = np.array(line[ :len(x)])
     line2 = np.array(line2[ :len(x)])
@@ -115,29 +111,6 @@ def plot_line(line, line2=0, **kwargs):
     raise ValueError('Wrong orient: ' + orient)
   
   plt.plot(x, line, label=label, c=c, lw=lw, ls=ls)
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-def slice_points(points, scoord, **kwargs):
-  """
-  Project points onto 1 of the planes.
-
-  """
-  if scoord == 'x':
-    X1, X2 = [[i[1] for i in points], [i[2] for i in points]]
-  elif scoord == 'y':
-    X1, X2 = [[i[0] for i in points], [i[2] for i in points]]
-  elif scoord == 'z':
-    X1, X2 = [[i[0] for i in points], [i[1] for i in points]]
-  else:
-    raise ValueError('Wrong slice coord: %s' % scoord)
-  
-  points2d = list(zip(X1, X2))
-  return points2d
 
 
 # -------------------------------------------------------------------------------
@@ -225,7 +198,7 @@ def plot_points(scatt, **kwargs):
   
 
 # -------------------------------------------------------------------------------
-# FORMAT 1D
+# FORMAT
 # -------------------------------------------------------------------------------
 
 

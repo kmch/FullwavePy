@@ -17,9 +17,6 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.plot.generic import new_figure
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class Proj(object):
@@ -27,9 +24,6 @@ class Proj(object):
   fullwavepy.generic Fullwave project.
   
   """
-  
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, name, **kwargs):
     """
     Initialize a Fullwave project.
@@ -53,11 +47,11 @@ class Proj(object):
     notebook many times.
     
     """
-    from fullwavepy.project.io import ProjInput, ProjOutput
-    from fullwavepy.project.files.misc import InfoFile, MetaDataProjFile
-    from fullwavepy.project.files.runfiles import Runfile
-    from fullwavepy.project.files.gridded.surfaces import TopographyFile
-    from fullwavepy.project.auxil import (ProjPath, ProjDirs, ProjDef, ProjGeometry, ProjEnv, ProjSegyMapp, ProjBox)    
+    from fullwavepy.project.generic.io import ProjInput, ProjOutput
+    from fullwavepy.project.generic.au import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
+                                               ProjEnv, ProjSegyMapp, ProjBox)
+    from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
+    from fullwavepy.project.files.text.runfiles import Runfile
 
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
@@ -95,9 +89,6 @@ class Proj(object):
     self.out = ProjOutput(self, **kwargs)
     self.o = self.out # ALIAS
     self.out.init(**kwargs)
-    
-    topo = kw('topo', None, kwargs)
-    self.topo = TopographyFile(self, self.inp.path, dupl=topo, **kwargs)  
     
   # -----------------------------------------------------------------------------
   
@@ -153,8 +144,8 @@ class ProjSyn(Proj):
     We don't probably need template idx.
     """
     from fullwavepy.project.files.gridded.models import ModelFileSgy, ModelFileVtr
-    from fullwavepy.project.files.datalike.sgy import DataFileSgy
-    from fullwavepy.project.files.templates import TemplateFileSgy, TemplateFileTtr
+    from fullwavepy.project.files.datalike.sgy import DataFileSgy, TemplateFileSgy
+    from fullwavepy.project.files.datalike.ttr import TemplateFileTtr
     
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
@@ -199,7 +190,7 @@ class ProjSyn(Proj):
     """
     from fullwavepy.project.files.datalike.sgy import SynDataFileSgy
     from fullwavepy.project.files.datalike.ttr import SynDataFileTtr
-    from fullwavepy.project.files.index import SynIndexFileSgy, SynIndexFileTtr
+    from fullwavepy.project.files.other.index import SynIndexFileSgy, SynIndexFileTtr
     #, WavefieldFiles
     
     if self.io == 'sgy':
@@ -245,7 +236,7 @@ class ProjSyn(Proj):
 
   # -----------------------------------------------------------------------------
       
-  @widgets('cmap', 'x', 'y', 'z')  
+  ##@widgets('cmap', 'x', 'y', 'z')  
   def plot_input(self, widgets=False, **kwargs):
     """
   
@@ -279,7 +270,8 @@ class ProjSyn(Proj):
     gs_tvp = gs[1:, :].subgridspec(2,2)
     kwargs['fig'] = fig
     kwargs['gs'] = gs_tvp
-    self.i.tvp.plot_3slices(**kwargs) 
+    kwargs['nslices'] = 3
+    self.i.tvp.plot(**kwargs) 
     
     #if kwargs['sources']:
       #print('sources on')
@@ -368,8 +360,8 @@ class ProjInv(Proj):
     from fullwavepy.project.files.gridded.models import ModelFileVtr, ModelFileSgy
     from fullwavepy.project.files.datalike.ttr import ObsDataFileTtr
     from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
-    from fullwavepy.project.files.index import ObsIndexFileSgy, ObsIndexFileTtr
-    from fullwavepy.project.files.templates import ObsHedFile
+    from fullwavepy.project.files.other.index import ObsIndexFileSgy, ObsIndexFileTtr
+    from fullwavepy.project.files.text.hed import ObsHedFile
     
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
@@ -404,8 +396,8 @@ class ProjInv(Proj):
     from fullwavepy.project.files.gridded.derivs import GradFile, PrecFile
     from fullwavepy.project.files.datalike.ttr import DumpDataFile, DumpCompareFile
     from fullwavepy.project.lists.extra import CPFileList, DumpFileList
-    from fullwavepy.project.files.misc import LastCheckpointFile
-    from fullwavepy.project.qc import Functional
+    from fullwavepy.project.files.text.misc import LastCheckpointFile
+    from fullwavepy.project.generic.qc import Functional
 
     self.out.lastcp = LastCheckpointFile(self, self.out.path, **kwargs)  
   
@@ -491,7 +483,7 @@ class ProjInv(Proj):
    
   # -----------------------------------------------------------------------------    
   
-  @widgets('cmap', 'sids', 'run_ids', 'it')
+  ##@widgets('cmap', 'sids', 'run_ids', 'it')
   def plot_output(self, widgets=False, **kwargs):
     """
     """

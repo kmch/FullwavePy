@@ -20,9 +20,6 @@ from fullwavepy.project.lists.deriv import SchedFileList, SlaveFileList
 # DERIVED TYPES SHOULD SUFFICE
 
 
-# -------------------------------------------------------------------------------  
-
-
 @traced
 @logged
 class CPFileList(SchedFileList):
@@ -68,7 +65,7 @@ class CPFileList(SchedFileList):
       
   # -----------------------------------------------------------------------------
   
-  @widgets('it', 'slice_at', 'node', 'cmap')
+  ##@widgets('it', 'slice_at', 'node', 'cmap')
   def plot(self, wdg=False, **kwargs):
     it = kw('it', 1, kwargs)
     self.it[it].plot(**kwargs)
@@ -196,9 +193,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
           sid = int(sid)
           self.it[it][sid] = {}
           for ts in tsteps:
-            ts = int(ts)
-            tid = '00001' #'?????'
-            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, tid, **kwargs)
+            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
     else:
       self.__log.warn(self.init_err)
   
@@ -211,14 +206,18 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     
     step = proj.env.var['SLAVES_WAVEFIELDSVTR']
     if step is not None:
-      step = int(step)
       if step < 0:
         tsteps = np.arange(abs(step), proj.ns+1, abs(step))
+        tsteps = [int(t) for t in tsteps]
         self.__log.info("proj.env.var['SLAVES_WAVEFIELDSVTR']=" + str(step) +
                         ' => wavefield dumped at timesteps: ' + str(tsteps))
+      elif step > 0:
+        tsteps = [step] 
+        self.__log.info('SLAVES_WAVEFIELDSVTR=%s => a single snaphsot at %ss' % (step, step)) 
+      
       else:
-        raise NotImplementedError('SLAVES_WAVEFIELDSVTR > 0')
-        
+        raise ValueError('SLAVES_WAVEFIELDSVTR=%s' % step)
+      
     else:
       self.__log.warn('SLAVES_WAVEFIELDSVTR not set - returning empty list...')
       tsteps = []

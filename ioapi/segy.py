@@ -577,7 +577,7 @@ def read_sgy(fname, overwrite=True, **kwargs):
     kwargs['nx'] = kwargs['shape'][0]
   
   else:
-    read_sgy._log.warn('No nx nor shape provided. You need it to preserve ' + 
+    read_sgy._log.debug('No nx nor shape provided. You need it to preserve ' + 
                        '3D array structure ' + 
                        '(nx, ny, nz). Otherwise it is gonna be (ntraces, 1, nsamps).')
   
@@ -586,11 +586,11 @@ def read_sgy(fname, overwrite=True, **kwargs):
   
   convert = True
   if exists(fname_vtr):
-    read_sgy._log.warn(fname_vtr + ' already exists.')
+    read_sgy._log.debug(fname_vtr + ' already exists.')
     if overwrite:
-      read_sgy._log.warn('Overwriting ' + fname_vtr)
+      read_sgy._log.debug('Overwriting ' + fname_vtr)
     else:
-      read_sgy._log.warn('Skipping sgy2vtr because overwrite=0.')
+      read_sgy._log.debug('Skipping sgy2vtr because overwrite=0.')
       convert = False
   
   if convert:
