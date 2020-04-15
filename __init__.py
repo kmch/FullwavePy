@@ -18,7 +18,7 @@ from fullwavepy.logging_config import *
 from fullwavepy.generic.system import get_files
 from fullwavepy.generic.parse import strip, exten
 from fullwavepy.math.generic import *
-from fullwavepy.math.func import *
+from fullwavepy.math.funcs import *
 
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
 from fullwavepy.ioapi.fw3d import TtrFile, VtrFile, read_vtr, save_vtr
@@ -29,8 +29,9 @@ from fullwavepy.ndat.manifs import *
 from fullwavepy.ndat.points import *
 
 from fullwavepy.plot.generic import *
-from fullwavepy.plot.oned import colors
-from fullwavepy.plot.twod import plot_image
+from fullwavepy.plot.plt1d import *
+from fullwavepy.plot.plt2d import *
+from fullwavepy.plot.plt3d import *
 from fullwavepy.plot.misc import time_freq
 
 from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv

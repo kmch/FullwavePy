@@ -117,7 +117,7 @@ class Functional(object):
   
   # ----------------------------------------------------------------------------- 
   
-  #@widgets('sids', 'run_ids')
+  ##@widgets('sids', 'run_ids')
   def plot(self, widgets=False, **kwargs):
     """
     
@@ -126,7 +126,7 @@ class Functional(object):
       Choose which ones have.
     
     """
-    from fullwavepy.plot.oned import colors
+    from fullwavepy.plot.plt1d import colors
     
     misfit = kw('misfit', True, kwargs)   
     alpha = kw('alpha', 0.4, kwargs)

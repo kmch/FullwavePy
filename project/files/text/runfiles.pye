@@ -508,9 +508,14 @@ class Runfile(ParameterFile):
                       'No merge with template will be applied.')
     
     # APPLY THE REMAINDER 
-    self.__log.info('Setting boundary conditions...')
+    self.__log.debug('Setting other parameters, including boundary conditions...')
     self.modify(problem=self.proj.problem, 
+                anisotropy=self.proj.anisotropy, 
+                kernel=self.proj.kernel, 
                 dim=self.proj.dim,
+                domain=self.proj.domain,
+                equation=self.proj.equation,
+                units=self.proj.units,
                 btop=str(btop),
                 bbot=str(b_abs), 
                 bleft=str(b_abs), 

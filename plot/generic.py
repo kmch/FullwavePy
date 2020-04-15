@@ -44,11 +44,11 @@ def compare(arg1, arg2, **kwargs):
   ndims = len(A1.shape)  
   
   if ndims == 1:
-    from fullwavepy.plot.oned import plot_1d
+    from fullwavepy.plot.plt1d import plot_1d
     plot_1d(lines=[A1, A2], **kwargs)
   
   elif ndims == 2:
-    from fullwavepy.plot.twod import compare_2d
+    from fullwavepy.plot.plt2d import compare_2d
     compare_2d(A1, A2, **kwargs)
   
   else:
@@ -60,7 +60,7 @@ def compare(arg1, arg2, **kwargs):
 
 @traced
 @logged
-def new_figure(**kwargs):
+def figure(**kwargs):
   """
   Apparently one has to create a new figure INSIDE 
   a function passed to interact. 

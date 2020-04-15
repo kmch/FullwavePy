@@ -236,7 +236,7 @@ class ProjSyn(Proj):
 
   # -----------------------------------------------------------------------------
       
-  #@widgets('cmap', 'x', 'y', 'z')  
+  ##@widgets('cmap', 'x', 'y', 'z')  
   def plot_input(self, widgets=False, **kwargs):
     """
   
@@ -483,7 +483,7 @@ class ProjInv(Proj):
    
   # -----------------------------------------------------------------------------    
   
-  #@widgets('cmap', 'sids', 'run_ids', 'it')
+  ##@widgets('cmap', 'sids', 'run_ids', 'it')
   def plot_output(self, widgets=False, **kwargs):
     """
     """

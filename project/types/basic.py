@@ -14,7 +14,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.plot.generic import new_figure
+from fullwavepy.plot.generic import figure
 
 
 @traced
@@ -492,7 +492,7 @@ class ProjInv(Proj):
     
     self.prepare_output(**kwargs)
 
-    fig = new_figure(**kwargs)
+    fig = figure(**kwargs)
     nrows = 3
     short = 1
     tall = 3

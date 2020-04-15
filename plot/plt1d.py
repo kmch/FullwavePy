@@ -141,7 +141,7 @@ def plot_points(scatt, **kwargs):
   -----
   
   """
-  from fullwavepy.plot.twod import _center_around_zero, colorbar
+  from fullwavepy.plot.plt2d import _center_around_zero, colorbar
   
   orient = kw('orient', 'h', kwargs)
   label = kw('label', None, kwargs)

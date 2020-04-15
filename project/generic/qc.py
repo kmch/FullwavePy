@@ -126,7 +126,7 @@ class Functional(object):
       Choose which ones have.
     
     """
-    from fullwavepy.plot.oned import colors
+    from fullwavepy.plot.plt1d import colors
     
     misfit = kw('misfit', True, kwargs)   
     alpha = kw('alpha', 0.4, kwargs)
