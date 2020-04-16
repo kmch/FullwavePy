@@ -1,7 +1,15 @@
+# %load ~/software/fullwavepy/nb_config.py
 # -----------------------------------------------------------------------------
 # Load default notebook's callables (defined in fullwavepy/__init__.py)
 # -----------------------------------------------------------------------------
 from fullwavepy import *
+
+# -----------------------------------------------------------------------------
+# Aliases of magic commands
+# -----------------------------------------------------------------------------
+%alias_magic mi matplotlib -p inline
+%alias_magic mn matplotlib -p notebook
+
 
 # -----------------------------------------------------------------------------
 # Configure matplotlib
@@ -9,10 +17,10 @@ from fullwavepy import *
 
 # Set matplotlib's backend ------
 
-# 1. non-interactive plots, display in a notebook cell
+# 1. non-interactive plots - display in a notebook cell
 %matplotlib inline
 
-# 2. interactivfullwavepy.plots, display in a notebook cell
+# 2. interactive plots - display in a notebook cell
  # %matplotlib notebook
 
 # Set matplotlib.pyplot's style ---------
