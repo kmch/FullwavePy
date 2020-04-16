@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, del_kw, exten
+from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.ioapi.generic import File, AsciiFile, BinaryFile, ArrayFile
 
@@ -81,7 +81,10 @@ class ArrayProjFile(ProjFile, ArrayFile):
   array files are defined on a grid 
   (e.g. data files).
   """
-  pass
+  def create(self, array, **kwargs):
+    from fullwavepy.ioapi.fw3d import save_vtr
+    save_vtr(array , strip(self.fname) + '.vtr')
+
 
 
 # -------------------------------------------------------------------------------

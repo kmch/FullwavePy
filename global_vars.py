@@ -29,17 +29,17 @@ startvp_bm = path + 'start_mods/Brennah_whole_model_19-10-30_sea-clipped.sgy'
 rawsign = path + 'wavelets/wavelet_19-09-22.sgy'
 topography = path + 'surfaces/bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr'
 
-exe = {'fullwave':       '~/PhD/fullwave3D/rev690/bin/fullwave3D.exe',
-       'fullwave_local': '/home/kmc3817/light_PhD/fullwave3D/rev690/bin/fullwave3D.exe',
+exe = {'fullwave':       '~/my_phd/fullwave3d_git_kajetanch/bin/fullwave3D.exe',
+       'fullwave_local': '~/my_phd/fullwave3d_git_kajetanch/bin/fullwave3D.exe',
+       'fsprep':         '~/my_phd/fsprep/fsprep',
        'segyprep':       '/home/kmc3817/light_PhD/fullwave3D/segyprep_v3.16/bin/segyprep_v3.16',
-       'fsprep':         '/home/kmc3817/light_PhD/fsprep/fsprep',
        'modprep':        '/home/kmc3817/light_PhD/fullwave3D/modprep/modprep.exe',
       }
-
-
 # -----------------------------------------------------------------------------
 # ARRAYS
 # -----------------------------------------------------------------------------
-#from fullwavepy.ioapi.generic import read_any
-#topo = Arr3d(read_any(topography, shape=(3201,1601,1)))
+from fullwavepy.ioapi.generic import read_any
+topo = Arr3d(read_any(topography, shape=(3201,1601,1),  extent=[[-8e4,8e4],[4e4,-4e4],[0,0]]))
+# a = 10
+# topo.plot(slice_at='z', vmin=-a, vmax=a, center_cmap=1, cmap=[])
 #topo = topo[...,0]

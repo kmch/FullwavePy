@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from mpl_toolkits.mplot3d import Axes3D
 
+import cmocean.cm as cm
 import plotly.express as px
 import plotly.graph_objects as go
 from ipywidgets import (interactive, interact, interact_manual, fixed,

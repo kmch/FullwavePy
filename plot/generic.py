@@ -60,14 +60,14 @@ def compare(arg1, arg2, **kwargs):
 
 @traced
 @logged
-def figure(**kwargs):
+def figure(figsize_x=6, figsize_y=6, **kwargs):
   """
   Apparently one has to create a new figure INSIDE 
   a function passed to interact. 
   This is the code that has to be put in every 
   function decorated with ##@widgets then.
   """
-  figsize = (kw('figsize_x', 6, kwargs), kw('figsize_y', 6, kwargs))
+  figsize = (figsize_x, figsize_y)
   return plt.figure(figsize=figsize)
     
 

@@ -44,6 +44,9 @@ class SgyFile(ArrayFile):
   
   """
   
+  # def create(self, array, **kwargs):
+  #   save_vtr(array , strip(self.fname) + '.vtr')
+
   # -----------------------------------------------------------------------------  
   
   def surange(self, **kwargs):

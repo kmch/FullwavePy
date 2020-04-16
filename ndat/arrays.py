@@ -36,6 +36,8 @@ class Arr(np.ndarray):
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
     #obj = cls._set_coords(obj, **kwargs)
+    if 'dx' in kwargs:
+      cls.dx = dx
     
     if ndims is not None:
       assert len(obj.shape) == ndims
