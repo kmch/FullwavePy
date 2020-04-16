@@ -709,9 +709,18 @@ def read_geo(fname, unit='node', **kwargs):
   x AND z ARE NOT SWAPPED IN THIS FORMAT 
     (IN CONTRAST TO .pgy)
   '1 +' ENSURES CONSISTENCY WITH .pgy FILES  
+
+  For both btop=0 and btop=-99 the coordinates frame 
+  is centered at the free surface which corresponds to
+  grid node 0 and 1 respectively.
+  That's why if we use btop=0 (as we do)
+  free
+
     
   """
   from .generic import read_txt
+  
+  read_geo._log.debug('Assuming btop=0, not -99')
   
   content = read_txt(fname, **kwargs)
   header = content[0]
@@ -730,13 +739,13 @@ def read_geo(fname, unit='node', **kwargs):
       
       xyz = [float(row[1])+x0, 
              float(row[2])+y0, 
-             float(row[3])+z0]       
+             float(row[3]) - dx +z0]    # this is for btop=0 only!   
     
     elif unit == 'node':
       dx = kwargs['dx']
       xyz = [1 + float(row[1]) / dx, 
              1 + float(row[2]) / dx, 
-             1 + float(row[3]) / dx]  
+             1 + (float(row[3]) - dx) / dx]  # this is for btop=0 only!
     else:
       raise ValueError('Unknown unit: ' + str(unit))  
     

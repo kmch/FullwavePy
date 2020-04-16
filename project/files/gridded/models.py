@@ -53,7 +53,7 @@ class ModelFileSgy(ModelFile, SgyFile):
     
     """
     from fullwavepy.ioapi.segy import vtr2sgy
-    super().create(*args, **kwargs)
+    #super().create(*args, **kwargs)
     fvtr = strip(self.fname) + '.vtr'
     vtr2sgy(fvtr, self.proj.dx)
 
