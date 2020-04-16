@@ -14,9 +14,8 @@ from fullwavepy.project.files.generic import BinaryProjFile, ArrayProjFile
 from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.project.files.datalike.generic import DataFile, SynDataFile, ObsDataFile
-
-
-# -------------------------------------------------------------------------------
+from fullwavepy.project.files.text.hed import HedFile
+from fullwavepy.project.files.other.index import IndexFile
 
 
 @traced
@@ -32,8 +31,6 @@ class DataFileSgy(DataFile, SgyFile):
     """
     
     """  
-    from fullwavepy.project.files.other.index import IndexFile
-    from fullwavepy.project.files.text.hed import HedFile
     self.suffix = suffix
     self.ext = 'sgy'
     self.idx = IndexFile(suffix, proj, path, **kwargs) # SIMILAR TO TEMPLATE
@@ -149,7 +146,6 @@ class DataFileSgy(DataFile, SgyFile):
   # -----------------------------------------------------------------------------
 
 
-
 # -------------------------------------------------------------------------------
 # SPECIFIC FILES (UNIQUE IDs)
 # -------------------------------------------------------------------------------
@@ -170,7 +166,6 @@ class TemplateFileSgy(DataFileSgy):
     """
     
     """ 
-    from fullwavepy.project.files.other.index import IndexFile
     suffix = 'Template'
     self.idx = IndexFile(suffix, proj, path, **kwargs)
     self.hed = HedFile(suffix, proj, path, **kwargs) # NOT SURE THIS FILE IS CREATED BY SegyPrep

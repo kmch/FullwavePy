@@ -192,8 +192,8 @@ def plot_array(A, **kwargs):
   Just a simple framework.
   
   """    
-  from fullwavepy.plot.oned import plot_1d
-  from fullwavepy.plot.twod import plot_2d
+  from fullwavepy.plot.plt1d import plot_1d
+  from fullwavepy.plot.plt2d import plot_2d
   
   ndims = len(A.shape)
   

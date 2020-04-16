@@ -498,36 +498,12 @@ class DipoleZ(Dipole):
 
 @traced
 @logged
-def xyz2w(xyz, dims, **kwargs):
+def xyz2w(xyz, extended_dims, **kwargs):
   """
   """
   x, y, z = xyz
-  nx, ny, nz = dims
-  return (x - 1) * ny * nz + (y - 1) * nz + z
+  nx, ny, nz = extended_dims
+  return int((x - 1) * ny * nz + (y - 1) * nz + z)
 
 
-
-
-
-  """
-  """
-  def check_fs_pos(self, **kwargs):
-    pass
-  
-  def spread_factors(self, **kwargs):
-    nsrcs = []
-    while diverged:
-      for src in srcs:
-        nsrcs.append(src.spread_n_bounce())
-      srcs = nsrcs
-      self._check_convergence()
-  
-  def _check_convergence():
-    pass
-  
-  def inject(self, wf, **kwargs):
-    pass
-  
-
-# -------------------------------------------------------------------------------
 

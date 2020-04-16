@@ -97,13 +97,13 @@ class GhostDataFileTxt(AsciiProjFile):
         fcs_weights.append(f_weights)
       weights.append(fcs_weights)
      
-    ghosts = [[float(i) for i in j] for j in ghosts]
+    ghosts = [[int(i) for i in j] for j in ghosts]
     intersects = [[float(i) for i in j] for j in intersects]
     ficts = [[[float(i) for i in j] for j in k] for k  in ficts]
     auxs = [[[[[float(i) for i in j] for j in k] for k in l] for l in m] for m in auxs]  
     weights = [[[[float(i) for i in j] for j in k] for k in l] for l in weights]
     
-    self.ghosts = Ghosts(np.array(ghosts)).astype(int)
+    self.ghosts = Ghosts(ghosts)
     self.isects = intersects
     self.ficts = ficts
     self.auxs = auxs

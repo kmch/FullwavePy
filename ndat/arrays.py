@@ -10,8 +10,8 @@ from matplotlib.gridspec import GridSpec
 
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets, timer
-from fullwavepy.plot.generic import new_figure
-from fullwavepy.plot.twod import plot_image
+from fullwavepy.plot.generic import figure
+from fullwavepy.plot.plt2d import plot_image
 
 
 @traced
@@ -201,7 +201,7 @@ class Arr1d(Arr):
     if 'c' in kwargs:
       plot_kwargs['c'] = kwargs['c']
     #c = kw('c', 'b', kwargs)
-    #from fullwavepy.plot.oned import plot_1d
+    #from fullwavepy.plot.plt1d import plot_1d
     self.__log.debug('self.extent' + str(self.extent))
     x1, x2 = self.extent 
     #self.__log.debug('Will not work for units other than node')
@@ -351,7 +351,7 @@ class Arr3d(Arr):
   def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
     """
     """
-    from fullwavepy.plot.twod import plot_image
+    from fullwavepy.plot.plt2d import plot_image
     
     # LABELS FOR EACH AXIS
     s2 = kw('slice', 'y', kwargs) # MAIN SLICE PLOTTED AT THE BOTTOM IN FULL WIDTH
@@ -370,7 +370,7 @@ class Arr3d(Arr):
 
     
     if widgets: #or fig is None:
-      fig = new_figure(**kwargs)
+      fig = figure(**kwargs)
       gs = fig.add_gridspec(2,2)
      
 

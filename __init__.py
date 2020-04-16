@@ -29,8 +29,9 @@ from fullwavepy.ndat.manifs import *
 from fullwavepy.ndat.points import *
 
 from fullwavepy.plot.generic import *
-from fullwavepy.plot.oned import colors
-from fullwavepy.plot.twod import plot_image
+from fullwavepy.plot.plt1d import *
+from fullwavepy.plot.plt2d import *
+from fullwavepy.plot.plt3d import *
 from fullwavepy.plot.misc import time_freq
 
 from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv

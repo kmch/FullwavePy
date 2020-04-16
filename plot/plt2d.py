@@ -50,7 +50,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   -----
   
   """
-  from fullwavepy.plot.generic import new_figure
+  from fullwavepy.plot.generic import figure
   from matplotlib.colors import LogNorm
   
   ax = kw('ax', plt.gca(), kwargs)
@@ -90,7 +90,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   
   #if widgets:# or fig is None:
-    #fig = new_figure(**kwargs)
+    #fig = figure(**kwargs)
 
   #if gs is None:
     #gs = fig.add_gridspec(1,1)
@@ -133,7 +133,7 @@ def plot_wiggl(image, **kwargs): #FIXME MOVE TO SEISMIC DATA
   or called from external.
   
   """
-  from fullwavepy.plot.oned import plot_1d
+  from fullwavepy.plot.plt1d import plot_1d
   
   gap = kw('gap', 10, kwargs) # GAP BETWEEN TRACE
   
