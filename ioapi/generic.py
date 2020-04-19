@@ -58,8 +58,9 @@ class File(object):
   # -----------------------------------------------------------------------------
 
   def create(self, *args, **kwargs):
-    raise NotImplementedError('Define in a child class.')
-    
+    #raise NotImplementedError('Define in a child class.') # with this, a lot fails
+    pass
+
   # -----------------------------------------------------------------------------
 
   def dupl(self, source, cmd='cp', **kwargs):

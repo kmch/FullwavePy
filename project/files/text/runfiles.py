@@ -137,9 +137,6 @@ class SegyPrepFile(ParameterFile):
   A SegyPrep's runfile.
   
   """  
-
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     """
     
@@ -182,6 +179,8 @@ class SegyPrepFile(ParameterFile):
     segyprep['maxoffset'] = kw('maxoffset', 1e6, kwargs) # IN METRES
     
     
+    #segyprep['add to depth'] = proj.zsea
+
     segyprep['FFID'] = kw('FFID', 'yes', kwargs) 
     segyprep['text'] = kw('text', 'yes', kwargs)
     segyprep['debug'] = kw('debug', 'yes', kwargs)

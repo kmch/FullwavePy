@@ -48,9 +48,6 @@ class AsciiProjFile(ProjFile, AsciiFile):
   not directlfullwavepy.plottable as an array.
   
   """
-  
-  # -----------------------------------------------------------------------------
-  
   def prepare(self, **kwargs):
     super().prepare(**kwargs)
     

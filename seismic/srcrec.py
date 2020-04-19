@@ -153,7 +153,7 @@ class HyperPointSR(object):
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
     psrs_to_spread = [self.pointsr]
-    i_max = 3
+    i_max = 2
     i = 0
     self.snapshots = []
     while i < i_max:
