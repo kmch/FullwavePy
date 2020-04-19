@@ -1,6 +1,6 @@
 """
-(c) 2019 Kajetan Chrapkiewicz.
-Copywright: Ask for peremoveission writing to k.chrapkiewicz17@imperial.ac.uk.
+(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 Notes
 -----

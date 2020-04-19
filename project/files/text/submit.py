@@ -1,5 +1,5 @@
 """
-(c) 2019 Kajetan Chrapkiewicz.
+(c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """

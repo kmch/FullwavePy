@@ -1,6 +1,6 @@
 """
-(c) 2019 Kajetan Chrapkiewicz.
-Copywright: Ask for peremoveission writing to k.chrapkiewicz17@imperial.ac.uk.
+(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 Notes
 -----
@@ -286,8 +286,7 @@ class ProjSyn(Proj):
 
     fig = plt.figure(figsize=figsize)
 
-    gs = GridSpec(4, 2, height_ratios=[.5, 1, 1, 1])
-#                  left=0, right=1, hspace=.1, wspace=.4) # width_ratios=[1, 2], )
+    gs = GridSpec(4, 2, height_ratios=[.5, 1, 1, 1]) #left=0, right=1, hspace=.1, wspace=.4) # width_ratios=[1, 2], )
     
     lays = []
     if 'tvp' in layers:
