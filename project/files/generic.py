@@ -83,6 +83,5 @@ class ArrayProjFile(ProjFile, ArrayFile):
     save_vtr(array , strip(self.fname) + '.vtr')
 
 
-
 # -------------------------------------------------------------------------------
 

@@ -122,7 +122,7 @@ class ArrayFile(File):
     Notes
     -----
     Overwrite=True by default because otherwise plots are not 
-    updated even though they are supposed. 
+    updated even though they are supposed to. 
     They will be correct (updated) only
     if you delete self.array variable, e.g. by restarting the 
     notebook kernel.

@@ -472,8 +472,8 @@ class Runfile(ParameterFile):
     """
     from fullwavepy.ioapi.generic import read_dict
     skelet_fname = self.path + self.pname + '-Skeleton.key'
-    self.__log.info('Using some values from ' + skelet_fname +
-                    '. To modify it, first update and run SegyPrep')
+    self.__log.info('Using some values from %s. To modify that file, '\
+                    'update SegyPrep.key and re-run SegyPrep' % skelet_fname)
                     
     btop = kw('btop', 0, kwargs)
     etop = kw('etop', 0, kwargs)  

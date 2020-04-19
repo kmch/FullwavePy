@@ -43,14 +43,15 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     else:
       ts = str(ts)
     
-    self.__log.debug('Assuming taskid = 1')
+    tid = 1
+    self.__log.debug('Assuming taskid = %s' % tid)
     
     self.name = str(proj.name + '-' + 
                     file_id + '-' + 
                     ts + 
                     '-csref' + str(sid).rjust(5,'0') + 
                     '-iter' + str(it).rjust(5,'0')  + 
-                    '-taskid' + str(1).rjust(5,'0') +
+                    '-taskid' + str(tid).rjust(5,'0') +
                     '.vtr')
     self.path = self.proj.out.path
     

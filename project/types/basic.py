@@ -2,10 +2,6 @@
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
-Notes
------
-Python devs usually don't write nested classes, neither do I.
-
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +17,7 @@ from fullwavepy.plot.generic import figure
 @logged
 class Proj(object):
   """
-  fullwavepy.generic Fullwave project.
+  Base class for all full-waveform projects.
   
   """
   def __init__(self, name, **kwargs):
@@ -61,6 +57,9 @@ class Proj(object):
     #if len(self.exe) == 0:
     #  self.__log.warn('Empty paths to executables (exe dictionary)')
     
+    # IMMERSED BOUNDARY
+    #self.immerse = kw('immerse', False, kwargs)
+
     
     ProjPath(self, **kwargs)
     del_kw('path', kwargs)
@@ -90,6 +89,12 @@ class Proj(object):
     self.o = self.out # ALIAS
     self.out.init(**kwargs)
     
+  # -----------------------------------------------------------------------------
+  
+  def init_input(self, **kwargs):
+    raise NotImplementedError('Proj class is not meant to be used directly. '\
+                              'Instead use child classes - ProjSyn, ProjInv etc.')
+
   # -----------------------------------------------------------------------------
   
   def ls(self, **kwargs):
