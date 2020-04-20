@@ -421,10 +421,14 @@ class ProjInv(Proj):
              'rawgrad': ['RawGrad', None, GradFile], #NOTE
              'rawprec': ['RawPrec', None, PrecFile]
              }
-    for attr, [file_id, file_start, file_class] in cpnts.items():
-      setattr(self.out, attr, 
-              CPFileList(self, file_class, file_id, file_start, **kwargs))    
     
+    self.__log.warn('Disabled init of cp file for now (until debug)')
+    
+    #for attr, [file_id, file_start, file_class] in cpnts.items():
+    #  self.__log.debug('attr=%s, file_id=%s, file_start=%s, file_class=%s' % (attr, file_id, file_start, file_class))
+    #  setattr(self.out, attr, 
+    #          CPFileList(self, file_class, file_id, file_start, **kwargs))    
+    # self, proj, FileClass, file_id, file_start,
     
     dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
              'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],

@@ -34,9 +34,6 @@ class CPFileList(SchedFileList):
   a sensible idea.
   
   """
-
-  # -----------------------------------------------------------------------------  
-  
   def __init__(self, proj, FileClass, file_id, file_start, **kwargs):  
     """
     file_id : str 
@@ -161,9 +158,6 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
   A handle for dumped wavefield-snapshots.
   
   """
-  
-  # ----------------------------------------------------------------------------- 
-  
   @timer
   def __init__(self, proj, FileClass, **kwargs):
     """

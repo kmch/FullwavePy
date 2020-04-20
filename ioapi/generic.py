@@ -7,7 +7,7 @@ import numpy as np
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import exten, strip, kw
+from fullwavepy.generic.parse import exten, strip, kw, del_kw
 from fullwavepy.generic.system import exists, bash
 
 

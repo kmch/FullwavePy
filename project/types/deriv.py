@@ -29,9 +29,6 @@ class ProjInvSyn(ProjInv):
   available.
   
   """
-  
-  # -----------------------------------------------------------------------------  
-
   def __init__(self, name, syn_proj_name, **kwargs):
     """
     Same as ProjInv + book-keeping of an extra
@@ -57,7 +54,8 @@ class ProjInvSyn(ProjInv):
     self.psyn = ProjSyn(syn_proj_name, path=syn_proj_path)
 
   # -----------------------------------------------------------------------------    
-
+  
+  @timer
   def prepare_input(self, file_z0, **kwargs):
     """
     Copy from the synthetic project.

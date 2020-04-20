@@ -46,24 +46,34 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     tid = 1
     self.__log.debug('Assuming taskid = %s' % tid)
     
-    self.name = str(proj.name + '-' + 
+    self.path = self.proj.out.path
+
+    pattern = str(proj.name + '-' + 
                     file_id + '-' + 
                     ts + 
                     '-csref' + str(sid).rjust(5,'0') + 
                     '-iter' + str(it).rjust(5,'0')  + 
-                    '-taskid' + str(tid).rjust(5,'0') +
+                    '*' + # instead of unknown taskid
                     '.vtr')
-    self.path = self.proj.out.path
     
-    #fnames = get_files(path, pattern, **kwargs)
-    #if len(fnames) > 1:
-    # raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
-    #elif len(fnames) == 0:
-    # self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(pattern))
-    #else:
-    # suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
+    
+# '-taskid' + str(tid).rjust(5,'0') +
+
+    fnames = get_files(self.path, pattern, **kwargs)
+    
+   
+
+    if len(fnames) > 1:
+     raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
+    elif len(fnames) == 0:
+     self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(pattern))
+     return
+    else:
+     suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
+    
+    
     self.fname = self.path + self.name
-    super().__init__(proj, self.path, **kwargs)
+    #super().__init__(proj, self.path, **kwargs)
     
   # -----------------------------------------------------------------------------
   

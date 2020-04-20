@@ -36,9 +36,6 @@ class ModelFileSgy(ModelFile, SgyFile):
   on the model grid.
   
   """
-
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, suffix, proj, path, **kwargs):
     """
     """

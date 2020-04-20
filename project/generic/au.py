@@ -490,10 +490,7 @@ class ProjEnv(object):
   Default values of environment variables.
     
   """
-  
-  # -----------------------------------------------------------------------------
-  
-  def __init__(self, proj, **kwargs): # TO FINISH
+  def __init__(self, proj, dump_all=False, **kwargs): # TO FINISH
     """
     Set default values (mostly Fullwave's defaults,
     soome of them are overwritten in projtypes, the 
@@ -506,6 +503,9 @@ class ProjEnv(object):
     
     Up-to-date with rev690 version. Run fullwave with 
     env flag for more info.
+
+    Fixme: update for 700-NewCodebase version after 
+    consortium meeting.
 
     """
     max_ram_gb = kw('max_ram_gb', 40, kwargs) # HERE?
@@ -573,6 +573,9 @@ class ProjEnv(object):
     self.var['SLAVES_SHOWDATESTAMP'] = kw('SLAVES_SHOWDATESTAMP', None, env)
     self.var['SLAVES_SHOWHOSTNAME'] = kw('SLAVES_SHOWHOSTNAME', None, env)
     
+    if dump_all:
+      self.set_all_dumps_true(**kwargs)
+
     self._true2prefix(**kwargs)
     
   # -----------------------------------------------------------------------------
@@ -580,6 +583,10 @@ class ProjEnv(object):
   def csrefs_to_dump(self, **kwargs): #FIXME IT IS IMPLEMENTED SOMEWHERE!!!
     """
     Get the list of IDs of composite-source  to dump.
+    
+    Notes
+    -----
+    It is used by external functions.
     
     """
     csrefs = self.var['SLAVES_DUMPCSREFS']
@@ -592,6 +599,32 @@ class ProjEnv(object):
       csrefs = [int(i) for i in csrefs.split(',')]
     
     return csrefs
+  
+  # -----------------------------------------------------------------------------
+    
+  def decimate_shot_dumps(self, factor, **kwargs):
+    """
+    Dump info for every {factor}th shot.
+
+    factor : int 
+      Take every {factor}th shot.
+    """
+    # try:
+    #   self.proj.i.s.read()
+
+    
+    # list2str(np.arange(1,162)[::factor])
+    pass
+  
+  # -----------------------------------------------------------------------------
+
+  def set_all_dumps_true(self, **kwargs):
+    """
+    """
+    for key, val in self.var.items():
+      self.var[key] = val
+      if ('DUMP' in key) and (key != 'SLAVES_DUMPCSREFS'):
+          self.var[key] = True
 
   # -----------------------------------------------------------------------------
 
