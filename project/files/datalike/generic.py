@@ -16,9 +16,6 @@ from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class MetaDataFile(CsvFile):

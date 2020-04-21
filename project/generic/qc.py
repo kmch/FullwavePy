@@ -1,4 +1,6 @@
 """
+This module contains tools for quality control of FWI runs.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -25,6 +27,25 @@ class Functional(object):
     #self.name = self.proj.name + '-Functional.png' # DUMP ASCII INSTEAD?
     #self.fname = self.path + self.proj.name + '-Functional.png'
   
+  # ----------------------------------------------------------------------------- 
+
+  def _prep_widgets(self, **kwargs):
+    """
+    Another take on robust, customized, automated
+    interactive plotting.
+
+    """
+    from ipywidgets import IntSlider, BoundedIntText, Dropdown, \
+                           SelectMultiple, Checkbox, Layout, TwoByTwoLayout
+    widgets = {}
+    p = self.proj
+    
+    sids = list(p.i.s.read().keys())
+    widgets['sids'] = SelectMultiple(options=sids, value=sids)
+    
+    self.widgets = widgets
+    return widgets
+
   # -----------------------------------------------------------------------------    
   
   def read(self, run_ids, misfit=True, **kwargs):
@@ -117,7 +138,7 @@ class Functional(object):
   
   # ----------------------------------------------------------------------------- 
   
-  ##@widgets('sids', 'run_ids')
+  #@widgets('sids', 'run_ids')
   def plot(self, widgets=False, **kwargs):
     """
     
@@ -144,7 +165,7 @@ class Functional(object):
     
     # CONVERT KEYS TO INT TO SORT THEM
     functional = {int(k) : v for k, v in functional.items()}
-    self.__log.warning('Converting shot IDs into integers')
+    self.__log.debug('Converting shot IDs into integers')
 
     if sids is not None:
       functional = {sid : functional[sid] for sid in sids}

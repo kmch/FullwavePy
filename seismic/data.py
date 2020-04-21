@@ -15,6 +15,10 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Data(Arr3d):
+  """
+  Seismic data.
+
+  """
   def interleave(self, othe, **kwargs):
     return super().interleave(othe, slice_at='y', node=0, **kwargs)
 
@@ -29,4 +33,16 @@ class Data(Arr3d):
     super().plot(*args, **kwargs)
   
 
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ObsData(Arr3d):
+  """
+  Observed (field) seismic data.
+  
+  """
+  # def filt
+  pass
 # -------------------------------------------------------------------------------

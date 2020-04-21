@@ -55,6 +55,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   ax = kw('ax', plt.gca(), kwargs)
   title = kw('title', None, kwargs)
+  spect = kw('spect', None, kwargs)
   cmap = kw('cmap', 'Greys', kwargs)
   ncolors = kw('ncolors', None, kwargs)  
   vmin = kw('vmin', np.min(image), kwargs)
@@ -69,6 +70,14 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     vmax = None
     center_cmap = False
     
+  if spect is not None:
+    from fullwavepy.math.fourier import dft_freqs
+    ntraces, nsamps = image.shape
+    plot_image._log.debug('nsamps=%s, ntraces=%s' % (nsamps, ntraces))
+    y = dft_freqs(nsamps, which='positive', **kwargs)
+    image = np.array(image[:, :len(y)])
+    extent = [0, ntraces, y[-1], 0] 
+
   # THIS CENTERS CELLS AT INTEGERS AGAIN WHICH WAS OVERWRITTEN BY CUSTOM EXTENT
   if extent is not None:
     plot_image._log.debug('extent before: %s' % extent)
@@ -82,12 +91,10 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     #y2 += .5 
     #extent = [x1, x2, y1, y2]
 
-  
   if isinstance(cmap, list):
     cmap = _combine_2_cmaps(cmap)
   
   cmap = plt.cm.get_cmap(cmap, ncolors)  
-  
   
   #if widgets:# or fig is None:
     #fig = figure(**kwargs)
