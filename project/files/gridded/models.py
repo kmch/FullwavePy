@@ -121,8 +121,8 @@ class ModelFileSgy(ModelFile, SgyFile):
     #self.__log.debug('scalco' + str(scalco))
     #x1, x2, y1, y2 = np.array([x1, x2, y1, y2]) * scalco
     #
-    #key_x = self.proj.sgy.hw['xmod']
-    #key_y = self.proj.sgy.hw['ymod'] 
+    #key_x = self.proj.sgyhw['xmod']
+    #key_y = self.proj.sgyhw['ymod'] 
     #
     #tmp_fname = 'tmp.sgy'
     #cmd = str('segyread tape=' + self.fname + ' | ' +

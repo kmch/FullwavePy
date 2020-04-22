@@ -68,7 +68,7 @@ class Proj(object):
     self.info = InfoFile(self, **kwargs)
     ProjDef(self, **kwargs)
      
-    self.sgy = ProjSgyMapp(self, **kwargs)
+    self.sgyhw = ProjSgyMapp(self, **kwargs)
     self.env = ProjEnv(self, **kwargs)
     self.cluster = ProjCluster(self, **kwargs))
 

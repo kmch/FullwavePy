@@ -12,6 +12,8 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
 
+from fullwavepy.ioapi.segy import SgyMapp
+
 
 @traced
 @logged
@@ -674,7 +676,7 @@ class ProjEnv(object):
 
 @traced
 @logged
-class ProjSgyMapp(object):
+class ProjSgyMapp(SgyMapp):
   """
   Mapping between physical quantities 
   and SEG-Y header-words.
@@ -694,19 +696,16 @@ class ProjSgyMapp(object):
   def __init__(self, proj, **kwargs):
     """
     """
-    sgy_hw = kw('sgy_hw', {}, kwargs)
-    if len(sgy_hw) == 0:
-      self.__log.info("Setting SEG-Y mapping to Fullwave's default")
+    sgyhw = kw('sgyhw', {}, kwargs)
+    if len(sgyhw) == 0:
+      self.__log.info("len(sgyhw)=0 => setting SEG-Y mapping to Fullwave's default")
     
-    hw = {}
-    hw['sid'] = kw('sid', 'fldr', sgy_hw)
-    hw['rid'] = kw('rid', 'tracf', sgy_hw)
-    hw['lid'] = kw('lid', 'ep', sgy_hw)
-    hw['xmod'] = kw('xmod', 'sx', sgy_hw)
-    hw['ymod'] = kw('ymod', 'sy', sgy_hw)
+    self['sid'] = kw('sid', 'fldr', sgyhw)
+    self['rid'] = kw('rid', 'tracf', sgyhw)
+    self['lid'] = kw('lid', 'ep', sgyhw)
+    self['xmod'] = kw('xmod', 'sx', sgyhw)
+    self['ymod'] = kw('ymod', 'sy', sgyhw)
     
-    self.hw = hw
-  
   
 # -------------------------------------------------------------------------------
 

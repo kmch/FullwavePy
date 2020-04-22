@@ -70,8 +70,8 @@ class DataFileSgy(DataFile, SgyFile):
       self.__log.warn(self.fname + ' not found. Returning.')
       return
     
-    skey = self.proj.sgy.hw['sid']
-    lkey = self.proj.sgy.hw['lid']
+    skey = self.proj.sgyhw['sid']
+    lkey = self.proj.sgyhw['lid']
     
     sids = self.proj.env.csrefs_to_dump()
     if sids is None:
@@ -130,8 +130,8 @@ class DataFileSgy(DataFile, SgyFile):
     """
     from fullwavepy.ioapi.segy import split_sgy
     
-    keys = kw('keys', [self.proj.sgy.hw['sid'],
-                       self.proj.sgy.hw['lid']], kwargs)
+    keys = kw('keys', [self.proj.sgyhw['sid'],
+                       self.proj.sgyhw['lid']], kwargs)
     
     fnames = [self.fname]
     

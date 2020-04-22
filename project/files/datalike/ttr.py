@@ -230,7 +230,7 @@ class DumpCompareFile(DataFileTtr):
     
     if not (hasattr(self.syn, 'lid')) or overwrite:
       # LINE IDs
-      lid_hw = self.proj.sgy.hw['lid'] # IT SHOULD BE ep FOR PROTEUS
+      lid_hw = self.proj.sgyhw['lid'] # IT SHOULD BE ep FOR PROTEUS
       lids = self.head[lid_hw].unique()
       
       for obj in [self.syn, self.obs, self.dif]:

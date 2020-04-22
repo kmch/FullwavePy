@@ -135,7 +135,7 @@ class DumpFileList(SlaveFileList):
     """
     its = range(1, len(self.it))
     sids = sorted(self.it[1].keys())
-    lids = sorted(self.proj.i.obs.read_header(overwrite=1)[self.proj.sgy.hw['lid']].unique())
+    lids = sorted(self.proj.i.obs.read_header(overwrite=1)[self.proj.sgyhw['lid']].unique())
     
     blocks = self.proj.i.rnf.blocks
     
