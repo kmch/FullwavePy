@@ -1,4 +1,8 @@
 """
+This module serves to read/write files in formats 
+defined by Fullwave3D's segy IO API, 
+in particular SEG-Y files.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -9,7 +13,7 @@ from autologging import logged, traced
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, strip, exten, path_leave
-from fullwavepy.ioapi.generic import ArrayFile#, CsvFile
+from fullwavepy.ioapi.generic import ArrayFile, CsvFile
 
 json_header_suffix = '_HEAD.json'
 filt_suffix = '_filt.sgy'
@@ -18,6 +22,15 @@ filt_mute_suffix = '_filt_mute.sgy'
 
 # -------------------------------------------------------------------------------
 # SGY
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SgyMapp(dict):
+  pass
+
+
 # -------------------------------------------------------------------------------
 
 
@@ -259,11 +272,12 @@ class SgyFile(ArrayFile):
 
   def filt(self, pad, overwrite=False, **kwargs):
     """
-    Overwrites.
+    CAUTION
+    It overwrites the content of the file.
     
     """
     from fullwavepy.ioapi.su import sushw
-    from ..signal.su import su_filter_full
+    from fullwavepy.signal.su import su_filter_full
     
     self.__log.info('Using ' + str(pad) + ' samples of padding')
     self.__log.info('Setting dt in the header of: ' + self.fname)
@@ -318,8 +332,6 @@ class SgyFile(ArrayFile):
     
   # -----------------------------------------------------------------------------  
 
-
-
   def _get_sr_coords(self, datafile=None, **kwargs):
     """
     Get HORIZONTAL (x,y) coordinates of sources and 
@@ -350,12 +362,22 @@ class SgyFile(ArrayFile):
     
   # -----------------------------------------------------------------------------
 
-#@traced
-#@logged
-#class SgyHeader(CsvFile):
-  #pass
+
+# -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class SgyHeader(CsvFile):
+  sid = 'fldr'
+  rid = 'tracf'
+  lid = 'ep'
+  def source_data(self):
+    """
+    It assumes each receiver has the same source data (same shots).
+    """
+    return self[self.tracf==1104]
+        
 
 # -------------------------------------------------------------------------------
 

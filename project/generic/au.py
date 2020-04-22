@@ -13,9 +13,6 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class ProjBox(object):
@@ -677,7 +674,7 @@ class ProjEnv(object):
 
 @traced
 @logged
-class ProjSegyMapp(object):
+class ProjSgyMapp(object):
   """
   Mapping between physical quantities 
   and SEG-Y header-words.
@@ -698,7 +695,8 @@ class ProjSegyMapp(object):
     """
     """
     sgy_hw = kw('sgy_hw', {}, kwargs)
-    self.__log.info("Setting SEG-Y header mapping to Fullwave's default")
+    if len(sgy_hw) == 0:
+      self.__log.info("Setting SEG-Y mapping to Fullwave's default")
     
     hw = {}
     hw['sid'] = kw('sid', 'fldr', sgy_hw)
@@ -711,4 +709,20 @@ class ProjSegyMapp(object):
   
   
 # -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjCluster(object):
+  """
+  """
+  def __init__(self, proj, **kwargs):
+
+    self.proj = proj
+    self.proj.cluster = cluster_name
+    self.__log.info('Setting PBS scripts will be prepared for the ' + 
+                    str(self.cluster) + ' cluster')
+
+# -------------------------------------------------------------------------------
+
 

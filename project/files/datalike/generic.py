@@ -21,6 +21,8 @@ from fullwavepy.ioapi.segy import SgyFile
 class MetaDataFile(CsvFile):
   """
   
+  Notes
+  -----
   csv is MUCH faster for Panda's read/write than json.
   Not to mention, we can choose columns.
   

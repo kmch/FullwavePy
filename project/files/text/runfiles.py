@@ -1,4 +1,7 @@
 """
+This module contains definitions of runfiles
+(parameter files read at run-time by various programs).
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -11,11 +14,6 @@ from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
 from fullwavepy.project.files.generic import AsciiProjFile
-
-
-#FIXME REPLACE WITH CONTIGUOUS STRING
-
-# ------------------------------------------------------------------------------- 
 
 
 @traced
@@ -311,11 +309,9 @@ class SegyPrepFile(ParameterFile):
 @logged
 class Runfile(ParameterFile):
   """
-  
+  Fullwave3D runfile.
+
   """  
-
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     """
     Suffix is for reading CP runfiles too.
@@ -591,6 +587,7 @@ class Runfile(ParameterFile):
      
     ! D. BOUNDARY CONDITIONS
      ibfs          : 0
+     multisurf     : 0
      seaLevel      : 0
      maxGhostIter  : 2
      vacuum        : 0

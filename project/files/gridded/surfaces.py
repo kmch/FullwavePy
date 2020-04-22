@@ -249,7 +249,8 @@ class ExtendedFsFile(SurfZFile, ExtenGridProjFile):
     self.array = SurfZFile.read(self, **kwargs) - self.proj.etop # COORECT THE Z-VALUE!
     self.array.extent = ExtenGridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
     return self.array
-  
+
+
 # -------------------------------------------------------------------------------
 
 

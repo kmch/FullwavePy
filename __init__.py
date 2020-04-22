@@ -16,8 +16,9 @@ from ipywidgets import (interactive, interact, interact_manual, fixed,
 
 from fullwavepy.logging_config import *
 
-from fullwavepy.generic.system import get_files
-from fullwavepy.generic.parse import strip, exten
+from fullwavepy.generic.system import *
+from fullwavepy.generic.parse import *
+
 from fullwavepy.math.generic import *
 from fullwavepy.math.funcs import *
 
@@ -39,6 +40,7 @@ from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv
 from fullwavepy.project.types.deriv import ProjInvSyn
 from fullwavepy.project.types.extra import ProjFsQC
 
+from fullwavepy.seismic.metadata import *
 from fullwavepy.seismic.data import *
 from fullwavepy.seismic.models import *
 from fullwavepy.seismic.srcrec import *

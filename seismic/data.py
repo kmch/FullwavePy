@@ -38,11 +38,25 @@ class Data(Arr3d):
 
 @traced
 @logged
-class ObsData(Arr3d):
+class ObsData(Data):
   """
-  Observed (field) seismic data.
+  Observed (recorded in the field) seismic data.
   
   """
-  # def filt
   pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SynData(Data):
+  """
+  Synthetic (calculated) seismic data.
+  
+  """
+  pass
+
+
 # -------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ class Proj(object):
     """
     from fullwavepy.project.generic.io import ProjInput, ProjOutput
     from fullwavepy.project.generic.au import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
-                                               ProjEnv, ProjSegyMapp, ProjBox)
+                                               ProjEnv, ProjSgyMapp, ProjBox, ProjCluster)
     from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.text.runfiles import Runfile
 
@@ -68,12 +68,10 @@ class Proj(object):
     self.info = InfoFile(self, **kwargs)
     ProjDef(self, **kwargs)
      
-    self.sgy = ProjSegyMapp(self, **kwargs)
+    self.sgy = ProjSgyMapp(self, **kwargs)
     self.env = ProjEnv(self, **kwargs)
-    
-    self.cluster = kw('cluster', 'cx1', kwargs)
-    self.__log.info('PBS scripts will be prepared for the ' + 
-                    str(self.cluster) + ' cluster')
+    self.cluster = ProjCluster(self, **kwargs))
+
     
     meta = kw('meta', None, kwargs)
     self.meta = MetaDataProjFile(self, self.path, **kwargs)
