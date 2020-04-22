@@ -1,4 +1,7 @@
 """
+This module defines seismic models:
+backgrounds and anomalies.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -15,6 +18,24 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Model(Arr3d):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Background(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Anomaly(Model):
   pass
 
 
@@ -54,6 +75,10 @@ class Chckr(Model):
 @traced
 @logged
 def grad(shape, vtop, vbot, **kwargs):
+  """
+  Create a vertical gradient model.
+  
+  """
   A = np.zeros(shape)
   dv = (vbot - vtop) / (shape[-1] - 1)
   grad._log.debug('velocity increment: {}'.format(dv))
