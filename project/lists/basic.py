@@ -1,10 +1,10 @@
 """
-(c) 2019-2020 Kajetan Chrapkiewicz.
-Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
-
 This module contains handles for collections of similar files e.g. models
 for different iterations. 
-It allows to plot all items of the collection at once, among others.
+It allows, among others, to plot all items of the collection at once.
+
+(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
 import numpy as np
@@ -25,41 +25,12 @@ class ProjFileList(object):
   A handle for a collection of similar files.
   
   """
-  
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, **kwargs):
     """
     """
     self.proj = proj
   
   # -----------------------------------------------------------------------------  
-
-
-
-# -------------------------------------------------------------------------------  
-
-
-#@traced
-#@logged
-#class DumpFileList(ProjFileList):
-  #"""
-  
-  #"""
-  
-  ## ----------------------------------------------------------------------------- 
-  
-  #def _check_if_enabled(self, env_var, **kwargs):
-    #"""
-    #"""
-    #if self.env.var[env_var] == 'yes':
-      #enabled = True
-    #else:
-      #enabled = False
-      
-    #return enabled
-  
-  ## -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------
@@ -225,6 +196,7 @@ class JobFileList(ProjFileList):
     self.max_no_runs = 100 
     self.__log.debug('Max. no. of runs set to {}'.format(self.max_no_runs))
     self.no = list(np.zeros(self.max_no_runs))
+    
     for run_id in range(self.max_no_runs):
       self.no[run_id] = FileClass(proj, path, run_id, **kwargs)
   
@@ -250,3 +222,26 @@ class JobFileList(ProjFileList):
   
 # ------------------------------------------------------------------------------- 
 
+# -------------------------------------------------------------------------------  
+
+
+#@traced
+#@logged
+#class DumpFileList(ProjFileList):
+  #"""
+  
+  #"""
+  
+  ## ----------------------------------------------------------------------------- 
+  
+  #def _check_if_enabled(self, env_var, **kwargs):
+    #"""
+    #"""
+    #if self.env.var[env_var] == 'yes':
+      #enabled = True
+    #else:
+      #enabled = False
+      
+    #return enabled
+  
+  ## -----------------------------------------------------------------------------

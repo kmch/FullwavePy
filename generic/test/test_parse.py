@@ -1,11 +1,23 @@
+"""
+Unit tests of ..parse module.
+
+(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
+
+"""
 from unittest import TestCase
 from fullwavepy.generic.parse import *
+
 
 #class TestExten(TestCase)
 
 #class TestPathLeave(TestCase)
 
 #class TestStrip(TestCase)
+
+
+# -------------------------------------------------------------------------------
+
 
 class TestCore(TestCase):
   """
@@ -34,5 +46,8 @@ class TestCore(TestCase):
     prefix = 'a'
     suffix = 'e'
     self.assertEqual(core(s, prefix, suffix), s)
-    
+
+
+# -------------------------------------------------------------------------------
+
 #class TestDelKw(TestCase)    

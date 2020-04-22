@@ -698,7 +698,7 @@ class ProjSgyMapp(SgyMapp):
     """
     sgyhw = kw('sgyhw', {}, kwargs)
     if len(sgyhw) == 0:
-      self.__log.info("len(sgyhw)=0 => setting SEG-Y mapping to Fullwave's default")
+      self.__log.info("Setting SEG-Y mapping (sgyhw) to Fullwave3D's default.")
     
     self['sid'] = kw('sid', 'fldr', sgyhw)
     self['rid'] = kw('rid', 'tracf', sgyhw)
@@ -714,14 +714,18 @@ class ProjSgyMapp(SgyMapp):
 @logged
 class ProjCluster(object):
   """
+  Computer cluster for which proj.inp.pbs files
+  will be prepared.
+
   """
   def __init__(self, proj, **kwargs):
-
+    """
+    """
     self.proj = proj
-    self.proj.cluster = cluster_name
-    self.__log.info('Setting PBS scripts will be prepared for the ' + 
-                    str(self.cluster) + ' cluster')
+    self.name = kw('cluster', 'cx1', kwargs)
+    assert isinstance(self.name, str)
+    self.__log.info('Setting cluster to default - %s.' % self.name)
+
 
 # -------------------------------------------------------------------------------
-
 

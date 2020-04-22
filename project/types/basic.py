@@ -70,7 +70,7 @@ class Proj(object):
      
     self.sgyhw = ProjSgyMapp(self, **kwargs)
     self.env = ProjEnv(self, **kwargs)
-    self.cluster = ProjCluster(self, **kwargs))
+    self.cluster = ProjCluster(self, **kwargs)
 
     
     meta = kw('meta', None, kwargs)

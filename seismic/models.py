@@ -23,6 +23,24 @@ class Model(Arr3d):
 
 @traced
 @logged
+class ModelVp(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class StartVp(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class Chckr(Model):
   """
   Checkerboard model.

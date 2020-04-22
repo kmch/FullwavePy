@@ -1,4 +1,6 @@
 """
+This module defines decorators.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -11,7 +13,6 @@ from functools import wraps
 from ipywidgets import interact, fixed
 
 from fullwavepy.generic.parse import kw
-
 
 
 def timer(func):

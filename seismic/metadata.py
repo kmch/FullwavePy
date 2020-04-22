@@ -21,12 +21,12 @@ class Experiment(object):
   """
   def __init__(self, name, **kwargs):
     self.name = name
-    attrs = ['type', 
-             'source', 
-             'shot_lines']
-    
-    for attr in attrs:
-      setattr(self, attr, kw(attr, '?', kwargs))
+    #attrs = ['type', 
+    #         'source', 
+    #         'shot_lines']
+    #
+    #for attr in attrs:
+    #  setattr(self, attr, kw(attr, '?', kwargs))
 
   # -----------------------------------------------------------------------------  
   
@@ -40,11 +40,26 @@ class Proteus(Experiment):
   """
   """
   def __init__(self, **kwargs):
+    """
+    """
+    from fullwavepy.seismic.models import StartVp
     name = 'PROTEUS'
-    kwargs['type'] = 'marine-land'
-    kwargs['source'] = 'airgun'
-    kwargs['shot_lines'] = [ShotLine(i) for i in np.arange(1,61)]
+    self.type = 'marine-land'
+    self.source = 'airgun'
+    self.shot_lines = [ShotLine(i) for i in np.arange(1,61)]
+    self.path = {'startmods': '/home/kmc3817/heavy_PhD/start_mods/'}
+    
+    path = self.path['startmods']
+    self.svp = {'bh_full': StartVp(path+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),
+                'bh_clip': StartVp(path+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))
+    }
+
     super().__init__(name, **kwargs)
+
+#     startvp_jm = path + 'start_mods/jm_inversecheck-StartVp.sgy'
+# startvp_bh = path + 'start_mods/Ben_whole_model_18-04-24_sea-clipped.sgy'
+# startvp_bm = path + 'start_mods/Brennah_whole_model_19-10-30_sea-clipped.sgy'
+
 #  dataobs_hy_sgy = [SgyFile(path_leave(i), path=path_dataobs) for i in dataobs_hy]
 # dataobs_vz_sgy = [SgyFile(path_leave(i), path=path_dataobs) for i in dataobs_vz]
 # datalan_vz_sgy = [SgyFile(path_leave(i), path=path_datalan) for i in datalan_vz]

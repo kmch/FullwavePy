@@ -1,10 +1,9 @@
 """
+This module defines generic input and output of an FWI project 
+(shared by all project-types). 
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
-
-Notes
------
-Python devs usually don't write nested classes, neither do I.
 
 """
 import numpy as np
@@ -29,9 +28,6 @@ class ProjThroughput(object):
   versions of methods.
   
   """  
-  
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, proj, **kwargs):
     self.proj = proj
     
@@ -236,10 +232,10 @@ class ProjInput(ProjThroughput):
     self.rnf = self.runfile # ALIAS
     self.bash = JobFileList(self.proj, self.path, BashFile, **kwargs)
     
-    if self.proj.cluster == 'cx1':
+    if self.proj.cluster.name == 'cx1':
       self.pbs = JobFileList(self.proj, self.path, PbsFileCx1, **kwargs)
     else:
-      raise NotImplementedError('Unknown cluster: ' + self.proj.cluster)    
+      raise NotImplementedError('Unknown cluster: ' + self.proj.cluster.name)    
     
     self.jobinfo = JobFileList(self.proj, self.path, JobInfoFile, **kwargs)
     self.jinfo = self.jobinfo # ALIAS
