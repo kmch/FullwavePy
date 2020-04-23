@@ -31,7 +31,9 @@ class Dataset(dict):
       id = self.get_station_id(name)
       self.ids.append(id)
       self[id] = DataFileSgy(name, path) # FIXME: MAKE IT GENERIC
-    
+      # they are already defined in child classes:
+      self[id].dt = self.dt # FIXME it should rather be done for any SgyFile...
+      self[id].ns = self.ns
     self.ids = sorted(self.ids)
   
   # -----------------------------------------------------------------------------
@@ -88,6 +90,27 @@ class ProteusDataset(Dataset):
   # -----------------------------------------------------------------------------
 
   
+
+# -------------------------------------------------------------------------------
+
+
+class ProteusDatasetOBS(ProteusDataset):
+    def __init__(self, *args, **kwargs):
+      self.dt = 0.005 # s
+      self.ns = 12000 # samples
+      super().__init__(*args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+class ProteusDatasetLand(ProteusDataset):
+    def __init__(self, *args, **kwargs):
+      self.dt = 0.001 # s
+      self.ns = 7000  # samples
+      super().__init__(*args, **kwargs)
+
+
 # -------------------------------------------------------------------------------
 
 
@@ -134,13 +157,13 @@ class ProteusExperiment(Experiment):
     self.svp = {'bh_full': StartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),
                 'bh_clip': StartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
     
-    self.dataset = {'obshy': ProteusDataset(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
-                    'obsvx': ProteusDataset(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
-                    'obsvy': ProteusDataset(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),
-                    'obsvz': ProteusDataset(self.path['data']+'seismic/OBS/segy_local_coords/', '*1.sgy', self),
-                    'lanvx': ProteusDataset(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*3.sgy', self),
-                    'lanvy': ProteusDataset(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*2.sgy', self),
-                    'lanvz': ProteusDataset(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*1.sgy', self)}
+    self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
+                    'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
+                    'obsvy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),
+                    'obsvz': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*1.sgy', self),
+                    'lanvx': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*3.sgy', self),
+                    'lanvy': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*2.sgy', self),
+                    'lanvz': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*1.sgy', self)}
 
     super().__init__(self.name, **kwargs)
 

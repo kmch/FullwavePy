@@ -14,9 +14,42 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.types.basic import ProjSyn
+from fullwavepy.project.types.basic import *
 
 # extra -> case_study?
+
+
+@traced
+@logged
+class ProjExperiment(Proj):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjSynSingleStation(ProjExperiment, ProjSyn):
+  def __init__(self, name, experiment, dataset_id, station_id, *args, **kwargs):
+    self.ex = experiment
+    self.dataset = self.ex.dataset[dataset_id]
+    self.sid = station_id
+    self.shotgather = self.dataset[self.sid]
+    self.sgh = self.shotgather
+    # super().__init__(name, *args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProjSynSingleLine(ProjExperiment, ProjSyn):
+  pass
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced

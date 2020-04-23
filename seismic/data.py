@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, del_kw
+from fullwavepy.generic.parse import kw, del_kw, kwarg_over_attr
 from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ioapi.generic import ArrayFile
 from fullwavepy.ioapi.segy import SgyFile
@@ -35,7 +35,8 @@ class DataFile(ArrayFile):
       plt.ylim(tylim)
     
     plt.subplot(122)
-    self.__log.warn('REMEMBER ABOUT CORRECT dt!')
+    self.__log.warn('REMEMBER ABOUT dt')
+    kwargs['dt'] = kwarg_over_attr('dt', kwargs, self)
     kwargs = dict(kwargs, spect='ampl', cmap='hot', center_cmap=False)
     self.plot(*args, **kwargs)
     if tylim is not None:

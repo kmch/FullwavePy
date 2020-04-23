@@ -36,9 +36,9 @@ from fullwavepy.plot.plt2d import *
 from fullwavepy.plot.plt3d import *
 from fullwavepy.plot.misc import time_freq
 
-from fullwavepy.project.types.basic import Proj, ProjSyn, ProjInv
-from fullwavepy.project.types.deriv import ProjInvSyn
-from fullwavepy.project.types.extra import ProjFsQC
+from fullwavepy.project.types.basic import *
+from fullwavepy.project.types.deriv import *
+from fullwavepy.project.types.extra import *
 
 from fullwavepy.seismic.metadata import *
 from fullwavepy.seismic.data import *

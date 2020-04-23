@@ -1,4 +1,10 @@
 """
+This module defines basic project types ProjSyn and ProjInv 
+along their parent Proj that serves only 
+as a library of common features and should not be called directly.
+
+Other common features are implemented in ..generic.io.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -116,9 +122,6 @@ class ProjSyn(Proj):
   Generate synthetic data.
   
   """
-  
-  # -----------------------------------------------------------------------------  
-  
   def __init__(self, name, **kwargs):
     """
     
@@ -183,13 +186,8 @@ class ProjSyn(Proj):
   def init_output(self, **kwargs): 
     """
     This should be called by
-    proj.ouplot(...)
+    proj.output(...)
 
-    Notes
-    -----
-    Leading underscore - convention 
-    for 'private' methods.
-    
     """
     from fullwavepy.project.files.datalike.sgy import SynDataFileSgy
     from fullwavepy.project.files.datalike.ttr import SynDataFileTtr
@@ -206,7 +204,7 @@ class ProjSyn(Proj):
       raise ValueError('Unknown io: ' + self.io)
     
     self.out.syn = SynDataClass(self, self.out.path, **kwargs)
-    self.out.syn_idx = SynIndexClass(self, self.out.path, **kwargs)    
+    # self.out.syn_idx = SynIndexClass(self, self.out.path, **kwargs)  # REDUNDANT (see syn.idx)
     #try:
     #  self.out.syn.files(timer=True)
     #except OSError as err_message: 

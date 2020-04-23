@@ -8,6 +8,32 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 
+@logged
+def kwarg_over_attr(attr, kwargs, object):
+  """
+  Picks either attribute or kwarg.
+
+  kwarg is preferred.
+  """
+  assert isinstance(attr, str)
+
+  if attr in kwargs:
+    val = kwargs[attr]
+    if hasattr(object, attr):
+      val2 = getattr(object, attr)
+      kwarg_over_attr._log.debug('Returning kwargs[%s]=%s instead of %s.%s=%s' % (attr, val, object, attr, val2))
+    else:
+      kwarg_over_attr._log.debug('Returning kwargs[%s]=%s' % (attr, val))
+    return val
+  else:
+    if hasattr(object, attr):
+      val = getattr(object, attr)
+      kwarg_over_attr._log.debug('Returning %s.%s=%s' % (object, attr, val))
+      return val
+    else:
+      raise ValueError('%s not provided' % attr)
+
+
 # -------------------------------------------------------------------------------
 
 
