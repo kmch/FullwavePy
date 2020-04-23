@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.system import bash, exists, 
 
 
 # -------------------------------------------------------------------------------  
@@ -24,6 +24,11 @@ class ProjFileList(object):
   """
   A handle for a collection of similar files.
   
+  Notes
+  -----
+  When extending __init__ in a child class, BEGIN it with:
+  super().__init__(proj, **kwargs) 
+  
   """
   def __init__(self, proj, **kwargs):
     """
@@ -33,7 +38,7 @@ class ProjFileList(object):
   # -----------------------------------------------------------------------------  
 
 
-# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------  
 
 
 @traced
@@ -43,9 +48,6 @@ class IterFileList(ProjFileList):
   A handle for a collection of files dumped at certain iteration(s).
   
   """
-
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, **kwargs):
     """
     """
