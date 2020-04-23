@@ -13,6 +13,8 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, path_leave
 from fullwavepy.generic.system import get_files
 
+from fullwavepy.seismic.data import DataFile
+
 
 @traced
 @logged
@@ -22,9 +24,9 @@ class Dataset(dict):
     self.ex = experiment
     self.fnames = get_files(path, pattern, **kwargs)
     self.names = [path_leave(i) for i in self.fnames]
-    for i in self.fnames:
-      id = self.get_station_id(path_leave(i))
-      self[id] = i
+    for name in self.names:
+      id = self.get_station_id(name)
+      self[id] = DataFile(name, path)
 
   # -----------------------------------------------------------------------------
 
@@ -97,7 +99,7 @@ class Experiment(object):
 
 @traced
 @logged
-class Proteus(Experiment):
+class ProteusExperiment(Experiment):
   """
   """
   def __init__(self, **kwargs):

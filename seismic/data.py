@@ -10,6 +10,20 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.arrays import Arr3d
+from fullwavepy.ioapi.generic import ArrayFile
+
+
+
+@traced
+@logged
+class DataFileSgy(ArrayFile, SgyFile):
+  pass
+
+
+@traced
+@logged
+class DataFile(ArrayFile):
+  pass
 
 
 @traced

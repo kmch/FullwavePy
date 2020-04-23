@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.system import bash, exists, 
+from fullwavepy.generic.system import bash, exists
 
 
 # -------------------------------------------------------------------------------  
