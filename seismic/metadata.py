@@ -11,27 +11,41 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, path_leave
-from fullwavepy.generic.system import get_files
+from fullwavepy.generic.system import bash, get_files
 
-from fullwavepy.seismic.data import DataFile
+from fullwavepy.seismic.data import DataFileSgy
 
 
 @traced
 @logged
 class Dataset(dict):
+  """
+  """
   def __init__(self, path, pattern, experiment, **kwargs):
     self.path = path
     self.ex = experiment
     self.fnames = get_files(path, pattern, **kwargs)
     self.names = [path_leave(i) for i in self.fnames]
+    self.ids = []
     for name in self.names:
       id = self.get_station_id(name)
-      self[id] = DataFile(name, path)
+      self.ids.append(id)
+      self[id] = DataFileSgy(name, path) # FIXME: MAKE IT GENERIC
+    
+    self.ids = sorted(self.ids)
+  
+  # -----------------------------------------------------------------------------
+
+  def ls(self, **kwargs):
+    o, e = bash('pwd', path=self.path)
+    print('Content of ' + o)
+    o, e = bash('ls -lth ' + self.path)
+    print(o, e)
 
   # -----------------------------------------------------------------------------
 
   def get_station_id(self, **kwargs):
-    raise NotImplementedError('It is experiment-specific!')
+    raise NotImplementedError('Implement in a child-class. It is experiment-specific!')
 
   # -----------------------------------------------------------------------------
   

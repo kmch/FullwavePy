@@ -158,7 +158,10 @@ class ArrayFile(File):
     """
     array = self.read(**kwargs)
     array.plot(**kwargs)
-    
+
+  # def plotf(self, *args, **kwargs):
+  #   self.array.plotf(*args, **kwargs)
+
   # ----------------------------------------------------------------------------  
 
   def scroll(self, **kwargs): # MOVE TO Arr3d?

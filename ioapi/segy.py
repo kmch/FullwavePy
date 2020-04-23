@@ -281,7 +281,14 @@ class SgyFile(ArrayFile):
     
     self.__log.info('Using ' + str(pad) + ' samples of padding')
     self.__log.info('Setting dt in the header of: ' + self.fname)
-    sushw(self.fname, 'dt', (self.proj.dt*1e6), **kwargs)
+    
+    if hasattr(self, 'proj'):
+      self.__log.debug('Taking dt = self.proj.dt')
+      dt = self.proj.dt
+    else:
+      dt = kwargs['dt']
+
+    sushw(self.fname, 'dt', (dt*1e6), **kwargs)
     # THIS PREVENTS OVERWRITING AND OUTPUTS INTERMEDIATE STEPS TOO
     fname_out = su_filter_full(self.fname, pad, **kwargs)
     self.__log.info('Filtered data output to ' + fname_out)

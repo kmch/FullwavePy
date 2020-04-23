@@ -11,19 +11,45 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ioapi.generic import ArrayFile
+from fullwavepy.ioapi.segy import SgyFile
+from fullwavepy.plot.generic import *
 
-
-
-@traced
-@logged
-class DataFileSgy(ArrayFile, SgyFile):
-  pass
-
+# FIXME: MERGE WITH datalike!
 
 @traced
 @logged
 class DataFile(ArrayFile):
-  pass
+  def cast(self, arr, **kwargs):
+    self.array = Data(arr)
+    return self.array
+  
+  def plotf(self, fig, tylim=None, fylim=None, *args, **kwargs):
+    """
+    both time and freq
+    """
+    if fig is None:
+      figure(16,8)
+    plt.subplot(121)
+    self.plot(*args, **kwargs)
+    if tylim is not None:
+      plt.ylim(tylim)
+    
+    plt.subplot(122)
+    self.__log.warn('REMEMBER ABOUT CORRECT dt!')
+    kwargs = dict(kwargs, spect='ampl', cmap='hot', center_cmap=False)
+    self.plot(*args, **kwargs)
+    if tylim is not None:
+      plt.ylim(fylim)
+    # plt.gca().set_aspect('auto')
+
+@traced
+@logged
+class DataFileSgy(DataFile, SgyFile):
+  def read(self, **kwargs):
+    arr = SgyFile.read(self, **kwargs)
+    self.array = self.cast(arr, **kwargs)
+    return self.array
+
 
 
 @traced
