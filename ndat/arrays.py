@@ -125,7 +125,8 @@ class Arr(np.ndarray):
     dx = []
     assert len(obj.shape) == len(obj.extent)
     for nx, (x1, x2) in zip(obj.shape, obj.extent):
-      dx.append((x2 - x1) / nx)
+      dx_1D = (x2 - x1) / (nx-1) if nx > 1 else None
+      dx.append(dx_1D)
     
     obj.dx = np.array(dx)
     return obj
@@ -151,12 +152,51 @@ class Arr(np.ndarray):
 
   def _metre2index(self, m, axis, **kwargs):
     origin = self.extent[axis][0]
-    return (m - origin) / self.dx[axis]
+    i = (m - origin) / self.dx[axis]
+    if not i.is_integer():
+      raise ValueError('Index must be integer not %s' % i)
+    return int(i)
 
   # -----------------------------------------------------------------------------  
   
   def _metre2gridnode(self, *args, **kwargs):
     return self._metre2index(*args, **kwargs) + 1  
+  
+  # -----------------------------------------------------------------------------
+
+  def _box2inds(self, box, **kwargs):
+    """
+    Convert box into slicing-indices using extent.
+    
+    """
+    box = np.array(box)
+    extent = np.array(self.extent)
+    assert len(box.shape) == 1
+    assert len(box) == len(extent.flatten())
+    box = box.reshape(extent.shape)
+    inds = np.zeros(box.shape)
+    for axis, _ in enumerate(box):
+      self.__log.debug('axis %s' % axis)
+      b0, b1 = box[axis]
+      inds[axis][0] = self._metre2index(b0, axis)
+      inds[axis][1] = self._metre2index(b1, axis) + 1 # NOTE: FOR np.arange(b1, b2) etc.
+    
+    return inds.astype(int)
+
+  # ----------------------------------------------------------------------------- 
+
+  def carve(self, box, **kwargs):
+    """
+    Carve a box out of an array.
+
+    """
+    inds = self._box2inds(box, **kwargs)
+    
+    for axis in range(len(self.shape)):
+      self = np.take(self, np.arange(*inds[axis]), axis=axis)
+    
+    self.extent = np.array(box).reshape(inds.shape)
+    return self
   
   # -----------------------------------------------------------------------------  
  
@@ -374,11 +414,18 @@ class Arr3d(Arr):
   # -----------------------------------------------------------------------------
   
   ###@widgets('cmap', 'slice', 'x', 'y', 'z')
-  def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
+  def plot_3slices(self, fig=None, gs=None, widgets=False, **kwargs):
     """
     """
     from fullwavepy.plot.plt2d import plot_image
     
+    if fig is None:
+      fig = figure(16,8)
+    
+    kwargs['x'] = kw('x', 0, kwargs)
+    kwargs['y'] = kw('y', 0, kwargs)
+    kwargs['z'] = kw('z', 0, kwargs)
+
     # LABELS FOR EACH AXIS
     s2 = kw('slice', 'y', kwargs) # MAIN SLICE PLOTTED AT THE BOTTOM IN FULL WIDTH
     s0, s1 = [i for i in ['x', 'y', 'z'] if i != s2]
@@ -456,21 +503,23 @@ class Arr3d(Arr):
     import matplotlib.pyplot as plt
     from fullwavepy.plot.events import IndexTracker
     
-    A = self.read(scoord=None)
-    
     fig, ax = plt.subplots(1, 1)
-    tracker = IndexTracker(ax, A, **kwargs)
+    tracker = IndexTracker(ax, self, **kwargs)
     return fig, ax, tracker
 
   def scrollall(self, fig, **kwargs):
     """
+    To make it work in a jupyter notebook:
+     %matplotlib notebook
+     %matplotlib notebook
+     fig = plt.figure(figsize=(5,20))
+     tracker = some_array.scrollall(fig, cmap='viridis')
+     fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
     
     """
     from fullwavepy.plot.events import IndexTrackerAll
     
-    A = self.read(scoord=None)
-    
-    tracker = IndexTrackerAll(fig, A, **kwargs)
+    tracker = IndexTrackerAll(fig, self, **kwargs)
     return tracker
     #return tracker.onscroll
 

@@ -64,7 +64,13 @@ class StartVp(Model):
 @traced
 @logged
 class LandModel(Model):
-  pass
+  def topo_max(self, vel_air, **kwargs):
+    for k in range(self.shape[-1]):
+      if not np.all(self[...,k] == vel_air):
+        self.__log.info('Array-index (vertical axis) of max. topographic elevation %s' % k)
+        return k
+    
+    raise ValueError('k_peak not found')
 
 
 # -------------------------------------------------------------------------------

@@ -24,7 +24,23 @@ from fullwavepy.seismic.surfaces import *
 @traced
 @logged
 class ProteusBathyTopo(BathyTopo):
-  pass
+  def __new__(cls, *args, **kwargs):
+    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
+    cls.x1 = -8.0e4
+    cls.x2 = +8.0e4
+    cls.y1 = -4.0e4
+    cls.y2 = +4.0e4 
+    
+    kwargs['shape'] = (3201, 1601, 1)
+    
+    obj = super().__new__(cls, *args, **kwargs)
+    # obj = obj.slice(slice_at='z')
+    # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
+    # cls.extent = obj.extent
+    # obj.dx = obj.dx[:-1]
+    # cls.dx = obj.dx # otherwise is not passed in .copy()
+
+    return obj
 
 
 # -------------------------------------------------------------------------------
@@ -43,15 +59,8 @@ class ProteusStartVp(StartVp, AmphibiousModel):
 @logged
 class BenStartVp(ProteusStartVp):
   def __new__(cls, *args, **kwargs):
-    # cls.shape = (2481, 861, 131)
-    # cls.nx, cls.ny, cls.nz = cls.shape
-    cls.dx = 50     # m
+    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
   
-    cls.k_peak = 23
-    cls.z_peak = -cls.k_peak * cls.dx
-    cls.k_sea = 30
-    cls.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
-
     cls.x1 = -6.0e4
     cls.x2 = +6.4e4
     cls.y1 = -1.4e4
@@ -61,12 +70,16 @@ class BenStartVp(ProteusStartVp):
     cls.z2 = +5.0e3      
     cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
     kwargs['shape'] = (2481, 861, 131)
-    return super().__new__(cls, *args, **kwargs)
-  
-  # def _read(cls, *args, **kwargs):
-  #   kwargs['shape'] = (2481, 861, 131)
-  #   return super()._read(cls, *args, **kwargs)
+    
+    obj = super().__new__(cls, *args, **kwargs)
+    cls.dx = obj.dx # otherwise is not passed in .copy()
 
+    obj.k_peak = 23
+    obj.z_peak = -obj.k_peak * obj.dx[-1]
+    obj.k_sea = 30
+    obj.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
+    return obj
+  
 
 # -------------------------------------------------------------------------------
 
