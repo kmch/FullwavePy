@@ -36,9 +36,8 @@ class Arr(np.ndarray):
     obj = np.asarray(source).view(cls) # CAST THE TYPE
     obj = cls._set_extent(obj, **kwargs)
     #obj = cls._set_coords(obj, **kwargs)
-    if 'dx' in kwargs:
-      cls.dx = dx
-    
+    obj = cls._set_dx(obj, **kwargs)
+
     if ndims is not None:
       assert len(obj.shape) == ndims
     
@@ -117,6 +116,21 @@ class Arr(np.ndarray):
     return extent
   
   # -----------------------------------------------------------------------------
+
+  def _set_dx(obj, **kwargs):
+    """
+    It is fully determined by extent and shape.
+    In general, it is axis-dependent (dx != dy != dz != dx)
+    """
+    dx = []
+    assert len(obj.shape) == len(obj.extent)
+    for nx, (x1, x2) in zip(obj.shape, obj.extent):
+      dx.append((x2 - x1) / nx)
+    
+    obj.dx = np.array(dx)
+    return obj
+
+  # -----------------------------------------------------------------------------
   
   def _set_coords(obj, **kwargs):
     obj.__log.debug('obj.extent' + str(obj.extent))
@@ -132,6 +146,17 @@ class Arr(np.ndarray):
 
   def __array_finalize__(self, obj):
     if obj is None: return
+  
+  # -----------------------------------------------------------------------------  
+
+  def _metre2index(self, m, axis, **kwargs):
+    origin = self.extent[axis][0]
+    return (m - origin) / self.dx[axis]
+
+  # -----------------------------------------------------------------------------  
+  
+  def _metre2gridnode(self, *args, **kwargs):
+    return self._metre2index(*args, **kwargs) + 1  
   
   # -----------------------------------------------------------------------------  
  
@@ -281,7 +306,6 @@ class Arr2d(Arr):
       self.plot_slice(*args, **kwargs)
     else:
       self.plot_full(*args, **kwargs)
-    
   
   # -----------------------------------------------------------------------------
 
@@ -302,9 +326,9 @@ class Arr3d(Arr):
   """
   def __new__(cls, source, **kwargs):
     return super().__new__(cls, source, ndims=3, **kwargs)
-
+  
   # -----------------------------------------------------------------------------
-
+  
   ###@widgets('slice_at', 'node')
   def slice(self, slice_at='y', node=0, widgets=False, **kwargs):
     """
