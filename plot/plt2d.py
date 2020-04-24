@@ -54,6 +54,9 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   from matplotlib.colors import LogNorm
   
   ax = kw('ax', plt.gca(), kwargs)
+  aspect = kw('aspect', 'auto', kwargs)
+  aspect = 'auto' if aspect == 'a' else aspect
+  aspect = 'equal' if aspect == 'e' else aspect
   title = kw('title', None, kwargs)
   spect = kw('spect', None, kwargs)
   cmap = kw('cmap', 'Greys', kwargs)
@@ -114,6 +117,8 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
                  alpha=alpha)
   if cbar:
     colorbar(im, ax)
+  
+  ax.set_aspect(aspect)
 
 
 # -------------------------------------------------------------------------------

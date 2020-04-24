@@ -18,7 +18,8 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Model(Arr3d):
-  pass
+  def extract_interface(self, **kwargs):
+    pass
 
 
 # -------------------------------------------------------------------------------
@@ -46,10 +47,9 @@ class Anomaly(Model):
 @logged
 class ModelVp(Model):
   def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'magma', kwargs)
+    kwargs['cmap'] = kw('cmap', 'twilight', kwargs)
     kwargs['center_cmap'] = kw('center_cmap', False, kwargs)
     super().plot(**kwargs) 
-
 
 
 # -------------------------------------------------------------------------------
@@ -67,12 +67,17 @@ class StartVp(ModelVp):
 @traced
 @logged
 class LandModel(Model):
+  def extract_freesurf(self, **kwargs):
+    # self.__log.debug('self.extent %s' % self.extent)
+    # self.fs = np.clip(self, None, self.z_sea)
+    # self.fs.extent = self.extent
+    # return self.fs  
+    pass
   def topo_max(self, vel_air, **kwargs):
     for k in range(self.shape[-1]):
       if not np.all(self[...,k] == vel_air):
         self.__log.info('Array-index (vertical axis) of max. topographic elevation %s' % k)
         return k
-    
     raise ValueError('k_peak not found')
 
 
@@ -82,8 +87,11 @@ class LandModel(Model):
 @traced
 @logged
 class MarineModel(Model):
-  pass
-
+  def extract_seabed(self, **kwargs):
+    # self.sb = np.clip(self, self.z_sea, None)
+    # self.sb.extent = self.extent
+    # return self.sb
+    pass
 
 # -------------------------------------------------------------------------------
 
