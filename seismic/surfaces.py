@@ -50,10 +50,16 @@ class Surface(Arr3d):
 @traced
 @logged
 class BathyTopo(Surface):
+  def extract_seabed(self, **kwargs):
+    pass
+  def extract_freesurf(self, **kwargs):
+    self.fs = np.clip(self, None, self.z_sea)
+    return self.fs
+
   def plot(self, **kwargs):
     kwargs['cmap'] = kw('cmap', [], kwargs)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
     super().plot(**kwargs) 
 
-
+  
 # -------------------------------------------------------------------------------

@@ -26,6 +26,7 @@ from fullwavepy.seismic.surfaces import *
 class ProteusBathyTopo(BathyTopo):
   def __new__(cls, *args, **kwargs):
     #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
+    cls.z_sea = 0.0
     cls.x1 = -8.0e4
     cls.x2 = +8.0e4
     cls.y1 = -4.0e4

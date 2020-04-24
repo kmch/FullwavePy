@@ -45,7 +45,10 @@ class Anomaly(Model):
 @traced
 @logged
 class ModelVp(Model):
-  pass
+  def plot(self, **kwargs):
+    kwargs['cmap'] = kw('cmap', 'magma', kwargs)
+    kwargs['center_cmap'] = kw('center_cmap', False, kwargs)
+    super().plot(**kwargs) 
 
 
 
@@ -54,7 +57,7 @@ class ModelVp(Model):
 
 @traced
 @logged
-class StartVp(Model):
+class StartVp(ModelVp):
   pass
 
 
