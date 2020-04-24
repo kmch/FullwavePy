@@ -270,7 +270,7 @@ def read_any(fname, overwrite_mmp=False, **kwargs):
   Read file of any format, possibly as a 
   memory-mapped file if both the file is 
   present on disk and the shape of the array 
-  is provided.
+  is provided. FILE MUST CONTAIN AN ARRAY.
   
   shape : tuple
     Shape of the array stored in fname.
@@ -300,7 +300,7 @@ def read_any(fname, overwrite_mmp=False, **kwargs):
     read_any._log.debug(fname_mmp+' exists and its shape is provided: ' +
                        str(shape))
     A = read_mmp(fname_mmp, **kwargs)    
-
+  
   return A
   
 

@@ -30,10 +30,13 @@ class ProteusBathyTopo(BathyTopo):
     cls.x2 = +8.0e4
     cls.y1 = -4.0e4
     cls.y2 = +4.0e4 
-    
+    cls.z1 = 0
+    cls.z2 = 0     
+    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
     kwargs['shape'] = (3201, 1601, 1)
     
     obj = super().__new__(cls, *args, **kwargs)
+    cls.dx = obj.dx    
     # obj = obj.slice(slice_at='z')
     # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
     # cls.extent = obj.extent
@@ -219,11 +222,14 @@ class ProteusExperiment(Experiment):
 
     heavyphd = '/home/kmc3817/heavy_PhD/'
     self.path = {'start_mods': heavyphd + '/start_mods/',
+                 'surfaces': heavyphd + '/surfaces/',  
                  'data': heavyphd + 'DATA/Santorini_2015/'}
     
     self.svp = {'bh': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),}
                 # 'bh_clip': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
     
+    self.bathytopo = ProteusBathyTopo(self.path['surfaces']+'bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr')
+
     self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
                     'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
                     'obsvy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),

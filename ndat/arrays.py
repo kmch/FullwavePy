@@ -125,7 +125,9 @@ class Arr(np.ndarray):
     dx = []
     assert len(obj.shape) == len(obj.extent)
     for nx, (x1, x2) in zip(obj.shape, obj.extent):
+      obj.__log.debug('nx=%s, x1=%s, x2=%s' % (nx, x1, x2))
       dx_1D = (x2 - x1) / (nx-1) if nx > 1 else None
+      obj.__log.debug('dx_1D=%s' % dx_1D)
       dx.append(dx_1D)
     
     obj.dx = np.array(dx)
@@ -380,9 +382,10 @@ class Arr3d(Arr):
     assert len(self.extent) == 3
     extent2d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
     
-    if axis != 2:
-      self.__log.debug('Setting extent2d so that no vertical-axis flipping is needed.')
-      extent2d[-2: ] = [extent2d[-1], extent2d[-2]]
+    # if axis != 2:
+    self.__log.debug('Setting extent2d so that no vertical-axis flipping is needed.')
+    self.__log.debug('NOW ALSO FOR zslice (NOT TESTED BUT SEEMS TO HAVE FIXED THE BUG)')
+    extent2d[-2: ] = [extent2d[-1], extent2d[-2]]
     self.__log.debug('extent2d: ' + str(extent2d))
     
     A.extent = extent2d
