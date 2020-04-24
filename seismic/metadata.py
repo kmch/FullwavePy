@@ -13,7 +13,62 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, path_leave
 from fullwavepy.generic.system import bash, get_files
 
+from fullwavepy.ioapi.generic import *
+from fullwavepy.ioapi.segy import *
+
 from fullwavepy.seismic.data import DataFileSgy
+from fullwavepy.seismic.models import *
+from fullwavepy.seismic.surfaces import *
+
+
+@traced
+@logged
+class ProteusBathyTopo(BathyTopo):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusStartVp(StartVp, AmphibiousModel):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class BenStartVp(ProteusStartVp):
+  def __new__(cls, *args, **kwargs):
+    # cls.shape = (2481, 861, 131)
+    # cls.nx, cls.ny, cls.nz = cls.shape
+    cls.dx = 50     # m
+  
+    cls.k_peak = 23
+    cls.z_peak = -cls.k_peak * cls.dx
+    cls.k_sea = 30
+    cls.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
+
+    cls.x1 = -6.0e4
+    cls.x2 = +6.4e4
+    cls.y1 = -1.4e4
+    cls.y2 = +2.9e4 
+    # Z-axis points downwards   
+    cls.z1 = -1.5e3 
+    cls.z2 = +5.0e3      
+    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
+    kwargs['shape'] = (2481, 861, 131)
+    return super().__new__(cls, *args, **kwargs)
+  
+  # def _read(cls, *args, **kwargs):
+  #   kwargs['shape'] = (2481, 861, 131)
+  #   return super()._read(cls, *args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced
@@ -90,7 +145,6 @@ class ProteusDataset(Dataset):
   # -----------------------------------------------------------------------------
 
   
-
 # -------------------------------------------------------------------------------
 
 
@@ -154,8 +208,8 @@ class ProteusExperiment(Experiment):
     self.path = {'start_mods': heavyphd + '/start_mods/',
                  'data': heavyphd + 'DATA/Santorini_2015/'}
     
-    self.svp = {'bh_full': StartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),
-                'bh_clip': StartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
+    self.svp = {'bh': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),}
+                # 'bh_clip': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
     
     self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
                     'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),

@@ -23,25 +23,23 @@ class DataFile(ArrayFile):
     self.array = Data(arr)
     return self.array
   
-  def plotf(self, fig, tylim=None, fylim=None, *args, **kwargs):
+  def plotf(self, fig, tylim=None, fylim=None, *args, **kwargs): # FIXME: merge with plot.misc time_freq
     """
     both time and freq
+
     """
     if fig is None:
       figure(16,8)
+    
     plt.subplot(121)
     self.plot(*args, **kwargs)
-    if tylim is not None:
-      plt.ylim(tylim)
+    plt.ylim(tylim)
     
     plt.subplot(122)
-    self.__log.warn('REMEMBER ABOUT dt')
-    kwargs['dt'] = kwarg_over_attr('dt', kwargs, self)
-    kwargs = dict(kwargs, spect='ampl', cmap='hot', center_cmap=False)
+    kwargs['dt'] = kwarg_over_attr('dt', kwargs, self) # needed in DFT
+    kwargs = dict(kwargs, spect='ampl', cmap='hot', center_cmap=False) # DFT, different cmap
     self.plot(*args, **kwargs)
-    if tylim is not None:
-      plt.ylim(fylim)
-    # plt.gca().set_aspect('auto')
+    plt.ylim(fylim)
 
 @traced
 @logged

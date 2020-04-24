@@ -28,8 +28,9 @@ class ProjBox(object):
   
   def plot(self, **kwargs):
     from fullwavepy.plot.misc import plot_square
+    kwargs['label'] = self.proj.name
     plot_square(self.proj.box[0], self.proj.box[1], 
-                self.proj.box[2], self.proj.box[3])     
+                self.proj.box[2], self.proj.box[3], **kwargs)     
     
   # -----------------------------------------------------------------------------  
   

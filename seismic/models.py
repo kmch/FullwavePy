@@ -48,12 +48,40 @@ class ModelVp(Model):
   pass
 
 
+
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class StartVp(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class LandModel(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class MarineModel(Model):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class AmphibiousModel(LandModel, MarineModel):
   pass
 
 

@@ -15,8 +15,16 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Surface(Arr3d):
-    """
-    """
     pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class BathyTopo(Surface):
+    pass
+
 
 # -------------------------------------------------------------------------------

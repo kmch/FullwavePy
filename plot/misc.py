@@ -88,9 +88,10 @@ def plot_square(x1, x2, y1, y2, **kwargs):
   c = kw('c', 'r', kwargs)
   lw = kw('lw', 2, kwargs)
   alpha = kw('alpha', 0.6, kwargs)
+  label = kw('label', None, kwargs)
   
   plot_square._log.debug('(x1,x2,y1,y2) = ({},{},{},{})'.format(x1,x2,y1,y2))
-  plt.plot([x1, x2], [y1, y1], ls, c=c, lw=lw, alpha=alpha)
+  plt.plot([x1, x2], [y1, y1], ls, c=c, lw=lw, alpha=alpha, label=label)
   plt.plot([x1, x2], [y2, y2], ls, c=c, lw=lw, alpha=alpha)
   plt.plot([x1, x1], [y1, y2], ls, c=c, lw=lw, alpha=alpha)
   plt.plot([x2, x2], [y1, y2], ls, c=c, lw=lw, alpha=alpha)

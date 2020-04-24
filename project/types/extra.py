@@ -54,6 +54,19 @@ class ProjSynSingleLine(ProjExperiment, ProjSyn):
 
 @traced
 @logged
+class ProjSyn2xSingle(ProjExperiment, ProjSyn):
+  """
+  Single station, single line.
+  
+  """
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class ProjFsQC(ProjSyn):
   def _init_input(self, **kwargs):
     from fullwavepy.project.files.gridded.surfaces import FsFile
