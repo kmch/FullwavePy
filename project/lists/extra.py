@@ -69,6 +69,7 @@ class CPFileList(SchedFileList):
     
   # -----------------------------------------------------------------------------
 
+
 # -------------------------------------------------------------------------------  
 
 
@@ -171,25 +172,25 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     super().__init__(proj, **kwargs)
     tsteps = self._read_tsteps(**kwargs)
 
-    nfiles_max = 200
-    o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
-    nfiles = int(o)    
-    if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
-      self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
-                                                                                nfiles, nfiles_max)
+    # nfiles_max = 200
+    # o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
+    # nfiles = int(o)    
+    # if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
+    #   self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
+    #                                                                             nfiles, nfiles_max)
 
 
-    if self.init_err is None:
-      self.it[0] = None
-      for it in range(1, self.nits_total + 1):
-        self.it[it] = {}
-        for sid in self.sids:
-          sid = int(sid)
-          self.it[it][sid] = {}
-          for ts in tsteps:
-            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
-    else:
-      self.__log.warn(self.init_err)
+    # if self.init_err is None:
+    #   self.it[0] = None
+    #   for it in range(1, self.nits_total + 1):
+    #     self.it[it] = {}
+    #     for sid in self.sids:
+    #       sid = int(sid)
+    #       self.it[it][sid] = {}
+    #       for ts in tsteps:
+    #         self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
+    # else:
+    #   self.__log.warn(self.init_err)
   
   # ----------------------------------------------------------------------------- 
   

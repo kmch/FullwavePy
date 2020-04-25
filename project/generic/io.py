@@ -407,7 +407,7 @@ class ProjOutput(ProjThroughput):
     self.jobstats = JobStats(self.proj, **kwargs)
     self.jstat = self.jobstats
     self.__log.warn('Disabled self.fw until debug')
-    #self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
+    self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
       
     self.__log.debug('Initializing project-type-specific output...')
     self.proj.init_output(**kwargs)

@@ -370,14 +370,12 @@ class ProjPath(object):
   def __init__(self, proj, **kwargs):
     """
       path : str
-        A path where all the project files 
-        will reside in. 
-        Default: ./<name> 
+        A path where proj_name directory resides 
+        (or will reside). 
+        Default: ./ 
     """
-    proj.path = kw('path', './' + proj.name + '/', kwargs)
-    del_kw('path', kwargs)
-    if proj.path[-1] != '/':
-      proj.path += '/' 
+    path = kw('path', './', kwargs)
+    proj.path = path + '/{pname}/'.format(pname=proj.name)
     self.__log.debug('Project path set to: ' + proj.path)
 
 
