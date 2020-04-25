@@ -38,11 +38,22 @@ class Surface(Arr3d):
     inds[-1] = np.array([0, self.shape[-1]]) # FULL RANGE FOR DUMMY Z 
 
     return inds.astype(int)
+  
+  def _2d(self):
+    return self.slice(slice_at='z', node=0)
 
   def plot(self, **kwargs):
+    slice_at = kw('slice_at', 'z', kwargs)
+    if slice_at == 'z':
+      self.plot_map(**kwargs)
+    else:
+      self._2d().plot(**kwargs)
+  
+  def plot_map(self, **kwargs):
     kwargs['slice_at'] = 'z'
     kwargs['node'] = 0
-    super().plot(**kwargs)  
+    super().plot(**kwargs)
+
 
 # -------------------------------------------------------------------------------
 

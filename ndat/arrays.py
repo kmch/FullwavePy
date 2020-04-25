@@ -110,8 +110,8 @@ class Arr(np.ndarray):
     for dim in obj.shape:
       extent.append(func(dim))
     
-    if len(obj.shape) == 1:
-      extent = extent[0]
+    # if len(obj.shape) == 1:
+    #   extent = extent[0]
     
     return extent
   
@@ -123,6 +123,8 @@ class Arr(np.ndarray):
     In general, it is axis-dependent (dx != dy != dz != dx)
     """
     dx = []
+    obj.__log.debug('obj.shape %s' % str(obj.shape))
+    obj.__log.debug('obj.extent %s' % str(obj.extent))
     assert len(obj.shape) == len(obj.extent)
     for nx, (x1, x2) in zip(obj.shape, obj.extent):
       obj.__log.debug('nx=%s, x1=%s, x2=%s' % (nx, x1, x2))
@@ -265,17 +267,17 @@ class Arr1d(Arr):
 
   def plot(self, **kwargs):
     """
+    format of extent: [[x1,x2]] is for compatibility with 2d and 3d
     """
-    plot_kwargs = {}
-    if 'c' in kwargs:
-      plot_kwargs['c'] = kwargs['c']
-    #c = kw('c', 'b', kwargs)
-    #from fullwavepy.plot.plt1d import plot_1d
+    c = kw('c', None, kwargs)
+
+    assert np.array(self.extent).shape == (1,2)
     self.__log.debug('self.extent' + str(self.extent))
-    x1, x2 = self.extent 
-    #self.__log.debug('Will not work for units other than node')
-    x = np.arange(x1, x2)
-    plt.plot(x, self, **plot_kwargs)
+    
+    x1, x2 = self.extent[0] 
+    x = np.linspace(x1, x2, len(self))
+    
+    plt.plot(x, self, c=c)
 
   # -----------------------------------------------------------------------------
 
@@ -300,12 +302,16 @@ class Arr2d(Arr):
     """
     di = {'x': 0, 'y': 1} # TRANSLATE slice_at INTO AXIS NO.
     axis = di[slice_at]
+    
+    
     A = Arr1d(np.take(self, indices=node, axis=axis))
     
     assert len(self.extent) == 2
-    extent1d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+    extent1d = np.array([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+    self.__log.debug('extent1d %s' % str(extent1d))
     
     A.extent = extent1d
+    # A = Arr1d(A)
     
     return A
 
@@ -380,12 +386,14 @@ class Arr3d(Arr):
     A = Arr2d(np.take(self, indices=node, axis=axis))
     
     assert len(self.extent) == 3
-    extent2d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
-    
+    # extent2d = np.ravel([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+    extent2d = np.array([el for i, el in enumerate(self.extent) if i != di[slice_at]])
+
     # if axis != 2:
     self.__log.debug('Setting extent2d so that no vertical-axis flipping is needed.')
     self.__log.debug('NOW ALSO FOR zslice (NOT TESTED BUT SEEMS TO HAVE FIXED THE BUG)')
-    extent2d[-2: ] = [extent2d[-1], extent2d[-2]]
+    # extent2d[-2: ] = [extent2d[-1], extent2d[-2]]
+    extent2d[-1] = extent2d[-1][::-1]
     self.__log.debug('extent2d: ' + str(extent2d))
     
     A.extent = extent2d
@@ -415,9 +423,60 @@ class Arr3d(Arr):
       plt.gca().invert_yaxis()
   
   # -----------------------------------------------------------------------------
-  
+
+  def plot_3slices(self, fig=None, **kwargs):
+    """
+    """
+    from fullwavepy.plot.plt2d import plot_image
+    
+    if fig is None:
+      fig = figure(16,8)
+    
+    kwargs['x'] = kw('x', 0, kwargs)
+    kwargs['y'] = kw('y', 0, kwargs)
+    kwargs['z'] = kw('z', 0, kwargs)
+
+    # LABELS FOR EACH AXIS
+    s2 = kw('slice', 'y', kwargs) # MAIN SLICE PLOTTED AT THE BOTTOM IN FULL WIDTH
+    s0, s1 = [i for i in ['x', 'y', 'z'] if i != s2]
+    s = [s0, s1, s2]
+    # CONVERT THE LABELS INTO ARRAY DIMENSIONS (AXES)
+    convert_s2a = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice TO axis
+ 
+    if gs is None:
+      gs = GridSpec(2,2)
+   
+    axes = list(np.zeros(3))
+    axes[0] = fig.add_subplot(gs[0,0])
+    axes[1] = fig.add_subplot(gs[0,1])
+    axes[2] = fig.add_subplot(gs[1,:]) 
+    
+    kwargs['vmin'] = kw('vmin', np.min(self), kwargs)
+    kwargs['vmax'] = kw('vmax', np.max(self), kwargs)
+    self.__log.debug('Setting vmin, vmax to: {}, {}'.format(kwargs['vmin'], 
+                                                            kwargs['vmax']))
+    
+    for i, ax in enumerate(axes):
+      plt.sca(ax)
+      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
+      
+      # PLOT SLICING LINES
+      a, b = [j for j in ['x', 'y', 'z'] if j != s[i]]
+      abcissae_horiz = range(self.shape[convert_s2a[a]])
+      ordinate_horiz = np.full(len(abcissae_horiz), kwargs[b])
+      ordinate_verti = range(self.shape[convert_s2a[b]])
+      abcissae_verti = np.full(len(ordinate_verti), kwargs[a])
+      
+      if s[i] == 'z':
+        abcissae_horiz, ordinate_horiz, abcissae_verti, ordinate_verti = abcissae_verti, ordinate_verti, abcissae_horiz, ordinate_horiz
+        ax.invert_yaxis()
+      plt.plot(abcissae_horiz, ordinate_horiz, '--', c='white')
+      plt.plot(abcissae_verti, ordinate_verti, '--', c='white')
+
+  # -----------------------------------------------------------------------------
+
   ###@widgets('cmap', 'slice', 'x', 'y', 'z')
-  def plot_3slices(self, fig=None, gs=None, widgets=False, **kwargs):
+  def plot_3slices_OLDish(self, fig=None, gs=None, widgets=False, **kwargs):
     """
     """
     from fullwavepy.plot.plt2d import plot_image
