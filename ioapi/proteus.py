@@ -1,0 +1,246 @@
+"""
+This module defines all objects specific to the PROTEUS experiment.
+
+(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
+
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from autologging import logged, traced
+
+from fullwavepy.generic.decor import timer
+from fullwavepy.generic.parse import kw, del_kw, path_leave
+from fullwavepy.generic.system import bash, get_files
+
+from fullwavepy.ioapi.generic import *
+from fullwavepy.ioapi.segy import *
+
+from fullwavepy.seismic.data import DataFileSgy
+from fullwavepy.seismic.models import *
+from fullwavepy.seismic.surfaces import *
+from fullwavepy.seismic.metadata import * 
+from fullwavepy.seismic.wavelets import *
+
+from fullwavepy.project.types.deriv import *
+
+
+@traced
+@logged
+class ProteusExperiment(Experiment):
+  """
+  """
+  def __init__(self, **kwargs):
+    """
+    """
+    from fullwavepy.seismic.models import StartVp
+
+    self.sgyhw = {'sid': 'tracf',
+                  'rid': 'fldr',
+                  'lid': 'ep',
+                 }
+
+    self.name = 'PROTEUS'
+    self.cruise_id = 'MGL1521'
+    self.type = 'marine-land'
+    self.source = 'airgun'
+    self.shot_lines = [ShotLine(i, self) for i in np.arange(1,61)]
+    # metadataobs = path_dataobs + 'metadata.csv'
+    # metadatalan = path_datalan + 'metadata.csv'
+    base_path = '/home/kmc3817/heavy_PhD/'
+    self.path = {'data': base_path + 'DATA/Santorini_2015/',
+                 'metadata': base_path + 'metadata/',
+                 'start_mods': base_path + 'start_mods/',
+                 'surfaces': base_path + 'surfaces/',  
+                 'wavelets': base_path + 'wavelets/',
+                 }
+    
+    self.md = MetadataFile('proteus_metadata.csv', self.path['metadata'])
+    self.svp = {'bh': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),}
+                # 'bh_clip': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
+    self.wavelet = {'19-09-22': ProteusWavelet(self.path['wavelets']+'wavelet_19-09-22.sgy')}
+
+    self.bathytopo = ProteusBathyTopo(self.path['surfaces']+'bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr')
+
+    self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
+                    'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
+                    'obsvy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),
+                    'obsvz': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*1.sgy', self),
+                    'lanvx': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*3.sgy', self),
+                    'lanvy': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*2.sgy', self),
+                    'lanvz': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*1.sgy', self)}
+
+    super().__init__(self.name, **kwargs)
+
+   # -----------------------------------------------------------------------------  
+ 
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusProj(ProjExperiment):
+  def __init__(self,  *args, **kwargs):
+    # ex = ProteusExperiment() # disabled for speed, init once in ipynb and pass as kw
+    # super().__init__(ex, *args, **kwargs) ##
+    super().__init__(*args, **kwargs)
+
+  def prepare_input(self, pold, run=False, **kwargs):
+    pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusProjSyn(ProteusProj, ProjSyn):
+    pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusProjInv(ProteusProj, ProjInv):
+    pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusBathyTopo(BathyTopo):
+  def __new__(cls, *args, **kwargs):
+    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
+    cls.z_sea = 0.0
+    cls.x1 = -8.0e4
+    cls.x2 = +8.0e4
+    cls.y1 = -4.0e4
+    cls.y2 = +4.0e4 
+    cls.z1 = 0
+    cls.z2 = 0     
+    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
+    kwargs['shape'] = (3201, 1601, 1)
+    
+    obj = super().__new__(cls, *args, **kwargs)
+    cls.dx = obj.dx    
+    # obj = obj.slice(slice_at='z')
+    # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
+    # cls.extent = obj.extent
+    # obj.dx = obj.dx[:-1]
+    # cls.dx = obj.dx # otherwise is not passed in .copy()
+
+    return obj
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusStartVp(StartVp, AmphibiousModel):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class BenStartVp(ProteusStartVp):
+  def __new__(cls, *args, **kwargs):
+    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
+  
+    cls.x1 = -6.0e4
+    cls.x2 = +6.4e4
+    cls.y1 = -1.4e4
+    cls.y2 = +2.9e4 
+    # Z-axis points downwards   
+    cls.z1 = -1.5e3 
+    cls.z2 = +5.0e3      
+    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
+    kwargs['shape'] = (2481, 861, 131)
+    
+    obj = super().__new__(cls, *args, **kwargs)
+    cls.dx = obj.dx # otherwise is not passed in .copy()
+
+    obj.k_peak = 23
+    obj.z_peak = -obj.k_peak * obj.dx[-1]
+    obj.k_sea = 30
+    obj.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
+    return obj
+  
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusDataset(Dataset):
+  """
+  """
+  def __init__(self, path, pattern, experiment, **kwargs):
+    self.cruise_id = 'MGL1521'
+    self.sep = '_'
+    self.pools = ['L', 'W', 'S']
+    self.channels = ['1', '2', '3', '4']
+    self.ext = 'sgy'
+    self.len_station_id = 3
+    super().__init__(path, pattern, experiment, **kwargs)
+
+  # -----------------------------------------------------------------------------  
+  
+  def get_station_id(self, name):
+    return name[len(self.cruise_id+self.sep+self.pools[0]):-len(self.sep+self.channels[0]+'.'+self.ext)]
+
+  # -----------------------------------------------------------------------------
+
+  def get_pool_id(self, name):  
+    return name[len(self.cruise_id+self.sep):-(self.len_station_id+len(self.sep+self.channels[0]+'.'+self.ext))]
+
+  # -----------------------------------------------------------------------------
+
+  def get_channel_id(self, name):
+    return name[len(self.cruise_id+self.sep+self.pools[0])+self.len_station_id+len(self.sep):-len('.'+self.ext)]
+  
+  # -----------------------------------------------------------------------------
+
+  
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusDatasetOBS(ProteusDataset):
+    def __init__(self, *args, **kwargs):
+      self.dt = 0.005 # s
+      self.ns = 12000 # samples
+      super().__init__(*args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusDatasetLand(ProteusDataset):
+    def __init__(self, *args, **kwargs):
+      self.dt = 0.001 # s
+      self.ns = 7000  # samples
+      super().__init__(*args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ProteusWavelet(Wavelet):
+    pass
+
+
+# -------------------------------------------------------------------------------

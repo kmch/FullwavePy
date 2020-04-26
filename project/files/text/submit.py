@@ -16,6 +16,11 @@ from fullwavepy.project.files.text.misc import JobFile
 
 #FIXME REPLACE WITH CONTIGUOUS STRING
 
+
+
+
+
+
 # ------------------------------------------------------------------------------- 
 
 
@@ -330,3 +335,123 @@ class BashFile(JobFile, AsciiProjFile):
 
 # ------------------------------------------------------------------------------- 
 
+class QsubFile(JobFile, AsciiProjFile):
+  pass
+  # #!/bin/bash
+  
+  # ##
+  # # Author: Kajetan Chrapkiewicz, 2020. 
+  # # All rights reserved. Ask for permision writing to K.Chrapkiewicz17@imperial.ac.uk.
+  # ##
+  
+  # # ----------------------------------------------------------------------------------
+  # # READ PROGRAM ARGUMENTS
+  # # ----------------------------------------------------------------------------------
+  # proj_path=$1
+  # proj_name=$2
+  # code=$3
+  # priv_queue=$4
+  
+  
+  # printf 'Program arguments provided:\n'
+  # printf ' proj_path : '$proj_path'\n'
+  # printf ' proj_name : '$proj_name'\n'
+  # printf '      code : '$code'\n'
+  # # printf '   run_id : '$run_id'\n'
+  # printf 'priv_queue : '$priv_queue'\n'
+  
+  # printf 'FIXME: code_path compatible with Run.pbs, checking if this id was already run etc., ...\n\n'
+  
+  
+  # if [[ $1 == '' || $2 == '' ]]; then
+  #   (>&2 echo ${this_script}'Error. Re-run with required arguments: ')
+  #   echo 'proj_path=$1 # ./fwi_marm_AIT_2D/p01 / ...'
+  #   echo 'proj_name=$2 # p01 / ...'
+  #   echo 'code=$3 # rev688_test / ...'
+  # #   echo 'run_id=$4 # 0 / 1 / ...'  
+  #   echo 'priv_queue=$4 # pqmrwarn / leave empty for public queues (general, etc.)'  
+  #   exit 1
+  # fi
+  
+  # echo 'Please provide a run_id (an integer number >= 0)'
+  # read run_id
+  
+  
+  # # ----------------------------------------------------------------------------------
+  # # INITIAL SETUP
+  # # ----------------------------------------------------------------------------------
+  # path=/rds/general/user/kmc3817/home/my_phd/
+  # if [[ $code == 'git' ]]; then
+  #   code_path=${path}/fullwave3d_git_kajetanch/
+  # else # rev688 ETC.
+  #   code_path=${path}/fullwave3D/${code}/
+  # fi
+  
+  
+  # printf '\nSet code_path to '$code_path'\n'
+  # #module load mpi
+  # module unload mpi/intel-2019 # DEFAULT SINCE 1 FEB 2020 - INCOMPATIBLE
+  # module load mpi/intel-2018 # COMPATIBLE WITH DEFAULT INTEL-SUITE 
+  # module load intel-suite
+  # printf '\nLoaded mpi and intel-suite modules\n\n'
+  
+  # # ----------------------------------------------------------------------------------
+  # # COMPILE THE FULLWAVE3D CODE
+  # # ----------------------------------------------------------------------------------
+  # make -C  $code_path -j fullwave3d
+  # stat=$?
+  # if [[ $stat == 2 ]]; then
+  #   (>&2 echo ${this_script}'Error when running make.')
+  #   exit 1
+  # fi
+  # printf '\nCompiled fullwave3d.\n'
+  
+  # # ----------------------------------------------------------------------------------
+  # # GO TO INPUT DIR (!)
+  # # ----------------------------------------------------------------------------------
+  # cd $proj_path/inp/
+  # printf '\nCAUTION! Changed to path: '
+  # pwd; echo
+  
+  
+  # # ----------------------------------------------------------------------------------
+  # # CHECK THE COMPLETENESS OF THE INPUT
+  # # ----------------------------------------------------------------------------------
+  # cmd=$code_path'/bin/fullwave3D.exe -checkinput '$proj_name
+  # $cmd # RUN NO. 1 (OUTPUT TO SCREEN)
+  # match=$($cmd | grep "Checked input & dumped canonical runfile") # RUN NO. 2
+  # if [[ $match == '' ]]; then
+  #   (>&2 printf "\nError returned by $cmd\n")
+  #   exit 1
+  # fi
+  # printf "\nChecked input using a command '$cmd'\n"
+  
+  # # ----------------------------------------------------------------------------------
+  # # SET A QUEUE FLAG
+  # # ----------------------------------------------------------------------------------
+  # if [[ $priv_queue == 'pqmrwarn' ]]; then
+  #   flags=$flags' -q '$priv_queue
+  # elif [[ $priv_queue == '' ]]; then
+  #   flags=''
+  # else 
+  #   (>&2 echo ${this_script}'Error. Unknown priv_queue. Leave empty if asking for a public one ')
+  #   exit 1
+  # fi
+  
+  # printf "\nFlags for the qsub command set to '$flags'\n"
+  
+  
+  # # ----------------------------------------------------------------------------------
+  # # SUBMIT THE JOB
+  # # ----------------------------------------------------------------------------------
+  # cmd="qsub$flags ${proj_name}-Run${run_id}.pbs" # IT'S SEEMS GOOD TO HAVE ONE Run.pbs SUFFIX
+  # job_id=$($cmd)
+  # printf "\nJob $job_id submitted using a command '$cmd'\n"
+  
+  
+  # # ----------------------------------------------------------------------------------
+  # # SAVE THE JOB INFO
+  # # ----------------------------------------------------------------------------------
+  # fname=${proj_name}-JobInfo${run_id}.log
+  # qstat -f $job_id > $fname
+  # printf "Job info saved to $fname\n"
