@@ -56,7 +56,7 @@ class ProteusExperiment(Experiment):
                  }
     
     self.md = MetadataFile('proteus_metadata.csv', self.path['metadata'])
-    self.svp = {'bh': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),}
+    self.svp = {'bh': {'18-04-24': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131))}}
                 # 'bh_clip': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
     self.wavelet = {'19-09-22': ProteusWavelet(self.path['wavelets']+'wavelet_19-09-22.sgy')}
 

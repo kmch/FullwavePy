@@ -13,6 +13,12 @@ from fullwavepy.generic.decor import widgets, timer
 from fullwavepy.plot.generic import figure
 from fullwavepy.plot.plt2d import plot_image
 
+# NOTE
+# Arr3d -> Arr2d etc. can only be achieved by their slice() methods
+# Numpy's slice-index notation A[:,0,:] etc. works (i.e. reshapes)
+# but doesn't convert the type
+
+
 
 @traced
 @logged
@@ -278,6 +284,7 @@ class Arr1d(Arr):
     x = np.linspace(x1, x2, len(self))
     
     plt.plot(x, self, c=c)
+    return plt.gca()
 
   # -----------------------------------------------------------------------------
 
@@ -328,7 +335,8 @@ class Arr2d(Arr):
     """
     """
     arr1d = self.slice(slice_at, node, widgets=False, **kwargs)
-    arr1d.plot(**kwargs)
+    ax = arr1d.plot(**kwargs)
+    return ax
 
   # -----------------------------------------------------------------------------
 
@@ -341,19 +349,22 @@ class Arr2d(Arr):
     self = modify_array(self, **kwargs)
     
     if wiggle:
-      plot_wiggl(self, **kwargs)
+      ax = plot_wiggl(self, **kwargs)
     else:
-      plot_image(self, **kwargs) 
-
+      ax = plot_image(self, **kwargs) 
+    
+    return ax
+  
   # -----------------------------------------------------------------------------
   
   def plot(self, *args, **kwargs):
     """
     """
     if 'slice_at' in kwargs:
-      self.plot_slice(*args, **kwargs)
+      ax = self.plot_slice(*args, **kwargs)
     else:
-      self.plot_full(*args, **kwargs)
+      ax = self.plot_full(*args, **kwargs)
+    return ax
   
   # -----------------------------------------------------------------------------
 
@@ -418,9 +429,9 @@ class Arr3d(Arr):
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     kwargs['title'] = 'slice at %s=%s' % (slice_at, node)
     del_kw('slice_at', kwargs) # JUST IN CASE
-    arr2d.plot(**kwargs)
+    ax = arr2d.plot(**kwargs)
     if slice_at == 'z': # DISABLE?
-      plt.gca().invert_yaxis()
+      ax.invert_yaxis()
   
   # -----------------------------------------------------------------------------
 
@@ -547,7 +558,7 @@ class Arr3d(Arr):
     
   # -----------------------------------------------------------------------------  
 
-  def plot(self, nslices=1, *args, **kwargs):
+  def plot(self, *args, **kwargs):
     """
     Framework plotter.
     
@@ -562,12 +573,35 @@ class Arr3d(Arr):
     Note, it doesn't need to have ##@widgets!
     
     """
+    if not ('x' in kwargs or 'y' in kwargs or 'z' in kwargs):
+      nslices = 1
+      kwargs['slice_at'] = 'y'
+      kwargs['node'] = 0
+    elif 'x' in kwargs and not ('y' in kwargs or 'z' in kwargs):
+      nslices = 1
+      kwargs['slice_at'] = 'x'
+      kwargs['node'] = kwargs['x']
+    elif 'y' in kwargs and not ('x' in kwargs or 'z' in kwargs):
+      nslices = 1
+      kwargs['slice_at'] = 'y'
+      kwargs['node'] = kwargs['y']
+    elif 'z' in kwargs and not ('x' in kwargs or 'y' in kwargs):
+      nslices = 1
+      kwargs['slice_at'] = 'z'
+      kwargs['node'] = kwargs['z']  
+    elif 'x' in kwargs and 'y' in kwargs and 'z' in kwargs:
+      nslices = 3
+    else:
+      raise ValueError('Slicing arguments not understood.')
+    
     if nslices == 1:
       self.plot_slice(*args, **kwargs)
     elif nslices == 3:
       self.plot_3slices(*args, **kwargs)
     else:
       raise ValueError('Wrong value of nslices: %s' %str(nslices))
+    
+    return plt.gca()
 
   # -----------------------------------------------------------------------------
   
