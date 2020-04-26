@@ -119,6 +119,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     colorbar(im, ax)
   
   ax.set_aspect(aspect)
+  return ax
 
 
 # -------------------------------------------------------------------------------
@@ -167,6 +168,7 @@ def plot_wiggl(image, **kwargs): #FIXME MOVE TO SEISMIC DATA
     
     #plt.plot(trace, c='k')
   #plt.gca().invert_yaxis() # DISABLED SINCE IT IS FLIPPED BY ANOTHER FUNCTION
+  return plt.gca()
   
 
 @traced

@@ -98,6 +98,8 @@ class Dataset(dict):
     self.fnames = get_files(path, pattern, **kwargs)
     self.names = [path_leave(i) for i in self.fnames]
     self.ids = []
+    self.fN = 1 / (2 * self.dt) # Nyquist
+    self.ttime = self.ns * self.dt
     for name in self.names:
       id = self.get_station_id(name)
       self.ids.append(id)

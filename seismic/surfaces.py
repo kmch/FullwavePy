@@ -45,14 +45,14 @@ class Surface(Arr3d):
   def plot(self, **kwargs):
     slice_at = kw('slice_at', 'z', kwargs)
     if slice_at == 'z':
-      self.plot_map(**kwargs)
+      return self.plot_map(**kwargs)
     else:
-      self._2d().plot(**kwargs)
+      return self._2d().plot(**kwargs)
   
   def plot_map(self, **kwargs):
     kwargs['slice_at'] = 'z'
     kwargs['node'] = 0
-    super().plot(**kwargs)
+    return super().plot(**kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class BathyTopo(Surface):
   def plot(self, **kwargs):
     kwargs['cmap'] = kw('cmap', [], kwargs)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    super().plot(**kwargs) 
+    return super().plot(**kwargs) 
 
   
 # -------------------------------------------------------------------------------

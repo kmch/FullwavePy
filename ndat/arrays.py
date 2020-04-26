@@ -432,6 +432,7 @@ class Arr3d(Arr):
     ax = arr2d.plot(**kwargs)
     if slice_at == 'z': # DISABLE?
       ax.invert_yaxis()
+    return ax
   
   # -----------------------------------------------------------------------------
 
@@ -469,7 +470,7 @@ class Arr3d(Arr):
     
     for i, ax in enumerate(axes):
       plt.sca(ax)
-      plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
+      aaxx = plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
       
       # PLOT SLICING LINES
       a, b = [j for j in ['x', 'y', 'z'] if j != s[i]]

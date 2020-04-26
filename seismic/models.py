@@ -49,7 +49,7 @@ class ModelVp(Model):
   def plot(self, **kwargs):
     kwargs['cmap'] = kw('cmap', 'twilight', kwargs)
     kwargs['center_cmap'] = kw('center_cmap', False, kwargs)
-    super().plot(**kwargs) 
+    return super().plot(**kwargs) 
 
 
 # -------------------------------------------------------------------------------

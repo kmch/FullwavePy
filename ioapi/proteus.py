@@ -229,8 +229,9 @@ class ProteusDatasetOBS(ProteusDataset):
 @logged
 class ProteusDatasetLand(ProteusDataset):
     def __init__(self, *args, **kwargs):
-      self.dt = 0.001 # s
+      self.dt = 0.01  # s (value 10000 microseconds in SEGY header)
       self.ns = 7000  # samples
+
       super().__init__(*args, **kwargs)
 
 
