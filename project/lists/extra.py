@@ -13,8 +13,11 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.parse import kw
+
 from fullwavepy.project.lists.basic import TimestepFileList
 from fullwavepy.project.lists.deriv import SchedFileList, SlaveFileList
+
+from fullwavepy.project.files.gridded.wavefields import *
 
 # THIS DOESN'T NEED BE SEPARATE FOR EACH DUMP!!!! #FIXME
 # DERIVED TYPES SHOULD SUFFICE
@@ -170,27 +173,28 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     
     """
     super().__init__(proj, **kwargs)
+    
     tsteps = self._read_tsteps(**kwargs)
 
-    # nfiles_max = 200
-    # o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
-    # nfiles = int(o)    
-    # if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
-    #   self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
-    #                                                                             nfiles, nfiles_max)
+    nfiles_max = 200
+    o, e = bash('ls {} | wc -l'.format(self.proj.out.path))
+    nfiles = int(o)    
+    if nfiles > nfiles_max: # IT WOULD TAKE AAAGEEES OTHERWISE
+      self.init_err = 'Cannot init {} because nfiles={} > nfiles_max={}'.format(self.__class__, 
+                                                                                nfiles, nfiles_max)
 
 
-    # if self.init_err is None:
-    #   self.it[0] = None
-    #   for it in range(1, self.nits_total + 1):
-    #     self.it[it] = {}
-    #     for sid in self.sids:
-    #       sid = int(sid)
-    #       self.it[it][sid] = {}
-    #       for ts in tsteps:
-    #         self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
-    # else:
-    #   self.__log.warn(self.init_err)
+    if self.init_err is None:
+      self.it[0] = None
+      for it in range(1, self.nits_total + 1):
+        self.it[it] = {}
+        for sid in self.sids:
+          sid = int(sid)
+          self.it[it][sid] = {}
+          for ts in tsteps:
+            self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
+    else:
+      self.__log.warn(self.init_err)
   
   # ----------------------------------------------------------------------------- 
   
@@ -219,7 +223,8 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
     
     self.__log.debug('tsteps: %s' % str(tsteps))
     
-    return tsteps
+    self.tsteps = tsteps
+    return self.tsteps
 
   # -----------------------------------------------------------------------------
   
@@ -249,4 +254,31 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
 
 
 # ------------------------------------------------------------------------------- 
+
+@traced
+@logged
+class ForwardWavefieldFileList(WavefieldFileList):
+  """
+  A handle for dumped forward-wavefield snapshots.
+  
+  """
+  def __init__(self, proj, *args, **kwargs):
+    super().__init__(proj, ForwardWavefieldFile, *args, **kwargs)
+
+
+# ------------------------------------------------------------------------------- 
+
+
+@traced
+@logged
+class BackpropWavefieldFileList(SlaveFileList, TimestepFileList):
+  """
+  A handle for dumped backpropagated-wavefield snapshots.
+  
+  """
+  def __init__(self, proj, *args, **kwargs):
+    super().__init__(proj, BackpropWavefieldFile, *args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
 

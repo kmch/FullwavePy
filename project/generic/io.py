@@ -11,8 +11,12 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import widgets
-from fullwavepy.generic.system import bash
+from fullwavepy.generic.system import bash, current_dir
 from fullwavepy.generic.parse import kw
+
+from fullwavepy.ioapi.clusters.cx1 import *
+from fullwavepy.ioapi.clusters.archer import *
+from fullwavepy.ioapi.clusters.thomas import *
 
 
 @traced
@@ -100,49 +104,53 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------
   
-  ###@widgets#FIXME
-  #def plot_3slices(self, fig, gs=None, widgets=False, **kwargs):
-  #  #FIXME BOILERPLATE
-  #  if widgets: 
-  #    figsize = (kw('figsize_x', 8, kwargs), kw('figsize_y', 8, kwargs))
-  #    fig = plt.figure(figsize=figsize)
-  #  if gs is None:
-  #    gs = fig.add_gridspec(2,2)  
-  #  ax1 = fig.add_subplot(gs[0,0])
-  #  ax2 = fig.add_subplot(gs[0,1])
-  #  ax3 = fig.add_subplot(gs[1,:])        
-      
-      
-    #if kwargs['true_vp']:
-    #  self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
-    #
-    ##if kwargs['fw']:
-    #  #self.tvp.plot_3slices(fig, gs, **dict(kwargs, widgets=False))
-    #
-    #if kwargs['receivers']: # ALWAYS MORE THAN SOURCES (HOPEFULLY)
-    #  self.r.plot_3slices(fig, **kwargs)
-    #  
-    #if kwargs['sources']:
-    #  self.s.plot_3slices(fig, **kwargs)
-
-
-  #def plot(self, **kwargs): #FIXME
-  #  """
-  #  An elegant way of plotting all plottables.
-  #  
-  #  """
-  #  for attr in [getattr(self, i) for i in vars(self)]:
-  #    try:
-  #      attr.plot(**kwargs)
-  #      plt.figure()
-  #    except (AttributeError, FileNotFoundError) as err:
-  #      self.__log.debug(err)
+  def _configure_remote(self, host_nick, **kwargs):
+    if host_nick == 'cx1':
+      from fullwavepy.ioapi.clusters.cx1 import proj_path_cx1
+      host = "kmc3817@login.cx1.hpc.ic.ac.uk"
+      remote_path = host + ':' + proj_path_cx1
+    else:
+      raise NotImplementedError('host nick: %s' % host_nick)
+    
+    self.remote_path = remote_path + self.proj.parent_dir + self.proj.name
 
   # -----------------------------------------------------------------------------
 
-  #def qc(self, **kwargs): #FIXME
-  #  self.ls(**kwargs)
-  #  self.plot(**kwargs)
+  def rsync(self, thr, host_nick, **kwargs):
+    """
+    thr : str 
+      'inp' or 'out'
+
+    Notes
+    -----
+    We could actually *sync* local and remote dirs so that 
+    they are the same all the time (what Dropbox does) but 
+    instead we push inp and pull out.
+    
+    """
+    self._configure_remote(host_nick, **kwargs)
+    local_path = self.proj.path
+    remot_path = self.remote_path
+    
+    if thr == 'inp':
+      self.__log.debug('Pushing inp from local to remote.')
+      source = local_path + '/inp/'
+      destin = remot_path + '/inp' # no slash
+    elif thr == 'out':
+      self.__log.debug('Pulling out from remote to local.')
+      source = remot_path + '/out/' # NOTE: remote is now source!
+      destin = local_path + '/out'  # no slash either
+    else:
+      raise ValueError('thr %s' %s)
+    
+    cmd = 'rsync -azP --info=progress2 %s %s' % (source, destin)
+    self.__log.debug('cmd %s' % str(cmd))
+    
+    o, e = bash(cmd)
+    self.__log.info(str(o))
+    if len(e) < 0:
+      self.__log.warn(str(e))
+
 
   # -----------------------------------------------------------------------------
 
@@ -154,7 +162,8 @@ class ProjThroughput(object):
 @logged
 class ProjInput(ProjThroughput):
   """
-  
+  Project's input.
+
   Notes
   -----
   It contains some necessary work-arounds
@@ -180,7 +189,6 @@ class ProjInput(ProjThroughput):
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
-    
     from fullwavepy.project.files.gridded.misc import InextFile
     from fullwavepy.project.files.gridded.surfaces import TopoFile, FsFile, ExtendedFsFile, InterpolFsFile
     from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt
@@ -189,7 +197,6 @@ class ProjInput(ProjThroughput):
     from fullwavepy.project.files.text.runfiles import SegyPrepFile, Runfile, Skeleton
     from fullwavepy.project.files.text.submit import BashFile
     from fullwavepy.project.lists.basic import JobFileList 
-    from fullwavepy.ioapi.cx1 import PbsFileCx1
     
     self.__log.debug('Initializing project-type-specific  input...')
     self.proj.init_input(**kwargs)
@@ -234,12 +241,21 @@ class ProjInput(ProjThroughput):
     
     if self.proj.cluster.name == 'cx1':
       self.pbs = JobFileList(self.proj, self.path, PbsFileCx1, **kwargs)
+    elif self.proj.cluster.name == 'thomas':
+      self.pbs = JobFileList(self.proj, self.path, PbsFileThomas, **kwargs)    
+    elif self.proj.cluster.name == 'archer':
+      self.pbs = JobFileList(self.proj, self.path, PbsFileArcher, **kwargs)    
     else:
       raise NotImplementedError('Unknown cluster: ' + self.proj.cluster.name)    
     
     self.jobinfo = JobFileList(self.proj, self.path, JobInfoFile, **kwargs)
     self.jinfo = self.jobinfo # ALIAS
-    
+  
+  # ----------------------------------------------------------------------------- 
+
+  def rsync(self, *args, **kwargs):
+    super().rsync('inp', *args, **kwargs)
+
   # -----------------------------------------------------------------------------
   
   def prepare(self, *args, **kwargs):
@@ -364,12 +380,13 @@ class ProjInput(ProjThroughput):
 @logged
 class ProjOutput(ProjThroughput):
   """
+  Project's output.
+
+  Notes
+  -----  
   As in ProjInput.
   
   """  
-  
-  # -----------------------------------------------------------------------------
-  
   def __init__(self, proj, **kwargs):
     super(ProjOutput, self).__init__(proj, **kwargs) 
     self.path = proj.path + '/out/'
@@ -392,8 +409,7 @@ class ProjOutput(ProjThroughput):
                                                JobOutLogFile, JobErrLogFile)
     
     from fullwavepy.project.lists.basic import JobFileList
-    from fullwavepy.project.lists.extra import WavefieldFileList
-    from fullwavepy.project.files.gridded.wavefields import ForwardWavefieldFile
+    from fullwavepy.project.lists.extra import ForwardWavefieldFileList
      
     self.__log.debug('Initializing generic-project output...')
     self.jobout = JobFileList(self.proj, self.path, JobOutLogFile, **kwargs)
@@ -406,11 +422,15 @@ class ProjOutput(ProjThroughput):
     self.e = self.err
     self.jobstats = JobStats(self.proj, **kwargs)
     self.jstat = self.jobstats
-    self.__log.warn('Disabled self.fw until debug')
-    self.fw = WavefieldFileList(self.proj, ForwardWavefieldFile, **kwargs) 
+    self.fw = ForwardWavefieldFileList(self.proj, **kwargs) 
       
     self.__log.debug('Initializing project-type-specific output...')
     self.proj.init_output(**kwargs)
+
+  # ----------------------------------------------------------------------------- 
+
+  def rsync(self, *args, **kwargs):
+    super().rsync('out', *args, **kwargs)
 
   # ----------------------------------------------------------------------------- 
 
@@ -435,10 +455,10 @@ class ProjOutput(ProjThroughput):
       f.prepare(**kwargs)
     
     self.proj.prepare_output(*args, **kwargs)
-    
+  
   def prep(self, *args, **kwargs):
     self.prepare(*args, **kwargs)
-    
+
   # -----------------------------------------------------------------------------
 
   def plot(self, *args, **kwargs):

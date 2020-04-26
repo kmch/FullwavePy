@@ -75,16 +75,19 @@ class IterFileList(ProjFileList):
     or somewhere.
     
     """
+    if self.proj.problem == 'synthetic':
+      self.__log.debug('synthetic problem => self.nits_total = 1 regardless' +
+                       ' of the iteration blocks in the runfile')
+      self.nits_total = 1
+      return    
+    
     try:
       self.nits_total = self.proj.inp.runfile.read_nits(**kwargs)
     except FileNotFoundError:
       self.__log.warn(self.proj.name + ' has no runfile yet, unable to set' + 
                       ' self.nits_total')
     
-    if self.proj.problem == 'synthetic':
-      self.__log.debug('synthetic problem => self.nits_total = 1 regardless' +
-                       ' of the iteration blocks in the runfile')
-      self.nits_total = 1
+
     
   # -----------------------------------------------------------------------------
 
@@ -99,9 +102,6 @@ class ShotFileList(ProjFileList):
   A handle for a collection of files dumped for certain shot(s).
   
   """
-  
-  # -----------------------------------------------------------------------------
-  
   def _read_sids(self, **kwargs):
     """
     SLAVES_DUMPCSREFS=[list/ranges]

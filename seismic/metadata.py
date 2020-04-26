@@ -8,6 +8,8 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
+import pandas as pd
+
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, path_leave
@@ -23,36 +25,7 @@ from fullwavepy.seismic.surfaces import *
 
 @traced
 @logged
-class ProteusBathyTopo(BathyTopo):
-  def __new__(cls, *args, **kwargs):
-    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
-    cls.z_sea = 0.0
-    cls.x1 = -8.0e4
-    cls.x2 = +8.0e4
-    cls.y1 = -4.0e4
-    cls.y2 = +4.0e4 
-    cls.z1 = 0
-    cls.z2 = 0     
-    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
-    kwargs['shape'] = (3201, 1601, 1)
-    
-    obj = super().__new__(cls, *args, **kwargs)
-    cls.dx = obj.dx    
-    # obj = obj.slice(slice_at='z')
-    # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
-    # cls.extent = obj.extent
-    # obj.dx = obj.dx[:-1]
-    # cls.dx = obj.dx # otherwise is not passed in .copy()
-
-    return obj
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class ProteusStartVp(StartVp, AmphibiousModel):
+class Metadata(pd.DataFrame):
   pass
 
 
@@ -61,29 +34,55 @@ class ProteusStartVp(StartVp, AmphibiousModel):
 
 @traced
 @logged
-class BenStartVp(ProteusStartVp):
-  def __new__(cls, *args, **kwargs):
-    #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
+class MetadataFile(CsvFile, AsciiFile):
+  def read(self, overwrite=True, **kwargs):
+    """
   
-    cls.x1 = -6.0e4
-    cls.x2 = +6.4e4
-    cls.y1 = -1.4e4
-    cls.y2 = +2.9e4 
-    # Z-axis points downwards   
-    cls.z1 = -1.5e3 
-    cls.z2 = +5.0e3      
-    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
-    kwargs['shape'] = (2481, 861, 131)
+    Notes
+    -----
+    Overwrite=True by default because otherwise plots are not 
+    updated even though they are supposed (e.g. you are passing 
+    a different fname). They will be correct (updated) only
+    if you delete self.array variable, e.g. by restarting the 
+    notebook kernel.
+    Disable overwrite only for PERFORMANCE (e.g. interactive plot)
+    when the array remains unchanged unlike other (e.g. plotting)
+    parameters.
     
-    obj = super().__new__(cls, *args, **kwargs)
-    cls.dx = obj.dx # otherwise is not passed in .copy()
+    """
+    if hasattr(self, 'df') and overwrite == True:
+       self.__log.warn('{}.df exists but it will be overwritten (overwrite=True).'.format(type(self)))    
+    
+    if not (hasattr(self, 'df') and overwrite == False):
+      self.df = Metadata(super().read(**kwargs))
 
-    obj.k_peak = 23
-    obj.z_peak = -obj.k_peak * obj.dx[-1]
-    obj.k_sea = 30
-    obj.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
-    return obj
-  
+    return self.df 
+
+
+  # -----------------------------------------------------------------------------  
+ 
+ 
+
+# -------------------------------------------------------------------------------
+
+
+
+@traced
+@logged
+class Experiment(object):
+  """
+  """
+  def __init__(self, name, **kwargs):
+    self.name = name
+    #attrs = ['type', 
+    #         'source', 
+    #         'shot_lines']
+    #
+    #for attr in attrs:
+    #  setattr(self, attr, kw(attr, '?', kwargs))
+
+  # -----------------------------------------------------------------------------  
+
 
 # -------------------------------------------------------------------------------
 
@@ -132,127 +131,6 @@ class Dataset(dict):
 # -------------------------------------------------------------------------------
 
 
-class ProteusDataset(Dataset):
-  """
-  """
-  def __init__(self, path, pattern, experiment, **kwargs):
-    self.cruise_id = 'MGL1521'
-    self.sep = '_'
-    self.pools = ['L', 'W', 'S']
-    self.channels = ['1', '2', '3', '4']
-    self.ext = 'sgy'
-    self.len_station_id = 3
-    super().__init__(path, pattern, experiment, **kwargs)
-
-  # -----------------------------------------------------------------------------  
-  
-  def get_station_id(self, name):
-    return name[len(self.cruise_id+self.sep+self.pools[0]):-len(self.sep+self.channels[0]+'.'+self.ext)]
-
-  # -----------------------------------------------------------------------------
-
-  def get_pool_id(self, name):  
-    return name[len(self.cruise_id+self.sep):-(self.len_station_id+len(self.sep+self.channels[0]+'.'+self.ext))]
-
-  # -----------------------------------------------------------------------------
-
-  def get_channel_id(self, name):
-    return name[len(self.cruise_id+self.sep+self.pools[0])+self.len_station_id+len(self.sep):-len('.'+self.ext)]
-  
-  # -----------------------------------------------------------------------------
-
-  
-# -------------------------------------------------------------------------------
-
-
-class ProteusDatasetOBS(ProteusDataset):
-    def __init__(self, *args, **kwargs):
-      self.dt = 0.005 # s
-      self.ns = 12000 # samples
-      super().__init__(*args, **kwargs)
-
-
-# -------------------------------------------------------------------------------
-
-
-class ProteusDatasetLand(ProteusDataset):
-    def __init__(self, *args, **kwargs):
-      self.dt = 0.001 # s
-      self.ns = 7000  # samples
-      super().__init__(*args, **kwargs)
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Experiment(object):
-  """
-  """
-  def __init__(self, name, **kwargs):
-    self.name = name
-    #attrs = ['type', 
-    #         'source', 
-    #         'shot_lines']
-    #
-    #for attr in attrs:
-    #  setattr(self, attr, kw(attr, '?', kwargs))
-
-  # -----------------------------------------------------------------------------  
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class ProteusExperiment(Experiment):
-  """
-  """
-  def __init__(self, **kwargs):
-    """
-    """
-    from fullwavepy.seismic.models import StartVp
-    
-    self.name = 'PROTEUS'
-    self.cruise_id = 'MGL1521'
-    self.type = 'marine-land'
-    self.source = 'airgun'
-    self.shot_lines = [ShotLine(i, self) for i in np.arange(1,61)]
-
-    heavyphd = '/home/kmc3817/heavy_PhD/'
-    self.path = {'start_mods': heavyphd + '/start_mods/',
-                 'surfaces': heavyphd + '/surfaces/',  
-                 'data': heavyphd + 'DATA/Santorini_2015/'}
-    
-    self.svp = {'bh': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', shape=(2481,861,131)),}
-                # 'bh_clip': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24_sea-clipped.sgy', shape=(2481,861,101))}
-    
-    self.bathytopo = ProteusBathyTopo(self.path['surfaces']+'bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr')
-
-    self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
-                    'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
-                    'obsvy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),
-                    'obsvz': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*1.sgy', self),
-                    'lanvx': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*3.sgy', self),
-                    'lanvy': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*2.sgy', self),
-                    'lanvz': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*1.sgy', self)}
-
-    super().__init__(self.name, **kwargs)
-
-
-# metadataobs = path_dataobs + 'metadata.csv'
-# metadatalan = path_datalan + 'metadata.csv'
-# metadata = path + 'metadata/prot
- 
- 
-  # -----------------------------------------------------------------------------  
- 
-
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 class ShotLine(object):
@@ -268,15 +146,4 @@ class ShotLine(object):
 
 # -------------------------------------------------------------------------------
 
-
-@traced
-@logged
-class Metadata(object): #FIXME?
-  def __init__(self, dataset, **kwargs):
-    pass
-
-  # -----------------------------------------------------------------------------  
- 
-
-# -------------------------------------------------------------------------------
 

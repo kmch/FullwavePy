@@ -424,7 +424,7 @@ class Arr3d(Arr):
   
   # -----------------------------------------------------------------------------
 
-  def plot_3slices(self, fig=None, **kwargs):
+  def plot_3slices(self, x, y, z, fig=None, gs=None, **kwargs):
     """
     """
     from fullwavepy.plot.plt2d import plot_image
@@ -432,9 +432,9 @@ class Arr3d(Arr):
     if fig is None:
       fig = figure(16,8)
     
-    kwargs['x'] = kw('x', 0, kwargs)
-    kwargs['y'] = kw('y', 0, kwargs)
-    kwargs['z'] = kw('z', 0, kwargs)
+    kwargs['x'] = x
+    kwargs['y'] = y
+    kwargs['z'] = z
 
     # LABELS FOR EACH AXIS
     s2 = kw('slice', 'y', kwargs) # MAIN SLICE PLOTTED AT THE BOTTOM IN FULL WIDTH
@@ -472,7 +472,10 @@ class Arr3d(Arr):
         ax.invert_yaxis()
       plt.plot(abcissae_horiz, ordinate_horiz, '--', c='white')
       plt.plot(abcissae_verti, ordinate_verti, '--', c='white')
-
+  
+  def p3s(self, *args, **kwargs):
+    return self.plot_3slices(*args, **kwargs)
+  
   # -----------------------------------------------------------------------------
 
   ###@widgets('cmap', 'slice', 'x', 'y', 'z')
@@ -546,6 +549,16 @@ class Arr3d(Arr):
 
   def plot(self, nslices=1, *args, **kwargs):
     """
+    Framework plotter.
+    
+    Notes
+    -----
+    This is a preferred function to call rather than
+    plot_3slices directly. This is because plot 
+    formatting is set in subclasses by overwriting
+    plot method. This could be avoided by defining
+    _format_plot() method or similar.
+
     Note, it doesn't need to have ##@widgets!
     
     """

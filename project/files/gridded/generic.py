@@ -57,8 +57,26 @@ class GridProjFile(ArrayProjFile):
     self.array.extent = extent
     return self.array
 
-  # -----------------------------------------------------------------------------
 
+  # -----------------------------------------------------------------------------
+  
+  def widg_plot_3slices(self):
+    """
+    Return widget-kwargs for @interact used in the notebook.
+
+    """
+    from ipywidgets import BoundedIntText as BIT
+    
+    p = self.proj
+    nx, ny, nz = p.dims
+    kwargs = dict(x=BIT(value=nx//2, min=0, max=nx-1),
+                  y=BIT(value=ny//2, min=0, max=ny-1),
+                  z=BIT(value=nz//2, min=0, max=nz-1))
+    return kwargs
+   
+  def wp3s(self, *args, **kwargs):
+    return self.widg_plot_3slices(*args, **kwargs)
+  # -----------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------
 

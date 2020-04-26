@@ -9,9 +9,13 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.gridded.generic import GridProjFile
+
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.fw3d import VtrFile
+
+from fullwavepy.seismic.models import *
+
+from fullwavepy.project.files.gridded.generic import GridProjFile
 
 
 @traced
@@ -22,8 +26,14 @@ class ModelFile(GridProjFile):
   defined on the model grid.
   
   """
-  pass
-  
+  def read(self, *args, **kwargs):
+    # FIXME: eventually create separate classes: ModelVpFile, etc.
+    if 'Vp' in self.name:
+      M = ModelVp
+    else:
+      M = Model
+    self.array = M(super().read(*args, **kwargs))
+    return self.array
 
 # -------------------------------------------------------------------------------
 

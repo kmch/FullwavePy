@@ -41,6 +41,10 @@ class DataFile(ArrayFile):
     self.plot(*args, **kwargs)
     plt.ylim(fylim)
 
+
+# -------------------------------------------------------------------------------
+
+
 @traced
 @logged
 class DataFileSgy(DataFile, SgyFile):
@@ -49,6 +53,8 @@ class DataFileSgy(DataFile, SgyFile):
     self.array = self.cast(arr, **kwargs)
     return self.array
 
+
+# -------------------------------------------------------------------------------
 
 
 @traced

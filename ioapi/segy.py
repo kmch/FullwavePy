@@ -90,6 +90,9 @@ class SgyFile(ArrayFile):
     if (not hasattr(self, 'head')) or overwrite:
       self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
     return self.head
+  
+  def rh(self, *args, **kwargs):
+    return self.read_header(*args, **kwargs)
 
   # -----------------------------------------------------------------------------
   

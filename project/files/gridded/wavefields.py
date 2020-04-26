@@ -9,6 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip, path_leave
+from fullwavepy.generic.system import *
 from fullwavepy.ioapi.fw3d import VtrFile
 from fullwavepy.project.files.gridded.generic import ExtenGridProjFile
 
@@ -56,12 +57,7 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
                     '*' + # instead of unknown taskid
                     '.vtr')
     
-    
-# '-taskid' + str(tid).rjust(5,'0') +
-
     fnames = get_files(self.path, pattern, **kwargs)
-    
-   
 
     if len(fnames) > 1:
      raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
@@ -71,9 +67,7 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     else:
      suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
     
-    
-    self.fname = self.path + self.name
-    #super().__init__(proj, self.path, **kwargs)
+    self.fname = self.path + self.proj.name + '-' + suffix + '.vtr'
     
   # -----------------------------------------------------------------------------
   
@@ -95,9 +89,9 @@ class ForwardWavefieldFile(WavefieldFile):
   Forward wavefield.
   
   """
-  def __init__(self, proj, ts, sid, it, **kwargs):
+  def __init__(self, proj, *args, **kwargs):
     file_id = 'fw'
-    super().__init__(proj, file_id, ts, sid, it, **kwargs)
+    super().__init__(proj, file_id, *args, **kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -110,9 +104,9 @@ class BackproWavefieldFile(WavefieldFile):
   Backropagated wavefield.
   
   """
-  def __init__(self, proj, ts, sid, it, **kwargs):
+  def __init__(self, proj, *args, **kwargs):
     file_id = 'bw'
-    super().__init__(proj, file_id, ts, sid, it, **kwargs)
+    super().__init__(proj, file_id, *args, **kwargs)
 
 
 # -------------------------------------------------------------------------------

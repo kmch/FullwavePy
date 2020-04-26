@@ -15,9 +15,6 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.project.lists.basic import IterFileList, ShotFileList, JobFileList
 
 
-# -------------------------------------------------------------------------------  
-
-
 @traced
 @logged
 class SchedFileList(IterFileList):
@@ -26,8 +23,14 @@ class SchedFileList(IterFileList):
   not to mention timesteps.
   
   """
-
-  # ----------------------------------------------------------------------------- 
+  def read(self, **kwargs):
+    for f in self.it[1: ]: # SKIP ITER. 0
+      try:
+        f.read(**kwargs)
+      except FileNotFoundError as err:
+        self.__log.warn(err)    
+  
+  # -----------------------------------------------------------------------------
 
   def plot_all(self, **kwargs):
     """
@@ -46,16 +49,11 @@ class SchedFileList(IterFileList):
   
   # ----------------------------------------------------------------------------- 
 
-  def read(self, **kwargs):
-    for f in self.it[1: ]: # SKIP ITER. 0
-      try:
-        f.read(**kwargs)
-      except FileNotFoundError as err:
-        self.__log.warn(err)    
-  
   ##@widgets('iter')
   def plot(self, **kwargs):
     pass
+
+  # -----------------------------------------------------------------------------
   
   #def plot(self, imin=0, imax=1, istep=1, **kwargs):
   #  """

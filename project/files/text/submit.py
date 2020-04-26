@@ -207,9 +207,6 @@ class BashFile(JobFile, AsciiProjFile):
   in a Bash shell (not on a cluster).
   
   """
-  
-  # -----------------------------------------------------------------------------  
-  
   def __init__(self, proj, path, run_id, **kwargs):
     """
     
@@ -321,7 +318,7 @@ class BashFile(JobFile, AsciiProjFile):
     
     self.__log.info('Running Fullwave3D...')
     
-    o, e = bash('./' + self.fname)
+    o, e = bash(self.fname)
     
     if len(o) != 0 and cat:
       self.__log.info(o)

@@ -145,11 +145,6 @@ class ArrayFile(File):
 
   # ----------------------------------------------------------------------------
 
-  #def resize_array(self, **kwargs):
-    #pass  
-  
-  # ----------------------------------------------------------------------------
-
   def plot(self, **kwargs):
     """
     We SHOULD self.read everytime, 
@@ -158,6 +153,19 @@ class ArrayFile(File):
     """
     array = self.read(**kwargs)
     array.plot(**kwargs)
+  
+  # ----------------------------------------------------------------------------
+
+  def plot_3slices(self, *args, **kwargs):
+    array = self.read(**kwargs)
+    array.plot_3slices(*args, **kwargs)
+
+  # ----------------------------------------------------------------------------
+
+  def p3s(self, *args, **kwargs):
+    return self.plot_3slices(*args, **kwargs)
+
+  # ----------------------------------------------------------------------------
 
   # def plotf(self, *args, **kwargs):
   #   self.array.plotf(*args, **kwargs)

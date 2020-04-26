@@ -289,6 +289,14 @@ class SegyPrepFile(ParameterFile):
     if cat:
       print(o, e)
     
+  # -----------------------------------------------------------------------------  
+  
+  @timer
+  def postprocess(self, **kwargs):
+    pass
+  
+  
+
   # -----------------------------------------------------------------------------
 
   def log(self, **kwargs):

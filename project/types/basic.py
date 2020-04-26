@@ -15,7 +15,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.system import bash, exists, current_dir
 from fullwavepy.plot.generic import figure
 
 
@@ -54,7 +54,9 @@ class Proj(object):
                                                ProjEnv, ProjSgyMapp, ProjBox, ProjCluster)
     from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.text.runfiles import Runfile
-
+    
+    self.kwargs = kwargs # crucial to inherit from project to project!
+    self.parent_dir = current_dir()
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
     
@@ -111,6 +113,14 @@ class Proj(object):
 
   # -----------------------------------------------------------------------------
   
+  def rsync(self, *args, **kwargs):
+    """
+    Sync with remote host.
+
+    """
+    self.__log.debug('Assuming inp and out rsync have the same (kw)args...')
+    self.inp.rsync(*args, **kwargs)
+    self.out.rsync(*args, **kwargs)
 
 # -------------------------------------------------------------------------------
 
@@ -187,12 +197,16 @@ class ProjSyn(Proj):
     """
     This should be called by
     proj.output(...)
+    
+    Notes
+    -----
+    Forward wavefield is common for both syn and inv => io
 
     """
     from fullwavepy.project.files.datalike.sgy import SynDataFileSgy
     from fullwavepy.project.files.datalike.ttr import SynDataFileTtr
     from fullwavepy.project.files.other.index import SynIndexFileSgy, SynIndexFileTtr
-    #, WavefieldFiles
+
     
     if self.io == 'sgy':
       SynDataClass = SynDataFileSgy
@@ -204,12 +218,7 @@ class ProjSyn(Proj):
       raise ValueError('Unknown io: ' + self.io)
     
     self.out.syn = SynDataClass(self, self.out.path, **kwargs)
-    # self.out.syn_idx = SynIndexClass(self, self.out.path, **kwargs)  # REDUNDANT (see syn.idx)
-    #try:
-    #  self.out.syn.files(timer=True)
-    #except OSError as err_message: 
-    #  self.__log.warning(str(err_message))
-    
+
   # -----------------------------------------------------------------------------
   
   def prepare_input(self, pold, run=False, **kwargs):
@@ -362,7 +371,8 @@ class ProjInv(Proj):
     from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
     from fullwavepy.project.files.other.index import ObsIndexFileSgy, ObsIndexFileTtr
     from fullwavepy.project.files.text.hed import ObsHedFile
-    
+    from fullwavepy.project.lists.extra import BackpropWavefieldFileList    
+
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
       ObsDataClass = ObsDataFileSgy
@@ -395,9 +405,10 @@ class ProjInv(Proj):
     from fullwavepy.project.files.gridded.models import ModelFileVtr, ModelFileSgy
     from fullwavepy.project.files.gridded.derivs import GradFile, PrecFile
     from fullwavepy.project.files.datalike.ttr import DumpDataFile, DumpCompareFile
-    from fullwavepy.project.lists.extra import CPFileList, DumpFileList
+    from fullwavepy.project.lists.extra import CPFileList, DumpFileList, BackpropWavefieldFileList
     from fullwavepy.project.files.text.misc import LastCheckpointFile
     from fullwavepy.project.generic.qc import Functional
+    
 
     self.out.lastcp = LastCheckpointFile(self, self.out.path, **kwargs)  
   
@@ -426,6 +437,8 @@ class ProjInv(Proj):
     #          CPFileList(self, file_class, file_id, file_start, **kwargs))    
     # self, proj, FileClass, file_id, file_start,
     
+    self.out.bw = BackpropWavefieldFileList(self.proj, **kwargs)
+
     dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
              'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
             }

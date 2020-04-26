@@ -10,6 +10,19 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 
 
+@traced
+@logged
+def current_dir(**kwargs):
+  """
+  Return a name of current directory.
+
+  Needs pwd.
+
+  """
+  o, e = bash('pwd')
+  dir_name = o.split('/')[-1].strip("\n") + '/'
+  return dir_name
+
 # -------------------------------------------------------------------------------
 
 
@@ -65,6 +78,8 @@ def bash(command, path='./', truncate=150, **kwargs):
   Notes
   -----
   It respects wildcards.
+
+  warning-messages should be implemented in callers by hand.
   
   Examples
   --------

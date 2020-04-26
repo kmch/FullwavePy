@@ -1,4 +1,3 @@
-# %load ~/software/fullwavepy/nb_config.py
 # -----------------------------------------------------------------------------
 # Load default notebook's callables (defined in fullwavepy/__init__.py)
 # -----------------------------------------------------------------------------

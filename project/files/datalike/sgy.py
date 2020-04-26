@@ -10,9 +10,13 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import BinaryProjFile, ArrayProjFile
+
 from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
+
+from fullwavepy.seismic.wavelets import *
+
+from fullwavepy.project.files.generic import BinaryProjFile, ArrayProjFile
 from fullwavepy.project.files.datalike.generic import DataFile, SynDataFile, ObsDataFile
 from fullwavepy.project.files.text.hed import HedFile
 from fullwavepy.project.files.other.index import IndexFile
@@ -317,9 +321,6 @@ class RawSignFile(DataFileSgy):
   """
   
   """  
-
-  # ----------------------------------------------------------------------------- 
-
   def __init__(self, proj, path, **kwargs):
     """
     
@@ -341,10 +342,10 @@ class RawSignFile(DataFileSgy):
     """
     from fullwavepy.ioapi.segy import array2sgy
     
-    if type(wavelet) == type(np.array([])):
-      array = wavelet
+    if not isinstance(wavelet, str):
+      array = wavelet     
     
-    elif isinstance(wavelet, str):
+    else: # for strings
       if 'fpeak' in kwargs:
         fpeak = kwargs['fpeak']
       else:
@@ -372,26 +373,12 @@ class RawSignFile(DataFileSgy):
       else:
         raise ValueError('Unknown wavelet type: ' + wavelet)
     
-    else:
-      raise TypeError('wavelet arg. must be either a string or an array')
-
     array2sgy(self.fname, array, self.proj.dt)
     
   # -----------------------------------------------------------------------------
   
   def read(self, **kwargs):
-    """
-    Convert into a 1D array.
-    
-    """
-    from fullwavepy.ndat.arrays import Arr1d
-    a = super().read(**kwargs)
-    
-    #assert a.shape[:2] == (1,1) # WE ASSUME shape=(1,1,nsamp)
-    if not isinstance(a, Arr1d):
-      self.array = Arr1d(a[0,0,:])
-    
-    return self.array
+    return Wavelet(super().read(**kwargs))
 
 
 # ------------------------------------------------------------------------------- 

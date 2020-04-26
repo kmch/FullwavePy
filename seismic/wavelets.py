@@ -9,13 +9,20 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.seismic.data import Data
+
+from fullwavepy.ndat.arrays import *
+
+from fullwavepy.seismic.data import *
 
 
 @traced
 @logged
 class Wavelet(Data):
-  pass
+  def plot(self, **kwargs):
+    assert self.shape[0] == 1
+    assert self.shape[1] == 1
+    a = Arr1d(self[0,0]) # FIXME
+    a.plot(**kwargs)
 
 
 # -------------------------------------------------------------------------------

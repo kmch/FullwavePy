@@ -25,6 +25,8 @@ from fullwavepy.math.funcs import *
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
 from fullwavepy.ioapi.fw3d import TtrFile, VtrFile, read_vtr, save_vtr
 from fullwavepy.ioapi.segy import SgyFile
+from fullwavepy.ioapi.su import *
+
 
 from fullwavepy.ndat.arrays import *
 from fullwavepy.ndat.manifs import *
@@ -45,6 +47,6 @@ from fullwavepy.seismic.data import *
 from fullwavepy.seismic.models import *
 from fullwavepy.seismic.srcrec import *
 from fullwavepy.seismic.wavefields import *
-
+from fullwavepy.seismic.wavelets import *
 
 from fullwavepy.signal.su import su_filter
