@@ -577,7 +577,7 @@ class Arr3d(Arr):
     if not ('x' in kwargs or 'y' in kwargs or 'z' in kwargs):
       nslices = 1
       kwargs['slice_at'] = 'y'
-      kwargs['node'] = 0
+      kwargs['node'] = self.shape[1] // 2
     elif 'x' in kwargs and not ('y' in kwargs or 'z' in kwargs):
       nslices = 1
       kwargs['slice_at'] = 'x'

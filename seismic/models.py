@@ -73,12 +73,14 @@ class LandModel(Model):
     # self.fs.extent = self.extent
     # return self.fs  
     pass
+  
   def topo_max(self, vel_air, **kwargs):
     for k in range(self.shape[-1]):
       if not np.all(self[...,k] == vel_air):
-        self.__log.info('Array-index (vertical axis) of max. topographic elevation %s' % k)
-        return k
-    raise ValueError('k_peak not found')
+        self.__log.info('Maximum land elevation has array index (along Z axis): %s' % k)
+        self.k_max_land = k
+        return self.k_max_land
+    raise ValueError('Maximum land elevation could not be found')
 
 
 # -------------------------------------------------------------------------------

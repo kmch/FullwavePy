@@ -64,6 +64,9 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   vmin = kw('vmin', np.min(image), kwargs)
   vmax = kw('vmax', np.max(image), kwargs)
   extent = kw('extent', None, kwargs)
+  noextent = kw('noextent', False, kwargs)
+  if noextent: # useful for QC of extent
+    extent = None  
   alpha = kw('alpha', 1, kwargs)
   lognorm = kw('lognorm', False, kwargs)
   norm = LogNorm() if lognorm else None
@@ -80,6 +83,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     y = dft_freqs(nsamps, which='positive', **kwargs)
     image = np.array(image[:, :len(y)])
     extent = [0, ntraces, y[-1], 0] 
+  
 
   # THIS CENTERS CELLS AT INTEGERS AGAIN WHICH WAS OVERWRITTEN BY CUSTOM EXTENT
   if extent is not None:
