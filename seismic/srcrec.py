@@ -369,26 +369,30 @@ class VolumeSR(Arr3d):
     need to convert it back.
     
     """
+    assert isinstance(ghs, np.ndarray) # lists are terribly slow and np.array(list)
+    # for each point is even worse an idea. This was a 10x bottle-neck
     assert len(ghs) == len(iss)
     
-    t1 = time.perf_counter()
+    # t1 = time.perf_counter()
     vout = np.copy(self.out)
-    t2 = time.perf_counter()
-    self.__log.info('Copying self.out to vout took %s s' % "{:15.12f}".format(t2-t1))
+    # t2 = time.perf_counter()
+    # self.__log.info('Copying self.out to vout took %s s' % "{:15.12f}".format(t2-t1))
     
-    t1 = time.perf_counter()
+    # t1 = time.perf_counter()
     vout[:, 0] += elef
     vout[:, 1] += efro
     vout[:, 2] += etop
-    t2 = time.perf_counter()
-    self.__log.info('Adding extra nodes to vout took %s s' % "{:15.12f}".format(t2-t1))    
+    # t2 = time.perf_counter()
+    # self.__log.info('Adding extra nodes to vout took %s s' % "{:15.12f}".format(t2-t1))    
     # here we compare grid-coords, NOT grid-coords to array-indices
     # => we don't subtract 1
     
-    t1 = time.perf_counter()
-    aghs = np.array(ghs)
-    t2 = time.perf_counter()
-    self.__log.info('aghs = np.array(ghs) took %s s' % "{:15.12f}".format(t2-t1))    
+
+    # THIS A BOTTLENECK!!!
+    # t1 = time.perf_counter()
+    # aghs = np.array(ghs)
+    # t2 = time.perf_counter()
+    # self.__log.info('aghs = np.array(ghs) took %s s' % "{:15.12f}".format(t2-t1))    
 
     reflected = []
     for vo in vout:
@@ -397,10 +401,10 @@ class VolumeSR(Arr3d):
         self.__log.debug('Skipping outside node %s with small ampl %s' % (str([x,y,z]), str(amp)))
         continue
       
-      t1 = time.perf_counter()
-      Gs = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))]
-      t2 = time.perf_counter()
-      self.__log.info('Locating the ghost took %s s' % "{:15.12f}".format(t2-t1))       
+      # t1 = time.perf_counter()
+      Gs = ghs[((ghs[:,0] == x) & (ghs[:,1] == y) & (ghs[:,2] == z))]
+      # t2 = time.perf_counter()
+      # self.__log.info('Locating the ghost took %s s' % "{:15.12f}".format(t2-t1))       
       
       if len(Gs) == 1:
         G = Gs[0]
@@ -410,12 +414,8 @@ class VolumeSR(Arr3d):
         self.__log.warn('No ghost found for the outside node %s. Skipping it.' % str([x,y,z]))
         continue
       
-      G = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))][0]
-      
-      t2 = time.perf_counter()
-      self.__log.info('Finding the ghost took %s s' % "{:15.12f}".format(t2-t1))
-
-      I = np.array(iss[ghs.index(list(G))])
+      I = np.array(iss[np.where(np.all(ghs==G, axis=1))[0][0]])
+      # I = np.array(iss[ghs.index(list(G))]) # this was the bottle-neck (see above)
       G = G[:3]
       
       #R[:3] = 2 * I - G
