@@ -165,7 +165,17 @@ class SegyPrepFile(ParameterFile):
     ttime_ms = ttime * 1000 # ms
     
     segyprep = {}
-  
+    
+    segyprep['add to depth'] = kw('add_to_depth', 0, kwargs)
+    
+    depth_type_default = 'both'
+    segyprep['depth type'] = kw('depth_type', depth_type_default, kwargs)
+    self.__log.warn('Setting depth type to default: %s' % str(depth_type_default))
+    # depth_type = kw('depth_type', None, kwargs)
+    #if depth_type is None:
+    #  pass # that's because I am not sure what the default is for geometry='segy'
+    #else:
+    #  segyprep['depth type'] = depth_type
     segyprep['problem'] = kw('problem', proj.problem, kwargs)
     segyprep['io'] = kw('io', proj.io, kwargs)  
     segyprep['reciprocity'] = kw('reciprocity', 0, kwargs)
@@ -176,9 +186,6 @@ class SegyPrepFile(ParameterFile):
     segyprep['minoffset'] = kw('minoffset', 0, kwargs) # IN METRES
     segyprep['maxoffset'] = kw('maxoffset', 1e6, kwargs) # IN METRES
     
-    
-    #segyprep['add to depth'] = proj.zsea
-
     segyprep['FFID'] = kw('FFID', 'yes', kwargs) 
     segyprep['text'] = kw('text', 'yes', kwargs)
     segyprep['debug'] = kw('debug', 'yes', kwargs)

@@ -14,6 +14,38 @@ from fullwavepy.project.files.generic import BinaryProjFile, AsciiProjFile
 
 @traced
 @logged
+class SRsDataFileTxt(AsciiProjFile):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class SourcesDataFileTxt(SRsDataFileTxt):
+  def __init__(self, proj, path, **kwargs):
+    super().__init__(proj, path, **kwargs)
+    self.name = self.pname + '-SourcesData.txt'
+    self.fname = self.path + self.name
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class ReceiversDataFileTxt(SRsDataFileTxt):
+  def __init__(self, proj, path, **kwargs):
+    super().__init__(proj, path, **kwargs)
+    self.name = self.pname + '-ReceiversData.txt'
+    self.fname = self.path + self.name
+
+
+# -------------------------------------------------------------------------------
+
+@traced
+@logged
 class GhostDataFileBin(BinaryProjFile):
   """
   """

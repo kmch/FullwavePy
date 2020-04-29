@@ -12,8 +12,16 @@ from fullwavepy.ndat.arrays import *
 class TestArr(TestCase):
   """
   """
+  def test_default_extent(self):
+    a = Arr1d(np.zeros((2)))
+    self.assertEqual(a.extent, [[0, 1]])
+    a = Arr2d(np.zeros((2,3)))
+    self.assertEqual(a.extent, [[0, 1], [0, 2]])
+    a = Arr3d(np.zeros((2,3,4)))
+    self.assertEqual(a.extent, [[0, 1], [0, 2], [0, 3]])
+
   def test_set_dx_1d(self):
-    a = Arr(np.zeros(nx))
+    a = Arr(np.zeros(10))
     self.assertEqual(len(a.shape), 1)
     # s = 'foobar'
     # self.assertEqual(core(s, ' ', 'bar'), 'foo')

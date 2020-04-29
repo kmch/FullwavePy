@@ -154,6 +154,7 @@ class HyperPointSR(object):
     
     psrs_to_spread = [self.pointsr]
     i_max = 2
+    self.__log.warn('Limiting no. of iterations to: %s' % str(i_max+1))
     i = 0
     self.snapshots = []
     while i < i_max:
@@ -495,7 +496,6 @@ class DipoleZ(Dipole):
 # -------------------------------------------------------------------------------
 
 
-
 @traced
 @logged
 def xyz2w(xyz, extended_dims, **kwargs):
@@ -506,4 +506,5 @@ def xyz2w(xyz, extended_dims, **kwargs):
   return int((x - 1) * ny * nz + (y - 1) * nz + z)
 
 
+# -------------------------------------------------------------------------------
 

@@ -64,6 +64,12 @@ class GenericPoint(np.ndarray):
     ----------
     funcs : list
     
+    Returns
+    vol : Arr3d
+      3D array of values.
+      It is endowed with vol.coords and vol.extent attributes.
+      The former stores coordinates.
+
     Notes
     -----
     See Hicks 2002, Geophysics for details.
@@ -83,7 +89,7 @@ class GenericPoint(np.ndarray):
     # APPLY ALONG TUPLE AXIS, I.E. TAKE POINTS COORDS AS AN ARGUMENT
     coord_axis = -1
     # DEAL WITH ONE COORDINATE AT A TIME
-    extent = []
+    extent = [] # WHAT IS THIS FOR?! FIXME
     for i, func in enumerate(funcs):
       # WRAPPER TO ACT ON A SINGLE COORDINATE OF AN ND-POINT
       func_of_xyz = lambda point : func(point[i])
@@ -97,7 +103,8 @@ class GenericPoint(np.ndarray):
     #self.vol[..., :-1] = cube
     #self.vol[..., -1] = vol
     
-    self.vol = Arr3d(vol) * self.value # SCALING WITH VALUE !!!!!!!!!
+    self.__log.debug('Scaling the cube with self.value=%s' % str(self.value))
+    self.vol = Arr3d(vol) * self.value
     self.vol.extent = self.cube_extent(cube, **kwargs)
     #self.vol._set_coords()
     self.__log.debug('self.vol.extent' + str(self.vol.extent))
@@ -109,18 +116,17 @@ class GenericPoint(np.ndarray):
   def cube_extent(self, cube, **kwargs):
     if len(cube.shape) == 4:
       x1, y1, z1 = cube[0,0,0]
-      x2, y2, z2 = cube[-1,-1,-1] + 1
+      self.__log.warning('Modified  extent of cube - tmp? DOUBLE-CHECK')
+      x2, y2, z2 = cube[-1,-1,-1] # + 1
       extent = [[x1, x2], [y1, y2], [z1, z2]]
+
     else:
       raise ValueError('cube.shape ' + str(cube.shape))
     
+    self.__log.debug('returning extent %s' % str(extent))    
     return extent
   
-  def interp(self, **kwargs):
-    pass
-  
-  def interp_hicks(self, **kwargs):
-    pass
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------

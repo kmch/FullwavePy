@@ -111,7 +111,7 @@ class Arr(np.ndarray):
     
     """
     if func is None:
-      func = lambda dim : [0, dim] # NOT dim-1; SEE GridProjFile ETC.
+      func = lambda dim : [0, dim-1]   # outdated: # NOT dim-1; SEE GridProjFile ETC.
     extent = []
     for dim in obj.shape:
       extent.append(func(dim))
@@ -186,11 +186,10 @@ class Arr(np.ndarray):
     box = box.reshape(extent.shape)
     inds = np.zeros(box.shape)
     for axis, _ in enumerate(box):
-      self.__log.debug('axis %s' % axis)
       b0, b1 = box[axis]
       inds[axis][0] = self._metre2index(b0, axis)
       inds[axis][1] = self._metre2index(b1, axis) + 1 # NOTE: FOR np.arange(b1, b2) etc.
-    
+      self.__log.debug('axis %s: i1=%s, i2=%s' % (axis, inds[axis][0], inds[axis][1]))    
     return inds.astype(int)
 
   # ----------------------------------------------------------------------------- 
@@ -423,13 +422,26 @@ class Arr3d(Arr):
   # -----------------------------------------------------------------------------
   
   ##@widgets('cmap', 'slice_at', 'node')
-  def plot_slice(self, slice_at='y', node=0, widgets=False, **kwargs):
+  def plot_slice(self, slice_at='y', node=None, widgets=False, **kwargs):
     """
     """
+    nx, ny, nz = self.shape
+    if node is None:
+      if slice_at == 'x':
+        node = kw('node', nx//2, kwargs)
+      elif slice_at == 'y':
+        node = kw('node', ny//2, kwargs)
+      elif slice_at == 'z':
+        node = kw('node', nz//2, kwargs)      
+      else:
+        raise ValueError('Wrong slice_at: %s' % str(slice_at))
+
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     kwargs['title'] = 'slice at %s=%s' % (slice_at, node)
     del_kw('slice_at', kwargs) # JUST IN CASE
+    
     ax = arr2d.plot(**kwargs)
+  
     if slice_at == 'z': # DISABLE?
       ax.invert_yaxis()
     return ax
@@ -576,8 +588,6 @@ class Arr3d(Arr):
     """
     if not ('x' in kwargs or 'y' in kwargs or 'z' in kwargs):
       nslices = 1
-      kwargs['slice_at'] = 'y'
-      kwargs['node'] = self.shape[1] // 2
     elif 'x' in kwargs and not ('y' in kwargs or 'z' in kwargs):
       nslices = 1
       kwargs['slice_at'] = 'x'

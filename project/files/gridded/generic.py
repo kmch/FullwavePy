@@ -28,6 +28,9 @@ class GridProjFile(ArrayProjFile):
     
     Notes
     -----
+
+    what's below is outdated:
+
     We CAN'T put in __init__ as these files are initalized 
     before params like proj.nx1 are known (they need input 
     files to be initialized already).
@@ -41,11 +44,11 @@ class GridProjFile(ArrayProjFile):
     """
     node1 = 1 # plot_image WILL SUBTRACT 0.5 TO CENTER AT INTEGERS AGAIN
     x1 = node1
-    x2 = x1 + self.proj.nx1
+    x2 = x1 + self.proj.nx1 - 1
     y1 = node1
-    y2 = y1 + self.proj.nx2 
+    y2 = y1 + self.proj.nx2 - 1
     z1 = node1
-    z2 = z1 + self.proj.nx3
+    z2 = z1 + self.proj.nx3 - 1
     self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
     return self.extent
   
