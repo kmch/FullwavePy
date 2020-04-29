@@ -3,6 +3,7 @@
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
+import time # for finding the bottle-necks
 import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
@@ -370,14 +371,24 @@ class VolumeSR(Arr3d):
     """
     assert len(ghs) == len(iss)
     
+    t1 = time.perf_counter()
     vout = np.copy(self.out)
+    t2 = time.perf_counter()
+    self.__log.info('Copying self.out to vout took %s s' % "{:15.12f}".format(t2-t1))
+    
+    t1 = time.perf_counter()
     vout[:, 0] += elef
     vout[:, 1] += efro
     vout[:, 2] += etop
+    t2 = time.perf_counter()
+    self.__log.info('Adding extra nodes to vout took %s s' % "{:15.12f}".format(t2-t1))    
     # here we compare grid-coords, NOT grid-coords to array-indices
     # => we don't subtract 1
-
+    
+    t1 = time.perf_counter()
     aghs = np.array(ghs)
+    t2 = time.perf_counter()
+    self.__log.info('aghs = np.array(ghs) took %s s' % "{:15.12f}".format(t2-t1))    
 
     reflected = []
     for vo in vout:
@@ -386,7 +397,10 @@ class VolumeSR(Arr3d):
         self.__log.debug('Skipping outside node %s with small ampl %s' % (str([x,y,z]), str(amp)))
         continue
       
+      t1 = time.perf_counter()
       Gs = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))]
+      t2 = time.perf_counter()
+      self.__log.info('Locating the ghost took %s s' % "{:15.12f}".format(t2-t1))       
       
       if len(Gs) == 1:
         G = Gs[0]
@@ -397,6 +411,10 @@ class VolumeSR(Arr3d):
         continue
       
       G = aghs[((aghs[:,0] == x) & (aghs[:,1] == y) & (aghs[:,2] == z))][0]
+      
+      t2 = time.perf_counter()
+      self.__log.info('Finding the ghost took %s s' % "{:15.12f}".format(t2-t1))
+
       I = np.array(iss[ghs.index(list(G))])
       G = G[:3]
       
