@@ -116,7 +116,7 @@ class GenericPoint(np.ndarray):
   def cube_extent(self, cube, **kwargs):
     if len(cube.shape) == 4:
       x1, y1, z1 = cube[0,0,0]
-      self.__log.warning('Modified  extent of cube - tmp? DOUBLE-CHECK')
+      self.__log.debug('Modified  extent of cube - tmp? DOUBLE-CHECK')
       x2, y2, z2 = cube[-1,-1,-1] # + 1
       extent = [[x1, x2], [y1, y2], [z1, z2]]
 
@@ -166,7 +166,9 @@ class Points3d(Points):
     for key, val in self.items():
       #assert len(val) == 3 # IT CAN HAVE METADATA
       self[key] = np.array([val[i1], val[i2]])
-  
+
+  # ----------------------------------------------------------------------------- 
+
   def plot_slice(self, ax=None, **kwargs):
     """
     """
@@ -207,7 +209,8 @@ class Points3d(Points):
     for i in range(3):
       self.plot_slice(s[i], fig.axes[i])
 
-  
+  # -----------------------------------------------------------------------------   
+
   def plot(self, *args, **kwargs):
     #if 'slice_at' in kwargs:
     self.plot_slice(*args, **kwargs)
@@ -235,10 +238,8 @@ class Points3d(Points):
     
     return fig       
      
-  
-  
+  # -----------------------------------------------------------------------------   
+
+
 # -------------------------------------------------------------------------------
-
-
-
 

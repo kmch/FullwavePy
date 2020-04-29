@@ -2,18 +2,18 @@
 # -----------------------------------------------------------------------------
 # SEG-Y MAPPING
 # -----------------------------------------------------------------------------
-sgyhw = {'sid': 'tracf',
-         'rid': 'fldr',
-         'lid': 'ep',
-        }
+# sgyhw = {'sid': 'tracf',
+#          'rid': 'fldr',
+#          'lid': 'ep',
+#         }
 
 
-exe = {'fullwave':       '~/my_phd/fullwave3d_git_kajetanch/bin/fullwave3D.exe',
-       'fullwave_local': '~/my_phd/fullwave3d_git_kajetanch/bin/fullwave3D.exe',
-       'fsprep':         '~/my_phd/fsprep/fsprep',
-       'segyprep':       '/home/kmc3817/light_PhD/fullwave3D/segyprep_v3.16/bin/segyprep_v3.16',
-       'modprep':        '/home/kmc3817/light_PhD/fullwave3D/modprep/modprep.exe',
-      }
+# exe = {'fullwave':       '~/my_phd/ FILL WITH PATH /bin/fullwave3D.exe',
+#        'fullwave_local': '~/my_phd/ FILL WITH PATH /bin/fullwave3D.exe',
+#        'fsprep':         '~/my_phd/fsprep/fsprep',
+#        'segyprep':       '/home/kmc3817/light_PhD/fullwave3D/segyprep_v3.16/bin/segyprep_v3.16',
+#        'modprep':        '/home/kmc3817/light_PhD/fullwave3D/modprep/modprep.exe',
+#       }
 
 
 # -----------------------------------------------------------------------------

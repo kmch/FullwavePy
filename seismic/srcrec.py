@@ -54,12 +54,14 @@ class SRs(Points3d):
     self.set_type(srtype_ids, **kwargs)
     #self.sprd_fctrs = {}
     self.hyper = {}
-
+    nsr = len(self.items())
+    i = 1
     for srid, sr in self.items():
-      self.__log.info('Calculating spread-factors for SRID ' + str(srid)) 
+      self.__log.info('ID %s (%s/%s)' % (srid, i, nsr))
       self.hyper[srid] = HyperPointSR(sr, **kwargs)
       self.hyper[srid].spread_factors(*args, **kwargs)
-    
+      i += 1
+  
   # -----------------------------------------------------------------------------
   
 
@@ -125,6 +127,7 @@ class HyperPointSR(object):
 
   # -----------------------------------------------------------------------------
   
+  @timer
   def find_vol(self, **kwargs):
     """
     """
@@ -145,22 +148,26 @@ class HyperPointSR(object):
     
   # -----------------------------------------------------------------------------
   
+  @timer
   def spread_factors(self, ghs, iss, ine, elef, efro, etop, **kwargs):
     """
     Iterative 
+    
+    Notess
+    -----
+    We pass kwargs to allow for 
+
     """
     self.find_vol(**kwargs)
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
     psrs_to_spread = [self.pointsr]
     i_max = 2
-    self.__log.warn('Limiting no. of iterations to: %s' % str(i_max+1))
     i = 0
     self.snapshots = []
-    while i < i_max:
-      i += 1    
+    while i <= i_max:
       n_to_spread = len(psrs_to_spread)
-      self.__log.info('Iteration %s, no. of points to spread: %s' % (i, n_to_spread)) 
+      self.__log.info('It. %s/%s: %s points to spread...' % (i, i_max, n_to_spread)) 
 
       if n_to_spread == 0:
         self.__log.info('No more points to spread. Returning.')
@@ -170,13 +177,15 @@ class HyperPointSR(object):
       new_psrs_to_spread = []
       for psr_to_spread in psrs_to_spread:
         self.__log.debug('psr_to_spread ' + str(psr_to_spread))
-        psr_to_spread.spread_factors(r_hicks=self.r_hicks)
-        psr_to_spread.vol.split(ine, elef, efro, etop)
         
-        self._update_vol(np.copy(psr_to_spread.vol.ins))
+        del_kw('r_hicks', kwargs)
+        psr_to_spread.spread_factors(r_hicks=self.r_hicks, **kwargs)
+        psr_to_spread.vol.split(ine, elef, efro, etop, **kwargs)
+        
+        self._update_vol(np.copy(psr_to_spread.vol.ins), **kwargs)
         
         
-        reflected = psr_to_spread.vol.bounce_off(ghs, iss, elef, efro, etop)
+        reflected = psr_to_spread.vol.bounce_off(ghs, iss, elef, efro, etop, **kwargs)
         if len(reflected) > 0:
           new_psrs_to_spread += reflected # append would create a nested list (undesired)
       
@@ -185,6 +194,7 @@ class HyperPointSR(object):
 
   # -----------------------------------------------------------------------------
   
+  @timer
   def _update_vol(self, nodes_in, **kwargs):
     for node_in in nodes_in:
       #self.__log.info('node_in ' + str(node_in))
@@ -238,6 +248,7 @@ class PointSR(GenericPoint):
   which has unique methods such as split and bounce_off.
   
   """
+  @timer
   def spread_factors(self, r_hicks, **kwargs):
     """
     This wrapper-class probably!  can't be avoided as it transmits
@@ -247,6 +258,7 @@ class PointSR(GenericPoint):
 
   # -----------------------------------------------------------------------------
   
+  @timer
   def spread(self, *args, **kwargs):
     """
     args are just passed from children to parent.
@@ -276,6 +288,7 @@ class PointSR(GenericPoint):
 class VolumeSR(Arr3d):
   """
   """
+  @timer
   def split(self, *args, **kwargs):
     """
     """
@@ -295,7 +308,8 @@ class VolumeSR(Arr3d):
       setattr(self, attr, arr)
 
   # -----------------------------------------------------------------------------    
-
+  
+  @timer
   def flag(self, ine, *args, **kwargs):
     """
     ine: array of interior/accurately at FS/exterior nodes
@@ -312,7 +326,8 @@ class VolumeSR(Arr3d):
     return self.flgs
   
   # -----------------------------------------------------------------------------
-
+  
+  @timer
   def _grid_coords_2_egrid_indices(self, elef, efro, etop, **kwargs):
     """
     Rationale
@@ -320,7 +335,7 @@ class VolumeSR(Arr3d):
     use vol.coords to pick subarray from inext-nodes array etc
     
     convert coords (x,y,z) of grid:
-     x = 1, 2, ... nx1 
+    x = 1, 2, ... nx1 
      
     (coords is an array as vol.coords laid out with 
     x  assumed to be the slowest and z the fastest index)
@@ -340,7 +355,8 @@ class VolumeSR(Arr3d):
     return indices
 
   # -----------------------------------------------------------------------------
-
+  
+  @timer
   def bounce_off(self, ghs, iss, elef, efro, etop, **kwargs):
     """
     ghs : list of ghosts

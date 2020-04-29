@@ -62,7 +62,7 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     if len(fnames) > 1:
      raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
     elif len(fnames) == 0:
-     self.__log.warn('Pattern {} matched by none of the files. Returning...'.format(pattern))
+     self.__log.debug('Pattern {} matched by none of the files. Returning...'.format(pattern))
      return
     else:
      suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]

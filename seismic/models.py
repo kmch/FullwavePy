@@ -18,8 +18,21 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Model(Arr3d):
-  def extract_interface(self, **kwargs):
-    pass
+  def __new__(cls, *args, **kwargs):
+    """
+    Parameters
+    ----------
+    k_fs : int (optional)
+      Array index along Z-axis (depth) corresponding 
+      to the origin of coordinates which is equivalent
+      in SEGY to sea level. 
+      In Fullwave3D for btop = 0 sea level is at node 0
+      i.e. one node above the model grid. 
+      See caldera.ipynb for details.
+
+    """
+    cls.k_fs = kw('k_fs', None, kwargs) # see the docstring
+    return super().__new__(cls, *args, **kwargs)
 
 
 # -------------------------------------------------------------------------------
@@ -94,6 +107,7 @@ class MarineModel(Model):
     # self.sb.extent = self.extent
     # return self.sb
     pass
+
 
 # -------------------------------------------------------------------------------
 

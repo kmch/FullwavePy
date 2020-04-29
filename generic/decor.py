@@ -32,7 +32,7 @@ def timer(func):
     
     if timer:
       t = end_time - start_time
-      print('Execution time of {}: {} s'.format(func.__name__, t))    
+      print('Exec. time: {} s <{}>'.format("{:15.12f}".format(t), func.__name__))    
     return value
   return wrapper_timer
 

@@ -169,8 +169,9 @@ class SegyPrepFile(ParameterFile):
     segyprep['add to depth'] = kw('add_to_depth', 0, kwargs)
     
     depth_type_default = 'both'
+    if 'depth_type' not in kwargs:
+      self.__log.warn('Setting depth type to default: %s' % str(depth_type_default))
     segyprep['depth type'] = kw('depth_type', depth_type_default, kwargs)
-    self.__log.warn('Setting depth type to default: %s' % str(depth_type_default))
     # depth_type = kw('depth_type', None, kwargs)
     #if depth_type is None:
     #  pass # that's because I am not sure what the default is for geometry='segy'

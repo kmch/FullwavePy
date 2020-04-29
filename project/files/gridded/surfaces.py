@@ -222,10 +222,18 @@ class FsFile(SurfZFile, GridProjFile):
     """
     set log_lvl(n<=10) to see the output messages.
     """
+    for fname in [self.proj.i.ghb.fname, self.proj.i.ght.fname]:
+      self.__log.info('Deleting %s...' % fname)
+      cmd = 'rm %s' % fname
+      o, e = bash(cmd, **kwargs)
+
     exe = self.proj.exe['fsprep']
     path = exe[ :-len('fsprep')]
+    self.__log.info('Making %s...' % exe)
     o, e = bash('make -C %s' % path)
+
     cmd = exe + " " + self.proj.name
+    self.__log.info('Running %s...' % cmd)
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
     self.__log.info(o) 
     if len(e) > 0:
