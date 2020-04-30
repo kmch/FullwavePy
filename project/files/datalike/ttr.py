@@ -318,7 +318,7 @@ class DumpCompareFile(DataFileTtr):
     self.read(**kwargs)
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs)
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    self.array.plot(**kwargs)
+    return self.array.plot(**kwargs)
    
   # -----------------------------------------------------------------------------
   

@@ -39,6 +39,8 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     self.sid = sid
     self.it = it
     
+    self.fname = 'Not set yet. Make sure the files exist and/or re-initialize the project'
+
     if float(ts).is_integer():
       ts = str(ts).rjust(6,'0') # YES, 6 DIGITS
     else:

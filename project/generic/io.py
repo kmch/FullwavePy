@@ -116,7 +116,7 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------
 
-  def rsync(self, thr, host_nick, **kwargs):
+  def rsync(self, thr, host_nick, only_logs=False, **kwargs):
     """
     thr : str 
       'inp' or 'out'
@@ -126,7 +126,7 @@ class ProjThroughput(object):
     We could actually *sync* local and remote dirs so that 
     they are the same all the time (what Dropbox does) but 
     instead we push inp and pull out.
-    
+
     """
     self._configure_remote(host_nick, **kwargs)
     local_path = self.proj.path
@@ -139,6 +139,9 @@ class ProjThroughput(object):
     elif thr == 'out':
       self.__log.debug('Pulling out from remote to local.')
       source = remot_path + '/out/' # NOTE: remote is now source!
+      if only_logs:
+        source += '*.log'
+        self.__log.info('Syncing only %s' % source)
       destin = local_path + '/out'  # no slash either
     else:
       raise ValueError('thr %s' %s)
@@ -191,7 +194,8 @@ class ProjInput(ProjThroughput):
     from fullwavepy.project.files.datalike.ttr import SignatureFileTtr
     from fullwavepy.project.files.gridded.misc import InextFile
     from fullwavepy.project.files.gridded.surfaces import TopoFile, FsFile, ExtendedFsFile, InterpolFsFile
-    from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt
+    from fullwavepy.project.files.other.ghost import GhostDataFileBin, GhostDataFileTxt, \
+      SourcesDataFileTxt, ReceiversDataFileTxt
     from fullwavepy.project.files.text.srcrec import SourcesFile, ReceiversFile
     from fullwavepy.project.files.text.misc import RawSeisTxtFile, JobInfoFile
     from fullwavepy.project.files.text.runfiles import SegyPrepFile, Runfile, Skeleton
@@ -229,6 +233,8 @@ class ProjInput(ProjThroughput):
     self.ghosttxt = GhostDataFileTxt(self.proj, self.path, **kwargs)
     self.ght = self.ghosttxt
     self.ine = InextFile(self.proj, self.path, **kwargs)
+    self.sdata = SourcesDataFileTxt(self.proj, self.path, **kwargs)
+    self.rdata = ReceiversDataFileTxt(self.proj, self.path, **kwargs)
     
     self.s = SourcesFile(self.proj, self.path, **kwargs)
     self.r = ReceiversFile(self.proj, self.path, **kwargs)

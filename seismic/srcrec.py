@@ -542,3 +542,31 @@ def xyz2w(xyz, extended_dims, **kwargs):
 
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged
+def w2xyz(w, extended_dims, **kwargs):
+  """
+  For QC.
+  
+  """
+  assert float(w).is_integer()
+  assert w > 0
+  enx, eny, enz = extended_dims
+  
+  if w > enx * eny * enz:
+    raise ValueError('w > enx * eny * enz')
+
+
+  i = 1
+  for x in range(1, enx+1):
+    for y in range(1, eny+1):
+      for z in range(1, enz+1):
+        if i == w:
+          return x, y, z
+        i += 1
+  raise ValueError('Could not find x,y,z for w=%s' % w)
+
+
+# -------------------------------------------------------------------------------
+

@@ -760,9 +760,11 @@ def read_geo(fname, unit='node', **kwargs):
   content = read_txt(fname, **kwargs)
   header = content[0]
   data = content[1: ]
-  
-  records = {}
-  
+
+  # NOTE  
+  # A list, not dict as we want to have a data-structure preserving the order of the records!
+  # (this will matter)
+  records = [] 
   for row in data:
     if unit == 'm':
       try:
@@ -784,7 +786,7 @@ def read_geo(fname, unit='node', **kwargs):
     else:
       raise ValueError('Unknown unit: ' + str(unit))  
     
-    records[int(row[0])] = xyz
+    records.append(int(row[0]), xyz)
   
   read_geo._log.debug('Assuming all keys are integer numbers')
   
