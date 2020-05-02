@@ -112,7 +112,11 @@ class ShotFileList(ProjFileList):
     proj = self.proj
     
     try:
-      sids_all = self.proj.inp.s.read(dx=1).keys() # dx IS DUMMY HERE
+      sids_all = [s.ID for s in self.proj.inp.s.read(dx=1).li] # dx IS DUMMY HERE
+    except AttributeError as err:
+      self.__log.warn(str(err))
+      return []
+
     except FileNotFoundError as err:
       self.__log.warn('Returning [] due to FileNotFoundError: ' + str(err)) #FIXME: WHY DOESN'T err CONTAIN FileNotFoundError
       return []
@@ -126,8 +130,9 @@ class ShotFileList(ProjFileList):
       sids = sids_all
     else:
       sids = self._parse_sid_ranges(csrefs, **kwargs)
-      
-    sids = sorted(sids)
+    
+    # we don't sort any more since now they're read in the order they appear in geom files into a list
+    # sids = sorted(sids) 
     return sids
 
   # -----------------------------------------------------------------------------      

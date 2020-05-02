@@ -124,18 +124,20 @@ class ProteusProjInv(ProteusProj, ProjInv):
 class ProteusBathyTopo(BathyTopo):
   def __new__(cls, *args, **kwargs):
     #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
-    cls.z_sea = 0.0
-    cls.x1 = -8.0e4
-    cls.x2 = +8.0e4
-    cls.y1 = -4.0e4
-    cls.y2 = +4.0e4 
-    cls.z1 = 0
-    cls.z2 = 0     
-    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
+    
+    x1 = -8.0e4
+    x2 = +8.0e4
+    y1 = -4.0e4
+    y2 = +4.0e4 
+    z1 = 0
+    z2 = 0     
+    kwargs['extent'] = [[x1, x2], [y1, y2], [z1, z2]]
     kwargs['shape'] = (3201, 1601, 1)
     
     obj = super().__new__(cls, *args, **kwargs)
-    cls.dx = obj.dx    
+    # cls.dx = obj.dx    
+    obj.z_sea = 0.0
+    
     # obj = obj.slice(slice_at='z')
     # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
     # cls.extent = obj.extent
@@ -163,22 +165,22 @@ class BenStartVp(ProteusStartVp):
   def __new__(cls, *args, **kwargs):
     #cls.dx = [50, 50, 50]  # [dx, dy, dz] m
   
-    cls.x1 = -6.0e4
-    cls.x2 = +6.4e4
-    cls.y1 = -1.4e4
-    cls.y2 = +2.9e4 
+    x1 = -6.0e4
+    x2 = +6.4e4
+    y1 = -1.4e4
+    y2 = +2.9e4 
     # Z-axis points downwards   
-    cls.z1 = -1.5e3 
-    cls.z2 = +5.0e3      
-    cls.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2], [cls.z1, cls.z2]]
+    z1 = -1.5e3 
+    z2 = +5.0e3      
+    kwargs['extent'] = [[x1, x2], [y1, y2], [z1, z2]]
     kwargs['shape'] = (2481, 861, 131)
     
     obj = super().__new__(cls, *args, **kwargs)
-    cls.dx = obj.dx # otherwise is not passed in .copy()
+    # cls.dx = obj.dx # otherwise is not passed in .copy()
 
-    obj.k_peak = 23
-    obj.z_peak = -obj.k_peak * obj.dx[-1]
-    obj.k_sea = 30
+    # obj.k_peak = 23
+    # obj.z_peak = -obj.k_peak * obj.dx[-1]
+    obj.k_sea = 29
     obj.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
     return obj
   

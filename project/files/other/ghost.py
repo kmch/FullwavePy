@@ -84,7 +84,7 @@ class GhostDataFileTxt(AsciiProjFile):
     weights : list
     
     """
-    from fullwavepy.immerse.points import Ghosts
+    # from fullwavepy.immerse.points import Ghosts
     
     ct = super().read(**kwargs)
     
@@ -135,7 +135,7 @@ class GhostDataFileTxt(AsciiProjFile):
     auxs = [[[[[float(i) for i in j] for j in k] for k in l] for l in m] for m in auxs]  
     weights = [[[[float(i) for i in j] for j in k] for k in l] for l in weights]
     
-    self.ghosts = Ghosts(ghosts)
+    self.ghosts = np.array(ghosts) #Ghosts(ghosts)
     self.isects = intersects
     self.ficts = ficts
     self.auxs = auxs

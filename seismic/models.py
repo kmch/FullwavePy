@@ -31,8 +31,9 @@ class Model(Arr3d):
       See caldera.ipynb for details.
 
     """
-    cls.k_fs = kw('k_fs', None, kwargs) # see the docstring
-    return super().__new__(cls, *args, **kwargs)
+    obj = super().__new__(cls, *args, **kwargs)
+    obj.k_fs = kw('k_fs', None, kwargs) # see the docstring
+    return obj
 
 
 # -------------------------------------------------------------------------------

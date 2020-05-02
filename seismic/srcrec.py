@@ -3,10 +3,11 @@
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
-import time # for finding the bottle-necks
+import time # to help find bottle-necks
 import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
+from ipywidgets import Dropdown, IntSlider
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
@@ -15,18 +16,72 @@ from fullwavepy.ndat.points import GenericPoint, Points3d
 from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
 
 
+# FIXME sync it somehow with hick_sources.f90
 clip_at = 1e-9 # spread-factors smaller than this will be neglected
+
+
+@traced
+@logged
+def vp2rho(vp, **kwargs):
+  """
+  Convert P-wave velocity into density using 
+  Gardner relation of the same form as in Fullwave3D.
+  
+  Parameters
+  ----------
+  vp : float
+    P-wave velocity in m/s.
+
+  Returns
+  -------
+  rho : float
+    Density in kg/m3.
+
+  Notes
+  -----
+  Units seem OK. E.g. vp=3000 m/s gives 2294 kg/m3
+  which looks like a physical density.
+
+  """
+  # Velocity range in which Gardner's relation is valid
+  vp_min = 1600
+  vp_max = 5000
+  
+  if (vp < vp_min):
+    vp2rho._log.warno("vp=%s < vp_min=%s of Gardner's relation, setting water density")
+    vp2rho._log.warn("Sync vp_min with Fullwave3D's Gardner cutoff etc.")
+    rho = 1000
+  elif (vp > vp_max):
+    raise ValueError("Gardner relation not valid for this vp=%s > vp_max=%s" % (vp, vp_max))
+  else:
+    rho = 310 * (vp**0.25)
+  
+  return rho
+
+
+# -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class SRs(Points3d):
   """
+  li : list
+    List of [id, xyz] records, where xyz = (x,y,z)
+    
   """
-  def __new__(cls, dictio, **kwargs):
-    for key, val in dictio.items():
-      dictio[key] = PointSR(val)
-    return super().__new__(cls, dictio, **kwargs)
+  def __init__(self, li, **kwargs):
+    self.__log.debug('li: %s' % str(li))
+    self.li = []
+    for l in li:
+      ID, xyz = l
+      self.li.append(PointSR(xyz, ID=ID))
+    
+    # cls.__log.debug('type(new_li[0]) %s' % type(new_li[0]))
+    # print(new_li)
+    # return super().__new__(cls, new_li)
+    # return new_li
+    # super().__init__(new_li, **kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -43,10 +98,17 @@ class SRs(Points3d):
             3 : DipoleX,
            }
     
-    assert len(srtype_ids) == len(self)
-    for srtype_id, [k, v] in zip(srtype_ids, self.items()):
-      self[k] = mapp[srtype_id](v, **kwargs)
- 
+    assert len(srtype_ids) == len(self.li)
+    # for srtype_id, sr[k, v] in zip(srtype_ids, self.items()):
+    new_list = []
+    for srtype_id, sr in zip(srtype_ids, self.li):
+      clss = mapp[srtype_id]
+      self.__log.debug('Appending instance of %s' % str(clss))
+      new_list.append(clss(sr, ID=sr.ID, **kwargs))
+
+    self.__log.debug('new_list: %s' % str(new_list))
+    self.li = new_list
+  
   # ----------------------------------------------------------------------------- 
  
   def spread_factors(self, srtype_ids, *args, **kwargs):
@@ -55,16 +117,30 @@ class SRs(Points3d):
     self.set_type(srtype_ids, **kwargs)
     #self.sprd_fctrs = {}
     self.hyper = {}
-    nsr = len(self.items())
+    nsr = len(self.li)
     i = 1
-    for srid, sr in self.items():
+    # for srid, sr in self.items():
+    for sr in self.li:
+      srid = sr.ID
       self.__log.info('ID %s (%s/%s)' % (srid, i, nsr))
-      self.hyper[srid] = HyperPointSR(sr, **kwargs)
+      self.hyper[srid] = HyperPointSR(sr, ID=srid, **kwargs)
       self.hyper[srid].spread_factors(*args, **kwargs)
       i += 1
   
   # -----------------------------------------------------------------------------
   
+  def qc_sprd_fctrs(self, **kwargs):
+    pass
+  
+  def widgets_qc_sprd_fctrs(self, **kwargs):
+    snap_max = 1
+    raise ValueError(snap_max)
+    widgets = dict(srid=Dropdown(options=[i.ID for i in self.li]),
+                   snap=IntSlider(value=snap_max, min=0, max=snap_max, step=1),
+                   slice_at=Dropdown(options=['y', 'x', 'z']),
+                   node=IntSlider(value=rmax, min=0, max=2*rmax-1, step=1))
+    return widgets
+
 
 # -------------------------------------------------------------------------------  
 
@@ -159,6 +235,8 @@ class HyperPointSR(object):
     We pass kwargs to allow for 
 
     """
+    assert isinstance(ghs, np.ndarray)
+
     self.find_vol(**kwargs)
     self.vol[..., -1] = 0.0 # OTHERWISE GROWING IN IPYNB
     
@@ -192,6 +270,7 @@ class HyperPointSR(object):
       
       self.snapshots.append(np.copy(self.vol))
       psrs_to_spread = list(new_psrs_to_spread)
+      i += 1
 
   # -----------------------------------------------------------------------------
   
@@ -486,8 +565,16 @@ class Dipole(PointSR):
   # -----------------------------------------------------------------------------
   
   def spread(self, r, **kwargs):
+    """
+    Notes
+    -----
+    Particle velocity is proportional 
+    to the NEGATIVE pressure gradient (v_i ~ -dp/dx_i),
+    hence the minus sign in func2.
+
+    """
     func1 = lambda x : kaiser(x, r) * sinc(x) 
-    func2 = lambda x : kaiser(x, r, dipole=True) * dsinc_dx(x)
+    func2 = lambda x : kaiser(x, r, dipole=True) * dsinc_dx(x) * (-1)
     
     funcs = [func1 for i in range(len(self))]
     funcs[self.axis] = func2

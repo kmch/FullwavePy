@@ -423,10 +423,6 @@ class DumpDataFile(DataFileTtr): # NOT USED?
     A = super().read(**kwargs)
     
     # READ SOURCE IDs
-    #nsrcs = len(self.proj.inp.s.read(unit='m'))
-    #self.__log.info('Ommiting first ' + str(nsrcs) +
-    #                 '  trace(s) as source-wavelet(s)')
-    #A = A[nsrcs: ]
     self.__log.info('Ommiting first trace (the source wavelet)')
     A = A[1: ]
     

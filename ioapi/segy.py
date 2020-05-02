@@ -786,7 +786,7 @@ def read_geo(fname, unit='node', **kwargs):
     else:
       raise ValueError('Unknown unit: ' + str(unit))  
     
-    records.append(int(row[0]), xyz)
+    records.append([int(row[0]), xyz])
   
   read_geo._log.debug('Assuming all keys are integer numbers')
   

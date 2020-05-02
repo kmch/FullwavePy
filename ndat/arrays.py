@@ -345,7 +345,7 @@ class Arr2d(Arr):
     kwargs['extent'] = np.ravel(self.extent) # ravel JUST IN CASE
     
     # IT SHOULDN'T BE APPLIED TWICE!
-    self = modify_array(self, **kwargs)
+    self = modify_array(self, **kwargs) # FIXME: MOVE IT SOMEWHERE ELSE?!
     
     if wiggle:
       ax = plot_wiggl(self, **kwargs)

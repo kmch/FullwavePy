@@ -168,15 +168,11 @@ class SegyPrepFile(ParameterFile):
     
     segyprep['add to depth'] = kw('add_to_depth', 0, kwargs)
     
-    depth_type_default = 'both'
-    if 'depth_type' not in kwargs:
-      self.__log.warn('Setting depth type to default: %s' % str(depth_type_default))
-    segyprep['depth type'] = kw('depth_type', depth_type_default, kwargs)
-    # depth_type = kw('depth_type', None, kwargs)
-    #if depth_type is None:
-    #  pass # that's because I am not sure what the default is for geometry='segy'
-    #else:
-    #  segyprep['depth type'] = depth_type
+    z_type_default = 'ibfs'
+    if 'z_type' not in kwargs:
+      self.__log.warn('Setting z type to (kmc custom) default: %s' % str(z_type_default))
+    segyprep['z type'] = kw('z type', z_type_default, kwargs)
+   
     segyprep['problem'] = kw('problem', proj.problem, kwargs)
     segyprep['io'] = kw('io', proj.io, kwargs)  
     segyprep['reciprocity'] = kw('reciprocity', 0, kwargs)
@@ -225,7 +221,6 @@ class SegyPrepFile(ParameterFile):
     segyprep['x shift'] = 0
     segyprep['y origin'] = self.proj.box[2]
     segyprep['y shift'] = 0
-    segyprep['z type'] = 'elevation' 
     return segyprep
   
   # -----------------------------------------------------------------------------  

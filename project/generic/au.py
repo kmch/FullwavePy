@@ -607,11 +607,6 @@ class ProjEnv(object):
     factor : int 
       Take every {factor}th shot.
     """
-    # try:
-    #   self.proj.i.s.read()
-
-    
-    # list2str(np.arange(1,162)[::factor])
     pass
   
   # -----------------------------------------------------------------------------

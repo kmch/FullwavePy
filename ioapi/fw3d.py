@@ -322,11 +322,9 @@ def read_pgy(fname, **kwargs):
   data = content[1: ]
   nx3, nx2, nx1 = [int(float(i)) for i in header[1: ]]
   
-  records = {}
+  records = [] # can't use dict as we want ordered, see read_geo
   for row in data:
-    records[int(row[0])] = [float(row[3]), float(row[2]), float(row[1])]
-  
-  #records = dict(sorted(records.items()))
+    records.append([int(row[0]), np.array([float(row[3]), float(row[2]), float(row[1])])])
   
   return records
   

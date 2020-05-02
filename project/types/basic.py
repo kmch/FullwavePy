@@ -491,7 +491,7 @@ class ProjInv(Proj):
     run smoothly.
     
     """
-    sources_dict = self.i.s.read(**kwargs)
+    pass
 
   # -----------------------------------------------------------------------------
 

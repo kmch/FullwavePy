@@ -40,7 +40,7 @@ class Functional(object):
     widgets = {}
     p = self.proj
     
-    sids = list(p.i.s.read().keys())
+    sids = [s.ID for s in p.i.s.read().li]
     widgets['sids'] = SelectMultiple(options=sids, value=sids)
     
     self.widgets = widgets

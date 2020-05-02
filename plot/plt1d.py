@@ -17,16 +17,6 @@ def plot_1d(**kwargs):
   """
   Plot multiple lines and points.
   
-  Parameters
-  ----------
-  **kwargs : keyword arguments (optional)
-    Current capabilities:
-  
-  
-  Returns
-  -------
-  None
-  
   Notes
   -----
   Iterators allow for providing fewer labels

@@ -61,8 +61,12 @@ class SRFile(AsciiProjFile):
     else:
       raise ValueError('Unknown io: ' + io)
     
-    self.d = SRs(sr)
-    return self.d
+    # self.__log.debug('self.d = SRs(sr)')
+    # sr_SRs = SRs(sr)
+    # print('sr_SRs', sr_SRs)
+    #sr_SRs # it's not dict any more but we keep it for backward compatibility for now
+    # return self.d
+    return sr #SRs(sr)
   
   # -----------------------------------------------------------------------------  
   
@@ -104,8 +108,7 @@ class SourcesFile(SRFile):
   # -----------------------------------------------------------------------------
 
   def read(self, *args, **kwargs):
-    self.d = Sources(super().read(*args, **kwargs))
-    return self.d
+    return Sources(super().read(*args, **kwargs))
     
   
 # -------------------------------------------------------------------------------
@@ -132,8 +135,7 @@ class ReceiversFile(SRFile):
   # -----------------------------------------------------------------------------
 
   def read(self, *args, **kwargs):
-    self.d = Receivers(super().read(*args, **kwargs))
-    return self.d
+    return Receivers(super().read(*args, **kwargs))
   
   # -----------------------------------------------------------------------------  
 

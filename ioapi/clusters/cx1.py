@@ -351,6 +351,11 @@ class PbsFileCx1(PbsFile):
 
     work_dir=$PBS_O_WORKDIR/../out/ # $PBS_O_WORKDIR IS THE ONE CONTAINING THIS SCRIPT
     
+    # CAVEAT  
+    rm $work_dir/{proj_name}-Runfile.key   
+    rm $work_dir/{proj_name}-Ghost.*
+
+
     # HARD-LINK INPUT FILES TO OUTPUT DIR WHERE THE CODE WILL RUN
     ln $PBS_O_WORKDIR/* $work_dir
     
