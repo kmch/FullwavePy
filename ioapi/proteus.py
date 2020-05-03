@@ -94,9 +94,6 @@ class ProteusProj(ProjExperiment):
     # super().__init__(ex, *args, **kwargs) ##
     super().__init__(*args, **kwargs)
 
-  def prepare_input(self, pold, run=False, **kwargs):
-    pass
-
 
 # -------------------------------------------------------------------------------
 

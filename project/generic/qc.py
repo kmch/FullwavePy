@@ -157,7 +157,7 @@ class Functional(object):
     ylim = kw('ylim', (0,100), kwargs)
     
     srcs = self.proj.i.s.read(**kwargs)
-    sids = kw('sids', list(srcs.keys()), kwargs)    
+    sids = kw('sids', [s.ID for s in srcs.li], kwargs)    
     kwargs['run_ids'] = kw('run_ids', [0], kwargs)
     misfit = kw('misfit', True, kwargs)
     

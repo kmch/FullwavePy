@@ -166,18 +166,18 @@ class SegyPrepFile(ParameterFile):
     
     segyprep = {}
     
-    segyprep['add to depth'] = kw('add_to_depth', 0, kwargs)
+    segyprep['addtodepth'] = kw('addtodepth', 0, kwargs)
     
-    z_type_default = 'ibfs'
-    if 'z_type' not in kwargs:
-      self.__log.warn('Setting z type to (kmc custom) default: %s' % str(z_type_default))
-    segyprep['z type'] = kw('z type', z_type_default, kwargs)
+    ztype_default = 'ibfs'
+    if 'ztype' not in kwargs:
+      self.__log.warn('Setting z type to (kmc custom) default: %s' % str(ztype_default))
+    segyprep['ztype'] = kw('ztype', ztype_default, kwargs)
    
     segyprep['problem'] = kw('problem', proj.problem, kwargs)
     segyprep['io'] = kw('io', proj.io, kwargs)  
     segyprep['reciprocity'] = kw('reciprocity', 0, kwargs)
     self.__log.warn('Reciprocity: ' + str(bool(segyprep['reciprocity'])))
-    segyprep['fixed array'] = kw('fixed array', 'yes', kwargs)
+    segyprep['fixedarray'] = kw('fixedarray', 'yes', kwargs)
     segyprep['unique'] = kw('unique', 'yes', kwargs)
     
     segyprep['minoffset'] = kw('minoffset', 0, kwargs) # IN METRES
@@ -199,7 +199,7 @@ class SegyPrepFile(ParameterFile):
     
     # GEOMETRY
     segyprep['geometry'] = kw('geometry', 'sgy', kwargs)
-    if segyprep['geometry'] == 'sgy':
+    if (segyprep['geometry'] == 'sgy') or (segyprep['geometry'] == 'segy'):
       segyprep = self.set_geom_segy(segyprep, **kwargs)
     elif segyprep['geometry'] == 'regular':
       segyprep = self.set_geom_regular(segyprep, **kwargs)
@@ -217,10 +217,10 @@ class SegyPrepFile(ParameterFile):
 
   def set_geom_segy(self, segyprep, **kwargs):
     segyprep['geometry'] = 'segy'
-    segyprep['x origin'] = self.proj.box[0]
-    segyprep['x shift'] = 0
-    segyprep['y origin'] = self.proj.box[2]
-    segyprep['y shift'] = 0
+    segyprep['xorigin'] = self.proj.box[0]
+    segyprep['xshift'] = 0
+    segyprep['yorigin'] = self.proj.box[2]
+    segyprep['yshift'] = 0
     return segyprep
   
   # -----------------------------------------------------------------------------  

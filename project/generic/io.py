@@ -414,9 +414,8 @@ class ProjOutput(ProjThroughput):
     from fullwavepy.project.files.text.logs import (OutLogFile, ErrLogFile, 
                                                JobOutLogFile, JobErrLogFile)
     
-    from fullwavepy.project.lists.basic import JobFileList
-    from fullwavepy.project.lists.extra import ForwardWavefieldFileList
-     
+    from fullwavepy.project.lists.basic import JobFileList 
+
     self.__log.debug('Initializing generic-project output...')
     self.jobout = JobFileList(self.proj, self.path, JobOutLogFile, **kwargs)
     self.joberr = JobFileList(self.proj, self.path, JobErrLogFile, **kwargs)
@@ -428,7 +427,7 @@ class ProjOutput(ProjThroughput):
     self.e = self.err
     self.jobstats = JobStats(self.proj, **kwargs)
     self.jstat = self.jobstats
-    self.fw = ForwardWavefieldFileList(self.proj, **kwargs) 
+
       
     self.__log.debug('Initializing project-type-specific output...')
     self.proj.init_output(**kwargs)

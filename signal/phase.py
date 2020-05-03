@@ -52,7 +52,6 @@ def extract_phase(A, picks, dt, freq, **kwargs):
   -----
   
   """
-  from fullwavepy.plot.generic import plot
   from fullwavepy.math.fourier import dft
   
   A, _ = _window_data(A, picks, **kwargs)

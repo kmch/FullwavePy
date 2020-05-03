@@ -141,7 +141,8 @@ class LastCheckpointFile(AsciiProjFile):
       proj.lastcp = self.read()
       self.__log.info('Last checkpoint: ' + str(proj.lastcp))
     except FileNotFoundError:
-      self.__log.warn(self.fname + ' not found.')
+      self.__log.warn(self.fname + ' not found. Setting proj.lastcp to 1')
+      proj.lastcp = 1
     
     super().__init__(proj, path, **kwargs)
 

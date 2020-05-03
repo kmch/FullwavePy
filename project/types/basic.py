@@ -206,7 +206,7 @@ class ProjSyn(Proj):
     from fullwavepy.project.files.datalike.sgy import SynDataFileSgy
     from fullwavepy.project.files.datalike.ttr import SynDataFileTtr
     from fullwavepy.project.files.other.index import SynIndexFileSgy, SynIndexFileTtr
-
+    from fullwavepy.project.lists.extra import ForwardWavefieldFileList
     
     if self.io == 'sgy':
       SynDataClass = SynDataFileSgy
@@ -218,7 +218,8 @@ class ProjSyn(Proj):
       raise ValueError('Unknown io: ' + self.io)
     
     self.out.syn = SynDataClass(self, self.out.path, **kwargs)
-
+    self.out.fw = ForwardWavefieldFileList(self.proj, it_max=1, **kwargs) 
+  
   # -----------------------------------------------------------------------------
   
   def prepare_input(self, pold, run=False, **kwargs):
@@ -350,9 +351,6 @@ class ProjInv(Proj):
   Inversion.
   
   """
-
-  # -----------------------------------------------------------------------------  
-
   def __init__(self, name, **kwargs):
     """
     
@@ -371,7 +369,6 @@ class ProjInv(Proj):
     from fullwavepy.project.files.datalike.sgy import ObsDataFileSgy
     from fullwavepy.project.files.other.index import ObsIndexFileSgy, ObsIndexFileTtr
     from fullwavepy.project.files.text.hed import ObsHedFile
-    from fullwavepy.project.lists.extra import BackpropWavefieldFileList    
 
     if self.io == 'sgy':
       ModelClass = ModelFileSgy
@@ -405,13 +402,18 @@ class ProjInv(Proj):
     from fullwavepy.project.files.gridded.models import ModelFileVtr, ModelFileSgy
     from fullwavepy.project.files.gridded.derivs import GradFile, PrecFile
     from fullwavepy.project.files.datalike.ttr import DumpDataFile, DumpCompareFile
-    from fullwavepy.project.lists.extra import CPFileList, DumpFileList, BackpropWavefieldFileList
+    from fullwavepy.project.lists.extra import CPFileList, DumpFileList, \
+      ForwardWavefieldFileList, BackpropWavefieldFileList
     from fullwavepy.project.files.text.misc import LastCheckpointFile
     from fullwavepy.project.generic.qc import Functional
     
-
     self.out.lastcp = LastCheckpointFile(self, self.out.path, **kwargs)  
-  
+    it_max = self.lastcp if self.lastcp > 0 else 1
+
+    self.out.fw = ForwardWavefieldFileList(self.proj, it_max, **kwargs) 
+    self.out.bw = BackpropWavefieldFileList(self.proj, it_max, **kwargs)
+
+
     self.out.fit = Functional(self, **kwargs)
 
     if self.io == 'sgy':
@@ -437,7 +439,7 @@ class ProjInv(Proj):
     #          CPFileList(self, file_class, file_id, file_start, **kwargs))    
     # self, proj, FileClass, file_id, file_start,
     
-    self.out.bw = BackpropWavefieldFileList(self.proj, **kwargs)
+
 
     dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
              'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
@@ -468,7 +470,8 @@ class ProjInv(Proj):
     self.i.obs.dupl(syn_proj.i.ose.fname)
     self.i.obs.raw.dupl(syn_proj.i.ose.fname)
     self.i.rse.prep(fnames=[self.i.obs.raw.name])
-    self.i.sp.prep(reciprocity=bool(syn_proj.i.sp.read()['reciprocity']))
+    # self.i.sp.prep(reciprocity=bool(syn_proj.i.sp.read()['reciprocity']))
+    self.i.sp.prep(**dict(syn_proj.i.sp.read(), problem=self.problem))
     if run:
       self.i.sp.run()
       self.i.rnf.prep(**kwargs)
@@ -476,7 +479,6 @@ class ProjInv(Proj):
       self.__log.warn('You need to i.sp.run and i.rnf.prep!')
       
     if process:
-      
       self.i.obs.process(filt_kwargs=kwargs['filt_kwargs'], 
                          mute_kwargs=dict(**kwargs['mute_kwargs'], 
                                           syn_file=syn_proj.o.syn))

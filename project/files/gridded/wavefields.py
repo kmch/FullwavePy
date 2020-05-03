@@ -101,7 +101,7 @@ class ForwardWavefieldFile(WavefieldFile):
 
 @traced
 @logged
-class BackproWavefieldFile(WavefieldFile):
+class BackpropWavefieldFile(WavefieldFile):
   """
   Backropagated wavefield.
   

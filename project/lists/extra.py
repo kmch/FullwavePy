@@ -163,7 +163,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
   
   """
   @timer
-  def __init__(self, proj, FileClass, **kwargs):
+  def __init__(self, proj, FileClass, it_max, **kwargs):
     """
     
     Notes
@@ -186,7 +186,8 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
 
     if self.init_err is None:
       self.it[0] = None
-      for it in range(1, self.nits_total + 1):
+      # for it in range(1, self.nits_total + 1):
+      for it in range(1, it_max + 1):
         self.it[it] = {}
         for sid in self.sids:
           sid = int(sid)
@@ -271,7 +272,7 @@ class ForwardWavefieldFileList(WavefieldFileList):
 
 @traced
 @logged
-class BackpropWavefieldFileList(SlaveFileList, TimestepFileList):
+class BackpropWavefieldFileList(WavefieldFileList):
   """
   A handle for dumped backpropagated-wavefield snapshots.
   
