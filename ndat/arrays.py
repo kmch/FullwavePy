@@ -274,15 +274,17 @@ class Arr1d(Arr):
     """
     format of extent: [[x1,x2]] is for compatibility with 2d and 3d
     """
+    from fullwavepy.plot.plt1d import plot_line
     c = kw('c', None, kwargs)
 
     assert np.array(self.extent).shape == (1,2)
     self.__log.debug('self.extent' + str(self.extent))
     
-    x1, x2 = self.extent[0] 
-    x = np.linspace(x1, x2, len(self))
+    kwargs['extent'] = self.extent[:2] 
+    plot_line(**kwargs)
+    # x = np.linspace(x1, x2, len(self))
     
-    plt.plot(x, self, c=c)
+    # plt.plot(x, self, c=c)
     return plt.gca()
 
   # -----------------------------------------------------------------------------

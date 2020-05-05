@@ -37,13 +37,15 @@ def plot_1d(**kwargs):
   
   for line in lines:
     kwargs['label'] = next(llabels, None)
-    plot_line(line, line2, **kwargs)    
+    ax = plot_line(line, line2, **kwargs)    
   
   for scatt in scatts:
     kwargs['label'] = next(slabels, None)
     kwargs['scatt_ampl'] = next(scatt_ampl, None)
-    plot_points(scatt, **kwargs)
-    
+    ax = plot_points(scatt, **kwargs)
+  
+  return ax
+
 
 # ------------------------------------------------------------------------------
 

@@ -67,6 +67,9 @@ class Proj(object):
     
     # IMMERSED BOUNDARY
     #self.immerse = kw('immerse', False, kwargs)
+    
+    self.ibfs = kw('ibfs', True, kwargs)
+    self.__log.info('Is this project using immersed-boundary? Answer: %s' % str(self.ibfs))
 
     
     ProjPath(self, **kwargs)
@@ -410,8 +413,10 @@ class ProjInv(Proj):
     self.out.lastcp = LastCheckpointFile(self, self.out.path, **kwargs)  
     it_max = self.lastcp if self.lastcp > 0 else 1
 
-    self.out.fw = ForwardWavefieldFileList(self.proj, it_max, **kwargs) 
-    self.out.bw = BackpropWavefieldFileList(self.proj, it_max, **kwargs)
+    self.__log.warn('NotImplemented: Cannot init. wavefield-file lists yet. ' + \
+      'They have different names than for ProjSyn')
+    # self.out.fw = ForwardWavefieldFileList(self.proj, it_max, **kwargs) 
+    # self.out.bw = BackpropWavefieldFileList(self.proj, it_max, **kwargs)
 
 
     self.out.fit = Functional(self, **kwargs)
@@ -465,18 +470,38 @@ class ProjInv(Proj):
       assert 'filt_kwargs' in kwargs
       assert 'mute_kwargs' in kwargs    
     
+    # Check if extra nodes changed
+    run_fsprep = False
+    extra_kw = ['e_abs', 'e_top']
+    for ekw in extra_kw:
+      if ekw in kwargs:
+        self.__log.debug('Found %s in kwargs' % ekw)
+        run_fsprep = True
+        break
+    
+    # If not, just copy the GhostData file
+    if not run_fsprep:
+      self.i.ghb.dupl(syn_proj.i.ghb.fname)  
+
+    self.i.fs.dupl(syn_proj.i.fs.fname)
+    self.i.sdata.dupl(syn_proj.i.sdata.fname)
+    self.i.rdata.dupl(syn_proj.i.rdata.fname)
     self.i.rsg.dupl(syn_proj.i.rsg.fname)
     self.i.svp.dupl(syn_proj.i.tvp.fname)
     self.i.obs.dupl(syn_proj.i.ose.fname)
     self.i.obs.raw.dupl(syn_proj.i.ose.fname)
     self.i.rse.prep(fnames=[self.i.obs.raw.name])
-    # self.i.sp.prep(reciprocity=bool(syn_proj.i.sp.read()['reciprocity']))
     self.i.sp.prep(**dict(syn_proj.i.sp.read(), problem=self.problem))
     if run:
       self.i.sp.run()
       self.i.rnf.prep(**kwargs)
+      if run_fsprep:
+        self.i.fs.run(**kwargs)
     else:
-      self.__log.warn('You need to i.sp.run and i.rnf.prep!')
+      self.__log.warn('You still need to:\n' + \
+        '1. Run %s with p.i.sp.run()\n' % self.i.sp.name + \
+        '2. Prepare %s with p.i.rnf.prep()\n' % self.i.rnf.name + \
+        '3. Run FsPrep with p.i.fs.run() (if extra nodes changed).')
       
     if process:
       self.i.obs.process(filt_kwargs=kwargs['filt_kwargs'], 

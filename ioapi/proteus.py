@@ -128,12 +128,12 @@ class ProteusBathyTopo(BathyTopo):
     y2 = +4.0e4 
     z1 = 0
     z2 = 0     
-    kwargs['extent'] = [[x1, x2], [y1, y2], [z1, z2]]
+    cls.extent = [[x1, x2], [y1, y2], [z1, z2]] # otherwise is not passed in .copy()
     kwargs['shape'] = (3201, 1601, 1)
     
     obj = super().__new__(cls, *args, **kwargs)
-    # cls.dx = obj.dx    
-    obj.z_sea = 0.0
+    cls.dx = obj.dx # otherwise is not passed in .copy()
+    cls.z_sea = 0.0
     
     # obj = obj.slice(slice_at='z')
     # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]
@@ -169,16 +169,16 @@ class BenStartVp(ProteusStartVp):
     # Z-axis points downwards   
     z1 = -1.5e3 
     z2 = +5.0e3      
-    kwargs['extent'] = [[x1, x2], [y1, y2], [z1, z2]]
+    cls.extent = [[x1, x2], [y1, y2], [z1, z2]] # otherwise is not passed in .copy()
     kwargs['shape'] = (2481, 861, 131)
     
     obj = super().__new__(cls, *args, **kwargs)
-    # cls.dx = obj.dx # otherwise is not passed in .copy()
+    cls.dx = obj.dx # otherwise is not passed in .copy()
 
     # obj.k_peak = 23
     # obj.z_peak = -obj.k_peak * obj.dx[-1]
-    obj.k_sea = 29
-    obj.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
+    cls.k_sea = 29
+    cls.z_sea = 0   # m it's important because all SR coords in SEGY data are relative to this
     return obj
   
 

@@ -96,11 +96,11 @@ class File(object):
     
   # -----------------------------------------------------------------------------
 
-  def compare(self, other_file, fig, **kwargs): #gs=None, **kwargs):
+  def compare(self, other_file, *args, **kwargs): #gs=None, **kwargs):
     arr1 = self.read(**kwargs)
     arr2 = other_file.read(**kwargs)
     # arr1.compare(arr2, fig, gs, **kwargs)
-    arr1.compare(arr2, fig, **kwargs)
+    arr1.compare(arr2, *args, **kwargs)
 
   # -----------------------------------------------------------------------------
 

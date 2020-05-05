@@ -147,9 +147,6 @@ class DumpCompareFile(DataFileTtr):
     3. Traces of 2nd kind
     
   """
-
-  # ----------------------------------------------------------------------------- 
-
   def __init__(self, suffix, proj, path, it, sid, **kwargs):
     super().__init__(suffix, proj, path, **kwargs)
     self.it = it

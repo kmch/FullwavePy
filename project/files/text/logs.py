@@ -34,7 +34,20 @@ class LogFile(JobFile, AsciiProjFile):
 
   # -----------------------------------------------------------------------------
    
-  
+  def rsync(self, **kwargs):
+      self.__log.debug('Pulling out from remote to local.')
+      source = remot_path + '/out/' # NOTE: remote is now source!
+      destin = local_path + '/out'  # no slash either
+    else:
+      raise ValueError('thr %s' %s)
+    
+    cmd = 'rsync -azP --info=progress2 %s %s' % (source, destin)
+    self.__log.debug('cmd %s' % str(cmd))
+    
+    o, e = bash(cmd)
+    self.__log.info(str(o))
+    if len(e) < 0:
+      self.__log.warn(str(e))    
 
   # -----------------------------------------------------------------------------
 
