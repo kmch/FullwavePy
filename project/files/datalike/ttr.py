@@ -158,6 +158,15 @@ class DumpCompareFile(DataFileTtr):
     
   # -----------------------------------------------------------------------------      
   
+  def _array_shape_from_head(self, **kwargs):
+    assert hasattr(self, 'head')
+    ntr = 3 * len(self.head) # 3x because DUMPCOMP has syn,obs,dif for the same trace id
+    ns = self.head.ns.unique()[0]
+    shape = (ntr, 1, ns)
+    return shape
+
+  # -----------------------------------------------------------------------------
+
   def read(self, **kwargs):
     """
     isep: 
@@ -165,8 +174,12 @@ class DumpCompareFile(DataFileTtr):
     """
     from fullwavepy.seismic.data import Data    
     self.__log.info('Reading ' + self.fname + '...')
+
+    self.read_header(**kwargs) # read header first to find out the shape of array to read => speedup!
+    
+    kwargs['shape'] = self._array_shape_from_head()
     self.array = super().read(**kwargs)
-    self.read_header(**kwargs)
+    
     
     isep  = int(len(self.array) / 3) 
     di = {'syn': Data(self.array[      :isep]),
@@ -220,7 +233,7 @@ class DumpCompareFile(DataFileTtr):
   
   # -----------------------------------------------------------------------------
 
-  def split(self, overwrite=False, **kwargs):
+  def split(self, overwrite=False, **kwargs): # rename to read_n_split?
     kwargs['overwrite'] = overwrite
     self.read(**kwargs)
     self.read_header(**kwargs)
@@ -235,6 +248,7 @@ class DumpCompareFile(DataFileTtr):
         for lid in lids:
           subhead = self.head[:][self.head[lid_hw] == lid]
           obj.lid[lid] = Data(np.take(obj, indices=subhead.index, axis=0))
+          obj.lid[lid].head = subhead
   
   # -----------------------------------------------------------------------------
   
@@ -305,8 +319,8 @@ class DumpCompareFile(DataFileTtr):
       
   # -----------------------------------------------------------------------------   
   
-  def exclude_bad_data(self, max_ph_dif, **kwargs):
-    pass
+  # def exclude_bad_data(self, max_ph_dif, **kwargs):
+  #   pass
   
   # -----------------------------------------------------------------------------  
   

@@ -315,4 +315,23 @@ def colors(n, cmap='rainbow', **kwargs):
 
 
 # ------------------------------------------------------------------------------ 
+    
+@traced
+@logged    
+def set_xticks(data, labels, ax=None, decim=10, **kwargs):
+  """
+  data : array / list
+    Plotted data to get the dimension from.
+  """  
+  if ax is None:
+    ax = plt.gca()
+  assert len(data) == len(labels)
+  locs = np.arange(len(data))[::decim]
+  labels = labels[::decim]
+  rotation = lambda decim : np.clip(90 - 10 * (decim - 1), 0, 90)
+  locs, labels = plt.xticks(locs, labels, rotation=rotation(decim))
+  return locs, labels
+
+# ------------------------------------------------------------------------------
+
 
