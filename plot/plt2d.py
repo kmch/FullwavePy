@@ -12,6 +12,7 @@ import cmocean
 
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets
+from fullwavepy.plot.generic import set_xlabels
 
 
 @traced
@@ -132,6 +133,9 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   if cbar:
     colorbar(im, ax)
   
+  if 'xlabels' in kwargs:
+    set_xlabels(kwargs['xlabels'], **kwargs)
+
   ax.set_aspect(aspect)
   return ax
 

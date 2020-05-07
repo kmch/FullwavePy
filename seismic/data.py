@@ -16,6 +16,7 @@ from fullwavepy.plot.generic import *
 
 # FIXME: MERGE WITH datalike!
 
+
 @traced
 @logged
 class DataFile(ArrayFile):
@@ -42,7 +43,6 @@ class DataFile(ArrayFile):
     plt.ylim(fylim)
   
 
-
 # -------------------------------------------------------------------------------
 
 
@@ -58,6 +58,7 @@ class DataFileSgy(DataFile, SgyFile):
 
     return ax
 
+
 # -------------------------------------------------------------------------------
 
 
@@ -68,19 +69,30 @@ class Data(Arr3d):
   Seismic data.
 
   """
+  def _xlabels_from_header(self, xlabels_hw='fldr', **kwargs):
+    if hasattr(self, 'head'):
+      self.__log.info('There is a header associated with this data.' +\
+        '%s keyword will be used as xlabels.' % xlabels_hw)
+    xlabels = self.head[xlabels_hw]
+    return xlabels
+  
   def interleave(self, othe, **kwargs):
     return super().interleave(othe, slice_at='y', node=0, **kwargs)
-
+    
   def compare(self, *args, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    kwargs['xlabels'] = self._xlabels_from_header(**kwargs)    
     super().compare(*args, **kwargs)
   
   def plot(self, *args, **kwargs):
     kwargs['cmap'] = kw('cmap', 'seismic', kwargs) #'twilight_shifted'
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    kwargs['xlabels'] = self._xlabels_from_header(**kwargs)
+    
     super().plot(*args, **kwargs)
   
+
 
 # -------------------------------------------------------------------------------
 

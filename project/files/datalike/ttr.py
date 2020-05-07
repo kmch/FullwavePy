@@ -371,7 +371,7 @@ class DumpCompareFile(DataFileTtr):
     
   # -----------------------------------------------------------------------------   
   
-  def plot_phase(self, freq, annotate=False, **kwargs):
+  def plot_phase(self, freq, **kwargs):
     """
     subtract : DataFile object
     

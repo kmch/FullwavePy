@@ -112,3 +112,24 @@ def aspeqt(ax=plt.gca(), **kwargs):
 
 # -------------------------------------------------------------------------------
 
+
+@traced
+@logged    
+def set_xlabels(labels, decim_xlabels=10, rotate_xlabels=None, **kwargs):
+  """
+  Decimate and rotate labels.
+
+  labels : list 
+    Labels before decimation
+  """  
+  locs = np.arange(len(labels))[::decim_xlabels]
+  labels = labels[::decim_xlabels]
+  rotation = lambda decim : np.clip(90 - 10 * (decim - 1), 0, 90)
+  if rotate_xlabels is None:
+    rotate_xlabels = rotation(decim_xlabels)
+  set_xlabels._log.debug('Rotating xlabels %s degrees' % rotate_xlabels)
+  locs, labels = plt.xticks(locs, labels, rotation=rotate_xlabels)
+  return locs, labels
+
+
+# ------------------------------------------------------------------------------

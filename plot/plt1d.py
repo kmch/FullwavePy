@@ -9,6 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw
 from ipywidgets import interact, interactive, fixed, interact_manual
+from fullwavepy.plot.generic import set_xlabels
 
 
 @traced
@@ -198,7 +199,7 @@ def plot_points(scatt, **kwargs):
 
 @traced
 @logged
-def _set_xaxis_1d(y, dt=1, **kwargs):
+def _set_xaxis_1d(y, dt=1, **kwargs): # make generic? (1-2D)
   """
   Define values of the X axis for 1fullwavepy.plots.
   
@@ -225,7 +226,10 @@ def _set_xaxis_1d(y, dt=1, **kwargs):
     x = np.linspace(x1, x2, len(y))
   else:  
     x = list(np.arange(len(y)) * dt)     
-  
+
+  if 'xlabels' in kwargs:
+    set_xlabels(kwargs['xlabels'], **kwargs)
+
   return x
 
 
@@ -286,7 +290,7 @@ def _fill_area(ax, x, y1, y2=0, **kwargs):
 
 @traced
 @logged
-def colors(n, cmap='rainbow', **kwargs):
+def colors(n, cmap='rainbow', **kwargs): # move to generic
   """
   Create an iterator for rainbow colors.
   
@@ -316,22 +320,5 @@ def colors(n, cmap='rainbow', **kwargs):
 
 # ------------------------------------------------------------------------------ 
     
-@traced
-@logged    
-def set_xticks(data, labels, ax=None, decim=10, **kwargs):
-  """
-  data : array / list
-    Plotted data to get the dimension from.
-  """  
-  if ax is None:
-    ax = plt.gca()
-  assert len(data) == len(labels)
-  locs = np.arange(len(data))[::decim]
-  labels = labels[::decim]
-  rotation = lambda decim : np.clip(90 - 10 * (decim - 1), 0, 90)
-  locs, labels = plt.xticks(locs, labels, rotation=rotation(decim))
-  return locs, labels
-
-# ------------------------------------------------------------------------------
 
 
