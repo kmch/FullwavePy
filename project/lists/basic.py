@@ -183,9 +183,6 @@ class JobFileList(ProjFileList):
   locally or on a cluster.
   
   """
-  
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, path, FileClass, **kwargs):
     """
     New approach to file-containers (static list).
@@ -206,6 +203,11 @@ class JobFileList(ProjFileList):
     
     for run_id in range(self.max_no_runs):
       self.no[run_id] = FileClass(proj, path, run_id, **kwargs)
+
+    # ALSO, FOR BACKWARD COMPATIBILITY WITH OLDER PROJECTS, CREATE A HANDLE 
+    # FOR A LOG FILE WITHOUT run_id
+    self.single = FileClass(proj, path, run_id=None, **kwargs)
+
   
   # -----------------------------------------------------------------------------  
   
@@ -217,9 +219,16 @@ class JobFileList(ProjFileList):
     """
     from fullwavepy.ioapi.generic import read_txt_raw
     
+    if None in run_ids and len(run_ids) > 1:
+      raise TypeError('None in run_ids and len(run_ids) > 1.')
+
     c = ""
     for run_id in run_ids:
-      lines = read_txt_raw(self.no[run_id].fname, **kwargs)
+      if run_id is None:
+        self.__log.debug('run_id is None. Assuming a single log file.')
+        lines = read_txt_raw(self.single.fname, **kwargs)
+      else:
+        lines = read_txt_raw(self.no[run_id].fname, **kwargs)
       for line in lines:
         c += line
     return c

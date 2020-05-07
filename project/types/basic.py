@@ -458,7 +458,7 @@ class ProjInv(Proj):
         #DumpFileList init: def __init__(self, proj, FileClass, file_id, fwd=1, **kwargs)
 
     # ADD ALIASES MANUALLY
-    #self.out.dc = self.out.dumpcomp
+    self.out.dc = self.out.dumpcomp
 
   # -----------------------------------------------------------------------------
   

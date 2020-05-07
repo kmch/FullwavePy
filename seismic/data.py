@@ -40,6 +40,7 @@ class DataFile(ArrayFile):
     kwargs = dict(kwargs, spect='ampl', cmap='hot', center_cmap=False) # DFT, different cmap
     self.plot(*args, **kwargs)
     plt.ylim(fylim)
+  
 
 
 # -------------------------------------------------------------------------------
@@ -53,6 +54,9 @@ class DataFileSgy(DataFile, SgyFile):
     self.array = self.cast(arr, **kwargs)
     return self.array
 
+  def plot_metadata(self, **kwargs):
+
+    return ax
 
 # -------------------------------------------------------------------------------
 

@@ -95,7 +95,10 @@ class JobFile(object):
     self.run_id = run_id
     self.suffix = suffix
     self.exten = exten
-    self.name = proj.name + '-' + suffix + str(run_id) + '.' + self.exten
+    if self.run_id is None:
+      self.name = proj.name + '-' + suffix + '.' + self.exten
+    else:
+      self.name = proj.name + '-' + suffix + str(run_id) + '.' + self.exten
     self.fname = path + self.name
   
   # -----------------------------------------------------------------------------

@@ -134,7 +134,7 @@ class Functional(object):
     
     self.shot = functional 
     
-    return functional
+    return self.shot
   
   # ----------------------------------------------------------------------------- 
   
@@ -188,6 +188,8 @@ class Functional(object):
     
     if len(functional) < 50:
       plt.legend(prop={'size': 6})
+    
+    return ax
     
   # -----------------------------------------------------------------------------    
 
