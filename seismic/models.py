@@ -65,6 +65,11 @@ class ModelVp(Model):
     kwargs['center_cmap'] = kw('center_cmap', False, kwargs)
     return super().plot(**kwargs) 
 
+  def info(self, *args, **kwargs):
+    self.__log.info('Property: velocity [m/s]')
+    super().info(*args, **kwargs)
+    
+
 
 # -------------------------------------------------------------------------------
 

@@ -76,6 +76,19 @@ def figure(figsize_x=6, figsize_y=6, **kwargs):
 
 @traced
 @logged
+def figax(figsize_x=6, figsize_y=6, **kwargs):
+  """
+  """
+  figsize = (figsize_x, figsize_y)
+  fig, ax = plt.subplots(figsize=figsize)
+  return fig, ax 
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 def flipy(ax=plt.gca(), **kwargs):
   ax.invert_yaxis()
 

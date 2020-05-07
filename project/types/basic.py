@@ -68,8 +68,8 @@ class Proj(object):
     # IMMERSED BOUNDARY
     #self.immerse = kw('immerse', False, kwargs)
     
-    self.ibfs = kw('ibfs', True, kwargs)
-    self.__log.info('Is this project using immersed-boundary? Answer: %s' % str(self.ibfs))
+    self.ibfs = kw('ibfs', False, kwargs)
+    self.__log.debug('Is this project using immersed-boundary? Yes if one. %s' % str(self.ibfs))
 
     
     ProjPath(self, **kwargs)
@@ -124,6 +124,7 @@ class Proj(object):
     self.__log.debug('Assuming inp and out rsync have the same (kw)args...')
     self.inp.rsync(*args, **kwargs)
     self.out.rsync(*args, **kwargs)
+
 
 # -------------------------------------------------------------------------------
 
@@ -430,33 +431,33 @@ class ProjInv(Proj):
 
        
     cpnts = {'vp': ['Vp', self.inp.startvp, ModelClass],
-             'grad': ['Grad', None, GradFile], #NOTE: GradFile doesn't imply 'Grad'
-             'prec': ['Prec', None, PrecFile],
-             'rawgrad': ['RawGrad', None, GradFile], #NOTE
-             'rawprec': ['RawPrec', None, PrecFile]
+            #  'grad': ['Grad', None, GradFile], #NOTE: GradFile doesn't imply 'Grad'
+            #  'prec': ['Prec', None, PrecFile],
+            #  'rawgrad': ['RawGrad', None, GradFile], #NOTE
+            #  'rawprec': ['RawPrec', None, PrecFile]
              }
     
-    self.__log.warn('Disabled init of cp file for now (until debug)')
-    
-    #for attr, [file_id, file_start, file_class] in cpnts.items():
-    #  self.__log.debug('attr=%s, file_id=%s, file_start=%s, file_class=%s' % (attr, file_id, file_start, file_class))
-    #  setattr(self.out, attr, 
-    #          CPFileList(self, file_class, file_id, file_start, **kwargs))    
-    # self, proj, FileClass, file_id, file_start,
-    
+    #self.__log.warn('Disabled init of cp file for now (until debug)')
+    #
+    for attr, [file_id, file_start, file_class] in cpnts.items():
+      self.__log.debug('attr=%s, file_id=%s, file_start=%s, file_class=%s' % \
+        (attr, file_id, file_start, file_class))
+      setattr(self.out, attr, 
+              CPFileList(self, file_class, file_id, file_start, **kwargs))    
+     # CPFileList init: def __init__(self, proj, FileClass, file_id, file_start, **kwargs)
 
 
-    dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
-             'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
-            }
-    for attr, [file_id, file_class] in dumps.items():
-      self.__log.debug('attr, file_id, file_class %s %s %s ' %
-                       (attr, file_id, file_class))
-      if (file_id in self.env.var) and (self.env.var[file_id] is not None):
-        setattr(self.out, attr, DumpFileList(self, file_class, file_id, **kwargs))
+    #dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
+    #         'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
+    #        }
+    #for attr, [file_id, file_class] in dumps.items():
+    #  self.__log.debug('attr, file_id, file_class %s %s %s ' %
+    #                   (attr, file_id, file_class))
+    #  if (file_id in self.env.var) and (self.env.var[file_id] is not None):
+    #    setattr(self.out, attr, DumpFileList(self, file_class, file_id, **kwargs))
         
     # ADD ALIASES MANUALLY
-    self.out.dc = self.out.dumpcomp
+    #self.out.dc = self.out.dumpcomp
 
   # -----------------------------------------------------------------------------
   

@@ -164,7 +164,6 @@ def ricker(fpeak, ns, dt):
 # -------------------------------------------------------------------------------
 
 
-
 @traced
 @logged
 def kaiser(x, r=3, dipole=False, **kwargs):

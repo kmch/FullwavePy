@@ -57,9 +57,11 @@ class ProteusExperiment(Experiment):
     
     self.md = MetadataFile('proteus_metadata.csv', self.path['metadata'])
     
-    self.bathytopo = ProteusBathyTopo(self.path['surfaces']+'bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr')
+    self.bathytopo = ProteusBathyTopo(self.path['surfaces'] + \
+      'bathy_x_-8e4_8e4_y_-4e4_4e4_cell_50.vtr')
 
-    self.dataset = {'obshy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*4.sgy', self),
+    self.dataset = {'obshy': ProteusDatasetOBS(self.path['data'] + \
+      'seismic/OBS/segy_local_coords/', '*4.sgy', self),
                     'obsvx': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*3.sgy', self),
                     'obsvy': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*2.sgy', self),
                     'obsvz': ProteusDatasetOBS(self.path['data']+'seismic/OBS/segy_local_coords/', '*1.sgy', self),
@@ -67,9 +69,11 @@ class ProteusExperiment(Experiment):
                     'lanvy': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*2.sgy', self),
                     'lanvz': ProteusDatasetLand(self.path['data']+'seismic/land/Santorini/segy_local_coords/', '*1.sgy', self)}
 
-    self.wavelet = {'19-09-22': ProteusWavelet(self.path['wavelets']+'wavelet_19-09-22.sgy')}
+    self.wavelet = {'19-09-22': ProteusWavelet(self.path['wavelets'] + \
+      'wavelet_19-09-22.sgy')}
 
-    self.svp = {'bh': {'18-04-24': BenStartVp(self.path['start_mods']+'Ben_whole_model_18-04-24.sgy', k_fs=29, shape=(2481,861,131)),
+    self.svp = {'bh': {'18-04-24': BenStartVp(self.path['start_mods'] + \
+      'Ben_whole_model_18-04-24.sgy', k_fs=29, shape=(2481,861,131)),
                '18-04-24_kameni1': StartVp(self.path['start_mods']+'bh_18-04-24_kameni1.vtr', k_fs=7, extent=[[-2500.,  2200.], [-2500.,  4300.], [ -400.,  3000.]], shape=(95, 137, 69)),
                }
     }

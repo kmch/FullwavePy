@@ -216,8 +216,10 @@ class Arr(np.ndarray):
   # -----------------------------------------------------------------------------
 
   def info(self, **kwargs):
-    self.__log.info('shape: {}'.format(self.shape))
-    self.__log.info('min: {}, max: {}'.format(np.min(self), np.max(self)))
+    self.__log.info('grid shape: {} [nodes]'.format(self.shape))
+    self.__log.info('grid cell-sizes in (x,y,z): {} [m]'.format(self.extent))    
+    self.__log.info('grid extent: {} [m]'.format(self.extent))
+    self.__log.info('value min: {}, max: {}'.format(np.min(self), np.max(self)))
 
   # -----------------------------------------------------------------------------
   
@@ -281,7 +283,7 @@ class Arr1d(Arr):
     self.__log.debug('self.extent' + str(self.extent))
     
     kwargs['extent'] = self.extent[:2] 
-    plot_line(**kwargs)
+    plot_line(self, **kwargs)
     # x = np.linspace(x1, x2, len(self))
     
     # plt.plot(x, self, c=c)

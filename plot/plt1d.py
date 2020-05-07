@@ -103,6 +103,7 @@ def plot_line(line, line2=0, **kwargs):
     raise ValueError('Wrong orient: ' + orient)
   
   plt.plot(x, line, label=label, c=c, lw=lw, ls=ls)
+  return plt.gca()
 
 
 # -------------------------------------------------------------------------------
@@ -187,6 +188,7 @@ def plot_points(scatt, **kwargs):
     #cax = divider.append_axes("right", size="5%", pad=0.05)
     #cbar = plt.colorbar(im, cax=cax) 
     #plt.sca(ax) # SET CURRENT AXIS BACK TO THE ACTUAL PLOT
+  return plt.gca()
   
 
 # -------------------------------------------------------------------------------

@@ -92,9 +92,6 @@ class DumpFileList(SlaveFileList):
   A handle for dumped data-files (not wavefields!).
   
   """
-
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, FileClass, file_id, fwd=1, **kwargs):
     """
     file_id : str 

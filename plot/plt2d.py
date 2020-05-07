@@ -51,7 +51,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   
   """
   from fullwavepy.plot.generic import figure
-  from matplotlib.colors import LogNorm
+  from matplotlib.colors import LogNorm, LightSource
   
   ax = kw('ax', plt.gca(), kwargs)
   aspect = kw('aspect', 'auto', kwargs)
@@ -67,6 +67,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   noextent = kw('noextent', False, kwargs)
   if noextent: # useful for QC of extent
     extent = None  
+  shade = kw('shade', False, kwargs)
   alpha = kw('alpha', 1, kwargs)
   lognorm = kw('lognorm', False, kwargs)
   norm = LogNorm() if lognorm else None
@@ -115,7 +116,16 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   if title is not None:
     ax.set_title(title)
   
+  if shade:
+    raise NotImplementedError('Debug first!')
+    ls = LightSource(azdeg=kw('azdeg', 45, kwargs), \
+      altdeg=kw('altdeg', 45, kwargs))
+    image = ls.shade(image, cmap=cmap, \
+       blend_mode=kw('blend_mode', 'hsv', kwargs), 
+       vert_exag=kw('vert_exag', 50, kwargs))  
+  
   #ax = fig.add_subplot()
+  # im = ax.imshow(image.T, cmap=cmap, extent=extent,
   im = ax.imshow(image.T, cmap=cmap, extent=extent, 
                  vmin=vmin, vmax=vmax, norm=norm,
                  alpha=alpha)
