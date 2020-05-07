@@ -269,6 +269,8 @@ class ProjGeometry(object):
         self.proj.enx2 = self.proj.nx2 + self.proj.efro + self.proj.ebac
       else:
         self.proj.enx2 = self.proj.nx2
+      
+      self.proj.edims = (self.proj.enx1, self.proj.enx2, self.proj.enx3)
     
     
     
@@ -276,6 +278,7 @@ class ProjGeometry(object):
     if self.proj.dim == '2d': # FIXME AD-HOC
       self.proj.enx2 = 1
     
+
     #if verbos > 1:
       #print(this_func, 'etop, eleft, efront', etop, eleft, efront)  
       #print(this_func, 'ebot, eright, eback', ebot, eright, eback)  

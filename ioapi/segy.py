@@ -184,7 +184,8 @@ class SgyFile(ArrayFile):
       else:
         kwargs['win'] = win # OTHERWISE MULTIPLE VALUES
         self.array = self.window(**kwargs)
-      
+    
+    self.__log.debug('self.array.extent %s' % str(self.array.extent))
     return self.array
     
   # -----------------------------------------------------------------------------  

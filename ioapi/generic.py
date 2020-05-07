@@ -152,13 +152,13 @@ class ArrayFile(File):
     
     """
     array = self.read(**kwargs)
-    array.plot(**kwargs)
+    return array.plot(**kwargs)
   
   # ----------------------------------------------------------------------------
 
   def plot_3slices(self, *args, **kwargs):
     array = self.read(**kwargs)
-    array.plot_3slices(*args, **kwargs)
+    return array.plot_3slices(*args, **kwargs)
 
   # ----------------------------------------------------------------------------
 

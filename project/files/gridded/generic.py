@@ -22,7 +22,7 @@ class GridProjFile(ArrayProjFile):
   (grid start with node no. 1)
   
   """
-  def _extent(self, **kwargs):
+  def _extent(self, unit='m', **kwargs):
     """
     Nodes are numbered as 1, 2, ...
     
@@ -42,24 +42,27 @@ class GridProjFile(ArrayProjFile):
     This is the ONLY way it is plot correctly both in 2D and 1D.
     
     """
-    node1 = 1 # plot_image WILL SUBTRACT 0.5 TO CENTER AT INTEGERS AGAIN
-    x1 = node1
-    x2 = x1 + self.proj.nx1 - 1
-    y1 = node1
-    y2 = y1 + self.proj.nx2 - 1
-    z1 = node1
-    z2 = z1 + self.proj.nx3 - 1
-    self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
+    if unit == 'm':
+      self.extent = np.array(self.proj.box).reshape(3,2)
+    else:
+      node1 = 1 # plot_image WILL SUBTRACT 0.5 TO CENTER AT INTEGERS AGAIN
+      x1 = node1
+      x2 = x1 + self.proj.nx1 - 1
+      y1 = node1
+      y2 = y1 + self.proj.nx2 - 1
+      z1 = node1
+      z2 = z1 + self.proj.nx3 - 1
+      self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
     return self.extent
   
   # -----------------------------------------------------------------------------  
   
   def read(self, *args, **kwargs):
     extent = self._extent(**kwargs)
+    kwargs['shape'] = self.proj.dims
     self.array = super().read(*args, **kwargs)
     self.array.extent = extent
     return self.array
-
 
   # -----------------------------------------------------------------------------
   
@@ -80,6 +83,7 @@ class GridProjFile(ArrayProjFile):
   def wp3s(self, *args, **kwargs):
     return self.widg_plot_3slices(*args, **kwargs)
   # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -107,6 +111,17 @@ class ExtenGridProjFile(GridProjFile):
     
     self.extent = np.array([[x1, x2], [y1, y2], [z1, z2]])
     return self.extent
+
+  # -----------------------------------------------------------------------------  
+  
+  def read(self, *args, **kwargs):
+    extent = self._extent(**kwargs)
+    kwargs['shape'] = self.proj.edims
+    self.array = super().read(*args, **kwargs)
+    self.array.extent = extent
+    return self.array
+
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------
