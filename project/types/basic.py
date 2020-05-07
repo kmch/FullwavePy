@@ -447,15 +447,16 @@ class ProjInv(Proj):
      # CPFileList init: def __init__(self, proj, FileClass, file_id, file_start, **kwargs)
 
 
-    #dumps = {'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
-    #         'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
-    #        }
-    #for attr, [file_id, file_class] in dumps.items():
-    #  self.__log.debug('attr, file_id, file_class %s %s %s ' %
-    #                   (attr, file_id, file_class))
-    #  if (file_id in self.env.var) and (self.env.var[file_id] is not None):
-    #    setattr(self.out, attr, DumpFileList(self, file_class, file_id, **kwargs))
-        
+    dumps = {'dumpcomp': ['SLAVES_DUMPCOMPARE', DumpCompareFile],
+            #  'dumpdat': ['SLAVES_DUMPDAT', DumpDataFile],
+            }
+    for attr, [file_id, file_class] in dumps.items():
+      self.__log.debug('attr, file_id, file_class %s %s %s ' %
+                       (attr, file_id, file_class))
+      if (file_id in self.env.var) and (self.env.var[file_id] is not None):
+        setattr(self.out, attr, DumpFileList(self, file_class, file_id, **kwargs))
+        #DumpFileList init: def __init__(self, proj, FileClass, file_id, fwd=1, **kwargs)
+
     # ADD ALIASES MANUALLY
     #self.out.dc = self.out.dumpcomp
 

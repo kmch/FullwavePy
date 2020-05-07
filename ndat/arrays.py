@@ -40,7 +40,11 @@ class Arr(np.ndarray):
     source = cls._read(source, **kwargs)
     
     obj = np.asarray(source).view(cls) # CAST THE TYPE
-    obj = cls._set_extent(obj, **kwargs)
+    # FIXME: REPLACE IT WITH STH TAKING source 
+    # AS ARG AND RETURNING EXTENT WHICH WE'LL ASSIGN TO obj JUST BEFORE RETURNING IT
+    # FROM THIS __new__ FUNCTION
+    obj = cls._set_extent(obj, **kwargs) 
+    
     #obj = cls._set_coords(obj, **kwargs)
     obj = cls._set_dx(obj, **kwargs)
 
@@ -166,6 +170,13 @@ class Arr(np.ndarray):
     if not i.is_integer():
       raise ValueError('Index must be integer not %s' % i)
     return int(i)
+
+  # -----------------------------------------------------------------------------  
+
+  def _index2metre(self, i, axis, **kwargs):
+    origin = self.extent[axis][0]
+    m = i * self.dx[axis] + origin
+    return m
 
   # -----------------------------------------------------------------------------  
   
@@ -433,15 +444,18 @@ class Arr3d(Arr):
     if node is None:
       if slice_at == 'x':
         node = kw('node', nx//2, kwargs)
+        # metre = self._index2metre(node, 0)
       elif slice_at == 'y':
         node = kw('node', ny//2, kwargs)
+        # metre = self._index2metre(node, 1)
       elif slice_at == 'z':
-        node = kw('node', nz//2, kwargs)      
+        node = kw('node', nz//2, kwargs) 
+        # metre = self._index2metre(node, 2)     
       else:
         raise ValueError('Wrong slice_at: %s' % str(slice_at))
 
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
-    kwargs['title'] = 'slice at %s=%s' % (slice_at, node)
+    kwargs['title'] = 'slice at %s-node %s' % (slice_at, node)
     del_kw('slice_at', kwargs) # JUST IN CASE
     
     ax = arr2d.plot(**kwargs)
@@ -457,9 +471,16 @@ class Arr3d(Arr):
     """
     from fullwavepy.plot.plt2d import plot_image
     
+    # layout = kw('layout', None, kwargs)
+    # if layout is None:
+      
+
+
     if fig is None:
       fig = figure(16,8)
     
+
+
     kwargs['x'] = x
     kwargs['y'] = y
     kwargs['z'] = z
@@ -500,9 +521,6 @@ class Arr3d(Arr):
         ax.invert_yaxis()
       plt.plot(abcissae_horiz, ordinate_horiz, '--', c='white')
       plt.plot(abcissae_verti, ordinate_verti, '--', c='white')
-  
-  def p3s(self, *args, **kwargs):
-    return self.plot_3slices(*args, **kwargs)
   
   # -----------------------------------------------------------------------------
 

@@ -32,7 +32,11 @@ class ModelFile(GridProjFile):
       M = ModelVp
     else:
       M = Model
-    self.array = M(super().read(*args, **kwargs))
+    
+    array = super().read(*args, **kwargs)
+    self.array = M(array)
+    self.array.extent = array.extent
+    self.__log.debug('self.array.extent %s' % str(self.array.extent))
     return self.array
 
 # -------------------------------------------------------------------------------
@@ -171,8 +175,9 @@ class ModelFileSgy(ModelFile, SgyFile):
       self.__log.warn('self.proj.dims not defined') 
     
     self.__log.debug("Set kwargs['nx'] to " + str(kwargs['nx']))
-    A = super().read(**kwargs)
-    return A
+    self.array = super().read(**kwargs)
+    self.__log.debug('Returning self.array.extent %s' % str(self.array.extent))    
+    return self.array
     
   # -----------------------------------------------------------------------------
 

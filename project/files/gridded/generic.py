@@ -62,6 +62,7 @@ class GridProjFile(ArrayProjFile):
     kwargs['shape'] = self.proj.dims
     self.array = super().read(*args, **kwargs)
     self.array.extent = extent
+    self.__log.debug('self.array.extent %s' % str(self.array.extent))
     return self.array
 
   # -----------------------------------------------------------------------------

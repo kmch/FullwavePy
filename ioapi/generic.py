@@ -140,6 +140,7 @@ class ArrayFile(File):
     
     # PASS extent (ESSENTIAL FOR PLOTS) FOR PLOTTING FROM FILE TO ARRAY
     if hasattr(self, 'extent'):
+      self.__log.debug('Setting extent to %s' % str(self.extent))
       self.array.extent = self.extent 
     return self.array
 

@@ -7,7 +7,7 @@ import numpy as np
 from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, strip
+from fullwavepy.generic.parse import kw, strip, path_extract, path_leave
 from fullwavepy.generic.system import exists
 from fullwavepy.ioapi.generic import ArrayFile
 
@@ -217,10 +217,22 @@ def read_ttr(fname, **kwargs):
   if not exists(fname):
     raise FileNotFoundError(fname)
   
-  # FIXME rename
-  cmd = str('convert_ttr2vtr_IMPROVED ' + fname)
 
-  o, e = bash(cmd)
+  
+  # T
+  name = path_leave(fname)
+  path = path_extract(fname)
+
+  len_max = 40
+  if len(name) > len_max:
+    read_ttr._log.warn('File name %s is longer than %s and may not be suitable for ttr2vtr code yet' % \
+      (name, len_max))
+
+
+  # FIXME rename
+  cmd = str('convert_ttr2vtr_IMPROVED ' + name)
+
+  o, e = bash(cmd, path=path)
   read_ttr._log.debug(o + e)
   
   fvtr = strip(fname) + '.vtr'

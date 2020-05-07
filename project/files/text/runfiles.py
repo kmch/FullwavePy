@@ -786,7 +786,7 @@ class Runfile(ParameterFile):
         
   # -----------------------------------------------------------------------------
 
-  def read_blocks(self, **kwargs):
+  def read_blocks(self, new_block_activator='nits', **kwargs):
     """
     Read iteration blocks.
     
@@ -800,10 +800,15 @@ class Runfile(ParameterFile):
     """
     from fullwavepy.ioapi.generic import read_txt
     
+
     content = read_txt(self.fname)
     
+    self.__log.info('new_block_activator=%s => each iteration block must begin with %s keyword.' % \
+      (new_block_activator, new_block_activator))
     self.__log.debug(str(content))
     
+    
+
     blocks = []
     for line in content:
       if len(line) < 3:
@@ -813,9 +818,11 @@ class Runfile(ParameterFile):
       colon = line[1]
       val = line[2]
       
-      if key == 'nits':
+      if key == new_block_activator:
+        self.__log.debug('Line %s starts with key %s => a new iteration block detected' % \
+          (line, new_block_activator))
         blocks.append({})
-        block = blocks[-1] 
+        current_block = blocks[-1] 
       
       if len(blocks) > 0: 
         try:
@@ -823,7 +830,7 @@ class Runfile(ParameterFile):
         except ValueError as err:
           self.__log.debug('Non-numeric parameter: ' + str(err))
         
-        block[key] = val
+        current_block[key] = val
         
     self.blocks = blocks
     return blocks

@@ -102,13 +102,32 @@ def path_leave(path, **kwargs):
   
   Notes
   -----
-  Understand return. 
+  ntpath.split:
+   Return tuple (head, tail) where tail is everything after the final slash. 
+    Either part may be empty. 
+  
+  ntpath.basename:
+   Return final component of a pathname
   
   """
-  import ntpath
-  head, tail = ntpath.split(path)
+  from ntpath import split, basename
   
-  return tail or ntpath.basename(head)
+  head, tail = split(path)
+  
+  # if tail is empty, return last component of head:
+  return tail or basename(head)
+
+# -------------------------------------------------------------------------------
+
+
+@logged
+def path_extract(path, **kwargs):
+  """
+  See path_leave for notes.
+  """
+  from ntpath import split
+  head, tail = split(path)  
+  return head
 
 
 # -------------------------------------------------------------------------------
