@@ -133,8 +133,9 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   if cbar:
     colorbar(im, ax)
   
-  if 'xlabels' in kwargs:
-    set_xlabels(kwargs['xlabels'], **kwargs)
+  # xlabels = kw('xlabels', None, kwargs)
+  # if 'xlabels' is not None:
+  #   set_xlabels(xlabels, **kwargs)
 
   ax.set_aspect(aspect)
   return ax

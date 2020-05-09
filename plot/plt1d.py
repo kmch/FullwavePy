@@ -227,8 +227,9 @@ def _set_xaxis_1d(y, dt=1, **kwargs): # make generic? (1-2D)
   else:  
     x = list(np.arange(len(y)) * dt)     
 
-  if 'xlabels' in kwargs:
-    set_xlabels(kwargs['xlabels'], **kwargs)
+  # xlabels = kw('xlabels', None, kwargs)
+  # if 'xlabels' is not None:
+  #   set_xlabels(xlabels, **kwargs)
 
   return x
 

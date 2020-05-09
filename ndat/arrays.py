@@ -10,7 +10,7 @@ from matplotlib.gridspec import GridSpec
 
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets, timer
-from fullwavepy.plot.generic import figure
+from fullwavepy.plot.generic import figure, aspeqt
 from fullwavepy.plot.plt2d import plot_image
 
 # NOTE
@@ -463,7 +463,105 @@ class Arr3d(Arr):
     if slice_at == 'z': # DISABLE?
       ax.invert_yaxis()
     return ax
-  
+
+  # -----------------------------------------------------------------------------
+
+  def plot_3slices_new2(self, x, y, z, fig=None, gs=None, **kwargs):
+    """
+    """
+    from fullwavepy.plot.plt2d import plot_image
+    layout = kw('layout', 'square', kwargs)
+ 
+
+    if fig is None:
+      fig = figure(16,8)
+    
+    kwargs['x'] = x
+    kwargs['y'] = y
+    kwargs['z'] = z
+
+    # LABELS FOR EACH AXIS
+    s2 = kw('slice', 'y', kwargs) # MAIN SLICE PLOTTED AT THE BOTTOM IN FULL WIDTH
+    s0, s1 = [i for i in ['x', 'y', 'z'] if i != s2]
+    s = [s0, s1, s2]
+    # CONVERT THE LABELS INTO ARRAY DIMENSIONS (AXES)
+    convert_s2a = {'x': 0, 'y': 1, 'z': 2} # TRANSLATE slice TO axis
+    
+
+    if layout == 'square':
+      if gs is None:
+        gs = GridSpec(2,2, height_ratios=[1,1], width_ratios=[2,1])
+      axes = list(np.zeros(3))
+      axes[0] = fig.add_subplot(gs[0,0])
+      axes[1] = fig.add_subplot(gs[1,0])
+      axes[2] = fig.add_subplot(gs[:,1]) 
+    elif layout == 'thin':
+      if gs is None:
+        gs = GridSpec(3,1)
+      axes = list(np.zeros(3))
+      axes[0] = fig.add_subplot(gs[0,0])
+      axes[1] = fig.add_subplot(gs[1,0])
+      axes[2] = fig.add_subplot(gs[2,0])   
+    else:
+      raise ValueError('Unknown layout: %s' % layout)  
+
+
+    kwargs['vmin'] = kw('vmin', np.min(self), kwargs)
+    kwargs['vmax'] = kw('vmax', np.max(self), kwargs)
+    self.__log.debug('Setting vmin, vmax to: {}, {}'.format(kwargs['vmin'], 
+                                                            kwargs['vmax']))
+    
+    for i, ax in enumerate(axes):
+      plt.sca(ax)
+      aaxx = plot_image(np.take(self, kwargs[s[i]], convert_s2a[s[i]]), **kwargs)
+      aspeqt(aaxx)
+
+      # PLOT SLICING LINES
+      a, b = [j for j in ['x', 'y', 'z'] if j != s[i]]
+      abcissae_horiz = range(self.shape[convert_s2a[a]])
+      ordinate_horiz = np.full(len(abcissae_horiz), kwargs[b])
+      ordinate_verti = range(self.shape[convert_s2a[b]])
+      abcissae_verti = np.full(len(ordinate_verti), kwargs[a])
+      
+      if s[i] == 'z':
+        abcissae_horiz, ordinate_horiz, abcissae_verti, ordinate_verti = abcissae_verti, ordinate_verti, abcissae_horiz, ordinate_horiz
+        ax.invert_yaxis()
+      plt.plot(abcissae_horiz, ordinate_horiz, '--', c='white')
+      plt.plot(abcissae_verti, ordinate_verti, '--', c='white')
+    
+    return plt.gca()
+
+  # -----------------------------------------------------------------------------
+
+  def plot_3slices_new1(self, x, y, z, fig=None, contour=None, **kwargs):
+    if fig is None:
+      fig = figure(16,6)
+    
+    kwargs['vmin'] = kw('vmin', np.min(self), kwargs)
+    kwargs['vmax'] = kw('vmax', np.max(self), kwargs)
+    self.__log.debug('Setting vmin, vmax to: {}, {}'.format(kwargs['vmin'], 
+                                                            kwargs['vmax']))
+    
+    # kwargs = dict(overwrite=0, overwrite_mmp=0, vmin=1500, vmax=7000, cmap='hsv')
+    gs = fig.add_gridspec(2,2, height_ratios=[1,1], width_ratios=[2,1])
+    fig.add_subplot(gs[0,0]) 
+    ax = p.out.vp.it[it].plot(x=x, **kwargs)
+    aspeqt(ax)
+    fig.add_subplot(gs[1,0])
+    ax = p.out.vp.it[it].plot(y=y, **kwargs)
+    aspeqt(ax)
+    fig.add_subplot(gs[:,1])
+    ax = p.out.vp.it[it].plot(z=z, **kwargs)
+    if contour is not None:
+      colors = kw('colors', 'k', kwargs)
+      levels = kw('levels', 40, kwargs)
+      plt.contour(surf[...,0].T, extent=np.array(surf.extent[:-1]).flatten(), \
+        colors=colors, levels=levels, alpha=0.4)
+    ax.set_xlim(self.extent[ :2])
+    ax.set_ylim(self.extent[2:4])
+    aspeqt(ax)
+    return ax
+
   # -----------------------------------------------------------------------------
 
   def plot_3slices(self, x, y, z, fig=None, gs=None, **kwargs):
@@ -525,7 +623,7 @@ class Arr3d(Arr):
   # -----------------------------------------------------------------------------
 
   ###@widgets('cmap', 'slice', 'x', 'y', 'z')
-  def plot_3slices_OLDish(self, fig=None, gs=None, widgets=False, **kwargs):
+  def plot_3slices_old1(self, fig=None, gs=None, widgets=False, **kwargs):
     """
     """
     from fullwavepy.plot.plt2d import plot_image

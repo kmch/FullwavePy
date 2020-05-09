@@ -73,9 +73,23 @@ class Data(Arr3d):
     if hasattr(self, 'head'):
       self.__log.info('There is a header associated with this data.' +\
         '%s keyword will be used as xlabels.' % xlabels_hw)
-    xlabels = self.head[xlabels_hw]
-    return xlabels
+      xlabels = self.head[xlabels_hw] # one per xtick
+    # xlabel = xlabels_hw # one per xaxis
+      return xlabels
+    else:
+      return None
   
+  # def plot_phase(self, freq, ph_type, **kwargs):# sync it better with dumpcomp
+  #   """
+  #   ph_type : syn/obs/dif
+  #   """
+  #   if not hasattr(self, 'head'):
+  #     self.__log.warn('self.head not found. Returning')
+  #     return
+    
+  #   plt.scatter(self.head.sx, self.head.sy, vmin=-np.pi, vmax=+np.pi,
+  #               c=self.head['phase %s (%s Hz)' % (ph_type, freq)])
+
   def interleave(self, othe, **kwargs):
     return super().interleave(othe, slice_at='y', node=0, **kwargs)
     
