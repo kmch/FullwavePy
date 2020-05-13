@@ -17,10 +17,6 @@ from fullwavepy.project.files.text.misc import JobFile
 #FIXME REPLACE WITH CONTIGUOUS STRING
 
 
-
-
-
-
 # ------------------------------------------------------------------------------- 
 
 
@@ -268,9 +264,8 @@ class BashFile(JobFile, AsciiProjFile):
       pwd
       
       work_dir={outdir}
-      # CAVEAT two lines below assume $work_dir = proj/out/  
-      rm {outdir}/{pname}-Runfile.key   
-      rm {outdir}/{pname}-Ghost.*') 
+      # CAVEAT it is assumed $work_dir = proj/out/  
+      rm {outdir}/*
 
       ln {inpdir}/* $work_dir 
       cd $work_dir # !!!

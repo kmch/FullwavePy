@@ -1,5 +1,8 @@
 """
 This module defines all objects specific to the PROTEUS experiment.
+It is useful to hard-wire some of the parameters as class attributes 
+to exchange them between different jupyter notebooks. Keeping them
+in a package seems like a better backup anyway.
 
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.

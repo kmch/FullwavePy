@@ -79,8 +79,7 @@ class SRFile(AsciiProjFile):
   # -----------------------------------------------------------------------------  
   
   def plot(self, *args, **kwargs): # GENERALIZE FOR ASCII PROJ FILE?
-    self.read(*args, **kwargs)
-    self.d.plot(*args, **kwargs)
+    return self.read(*args, **kwargs).plot(*args, **kwargs)
     
   # ----------------------------------------------------------------------------
 

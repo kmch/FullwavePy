@@ -227,7 +227,7 @@ class Points3d(Points):
       for key, val in self.items():
         ax.annotate(key, (val[0]+annoffset, val[1]+annoffset), clip_on=True) # clip_on IS REQUIRED
     
-    ax.plot([i[0] for i in self.li()], [i[1] for i in self.li()], 
+    ax.plot([i[0] for i in self.li], [i[1] for i in self.li], 
             '.',
             alpha=alpha, 
             marker=marker, 
