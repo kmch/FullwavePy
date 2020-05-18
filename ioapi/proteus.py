@@ -141,6 +141,7 @@ class ProteusBathyTopo(BathyTopo):
     obj = super().__new__(cls, *args, **kwargs)
     cls.dx = obj.dx # otherwise is not passed in .copy()
     cls.z_sea = 0.0
+    cls.k_sea = 29
     
     # obj = obj.slice(slice_at='z')
     # obj.extent = [[cls.x1, cls.x2], [cls.y1, cls.y2]]

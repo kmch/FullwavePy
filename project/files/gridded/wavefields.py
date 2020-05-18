@@ -50,25 +50,35 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     self.__log.debug('Assuming taskid = %s' % tid)
     
     self.path = self.proj.out.path
-
-    pattern = str(proj.name + '-' + 
-                    file_id + '-' + 
-                    ts + 
-                    '-csref' + str(sid).rjust(5,'0') + 
-                    '-iter' + str(it).rjust(5,'0')  + 
-                    '*' + # instead of unknown taskid
-                    '.vtr')
     
+    if True: #self.proj.problem == 'synthetic':
+      pattern = str(proj.name + '-' + 
+                      file_id + '-' + 
+                      ts + 
+                      '-csref' + str(sid).rjust(5,'0') + 
+                      '-iter' + str(it).rjust(5,'0')  + 
+                      '*' + # instead of unknown taskid
+                      '.vtr')
+    # elif self.proj.problem == 'tomography':
+    #   pattern = str(proj.name + '-' + 
+    #                   file_id + '-' + 
+    #                   ts + 
+    #                   '-csref' + str(sid).rjust(5,'0') + 
+    #                   '-iter' + str(it).rjust(5,'0')  + 
+    #                   '*' + # instead of unknown taskid
+    #                   '.vtr')    
+
+
     fnames = get_files(self.path, pattern, **kwargs)
 
     if len(fnames) > 1:
-     raise ValueError('Pattern {} matched by more than one file: {}'.format(pattern, fnames))
+     self.__log.debug('Pattern {} matched by more than one file: {}. Taking the first.'.format(pattern, fnames))
+      
     elif len(fnames) == 0:
      self.__log.debug('Pattern {} matched by none of the files. Returning...'.format(pattern))
      return
-    else:
-     suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
     
+    suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
     self.fname = self.path + self.proj.name + '-' + suffix + '.vtr'
     
   # -----------------------------------------------------------------------------

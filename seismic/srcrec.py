@@ -195,6 +195,8 @@ class Receivers(SRs):
 @logged
 class HyperPointSR(object):
   """
+  FIXME: implement check if we're not out of bounds
+  
   """
   def __init__(self, pointsr, **kwargs):
     """
@@ -635,6 +637,10 @@ def xyz2w(xyz, extended_dims, **kwargs):
 def w2xyz(w, extended_dims, **kwargs):
   """
   For QC.
+  
+  FIXME: it's terribly slow so now only for 
+  single-value checks. We could use Adrian's 
+  formulas to vectorize it.
   
   """
   assert float(w).is_integer()

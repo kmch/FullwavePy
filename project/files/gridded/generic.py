@@ -106,9 +106,9 @@ class ExtenGridProjFile(GridProjFile):
       y1 = y1 - self.proj.efro * self.proj.dx
       z1 = z1 - self.proj.etop * self.proj.dx
       
-      x2 = x1 + self.proj.enx1 * self.proj.dx
-      y2 = y1 + self.proj.enx2 * self.proj.dx
-      z2 = z1 + self.proj.enx3 * self.proj.dx
+      x2 = x1 + (self.proj.enx1 - 1) * self.proj.dx
+      y2 = y1 + (self.proj.enx2 - 1) * self.proj.dx
+      z2 = z1 + (self.proj.enx3 - 1) * self.proj.dx
     else:
       x1 -= self.proj.elef
       y1 -= self.proj.efro

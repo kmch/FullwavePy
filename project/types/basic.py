@@ -414,11 +414,8 @@ class ProjInv(Proj):
     self.out.lastcp = LastCheckpointFile(self, self.out.path, **kwargs)  
     it_max = self.lastcp if self.lastcp > 0 else 1
 
-    self.__log.warn('NotImplemented: Cannot init. wavefield-file lists yet. ' + \
-      'They have different names than for ProjSyn')
-    # self.out.fw = ForwardWavefieldFileList(self.proj, it_max, **kwargs) 
-    # self.out.bw = BackpropWavefieldFileList(self.proj, it_max, **kwargs)
-
+    self.out.fw = ForwardWavefieldFileList(self.proj, it_max, **kwargs) 
+    self.out.bw = BackpropWavefieldFileList(self.proj, it_max, **kwargs)
 
     self.out.fit = Functional(self, **kwargs)
 
@@ -477,21 +474,20 @@ class ProjInv(Proj):
     extra_kw = ['e_abs', 'e_top']
     for ekw in extra_kw:
       if ekw in kwargs:
-        self.__log.debug('Found %s in kwargs' % ekw)
+        self.__log.info('%s found in kwargs => will run fsprep.' % ekw)
         run_fsprep = True
         break
-    
     # If not, just copy the GhostData file
     if not run_fsprep:
       self.i.ghb.dupl(syn_proj.i.ghb.fname)  
-
+      self.i.sdata.dupl(syn_proj.i.sdata.fname)
+      self.i.rdata.dupl(syn_proj.i.rdata.fname)
+    
     self.i.fs.dupl(syn_proj.i.fs.fname)
-    self.i.sdata.dupl(syn_proj.i.sdata.fname)
-    self.i.rdata.dupl(syn_proj.i.rdata.fname)
     self.i.rsg.dupl(syn_proj.i.rsg.fname)
     self.i.svp.dupl(syn_proj.i.tvp.fname)
     self.i.obs.dupl(syn_proj.i.ose.fname)
-    self.i.obs.raw.dupl(syn_proj.i.ose.fname)
+    self.i.obs.raw.dupl(syn_proj.i.ose.fname) # NOTE
     self.i.rse.prep(fnames=[self.i.obs.raw.name])
     self.i.sp.prep(**dict(syn_proj.i.sp.read(), problem=self.problem))
     if run:
@@ -499,6 +495,14 @@ class ProjInv(Proj):
       self.i.rnf.prep(**kwargs)
       if run_fsprep:
         self.i.fs.run(**kwargs)
+        # self.i.ght.read()
+        # ghs = self.i.ght.ghosts
+        # iss = self.i.ght.isects
+        # ine = self.i.ine.read()
+        # srcs = p.i.s.read()
+        # recs = p.i.r.read()
+        # r_hicks = 2
+        # rmax = 5        
     else:
       self.__log.warn('You still need to:\n' + \
         '1. Run %s with p.i.sp.run()\n' % self.i.sp.name + \
