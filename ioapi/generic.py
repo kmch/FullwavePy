@@ -163,11 +163,6 @@ class ArrayFile(File):
 
   # ----------------------------------------------------------------------------
 
-  def p3s(self, *args, **kwargs):
-    return self.plot_3slices(*args, **kwargs)
-
-  # ----------------------------------------------------------------------------
-
   # def plotf(self, *args, **kwargs):
   #   self.array.plotf(*args, **kwargs)
 
@@ -212,9 +207,6 @@ class AsciiFile(File):
   not directlfullwavepy.plottable as an array.
   
   """
-  
-  # ----------------------------------------------------------------------------
-  
   def read(self, **kwargs):
     """
     
@@ -512,3 +504,5 @@ def save_txt(fname, lines, **kwargs):
     for line in lines:
       f.write(line + '\n')
 
+
+# -------------------------------------------------------------------------------

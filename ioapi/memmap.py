@@ -10,9 +10,6 @@ from autologging import logged, traced
 mmp_dtype = np.float32 # DATA TYPE FOR ARRAYS
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 def read_mmp(fname, shape, **kwargs):

@@ -188,7 +188,7 @@ class TtrFile(ArrayFile):
     
   def plot(self, **kwargs):
     kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
-    super().plot(**kwargs)
+    return super().plot(**kwargs)
 
 
 # -------------------------------------------------------------------------------

@@ -7,6 +7,44 @@ Notes
 Legacy code, possibly to be chucked away for good.
 
 """
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+def read_header_OLD(fname, **kwargs):
+  """
+  SEGY -> SU -> dict.
+
+  Read all trace header values for
+  all non-empty header keywords.
+  
+  Returns
+  -------
+  header : dict
+    Dictionary with keys 
+    corresponding to non-empty 
+    header-words
+  
+  Notes
+  -----
+  It is quite slow.
+  
+  """
+  from fullwavepy.ioapi.su import get_keywords, sugethw
+  
+  keys = get_keywords(fname, **kwargs)
+  header = {}
+  for key in keys:
+    header[key] = sugethw(fname, key, **kwargs)
+  
+  return header
+
+
+
+
 @timer
 @traced
 @logged

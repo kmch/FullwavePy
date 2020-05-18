@@ -7,9 +7,6 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 
 
-# -------------------------------------------------------------------------------
-
-
 @traced
 @logged
 def save_table(fname, chnls, times, delay=0):
