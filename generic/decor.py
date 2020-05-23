@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from autologging import logged, traced
 
 from functools import wraps
-from ipywidgets import interact, fixed
 
 from fullwavepy.generic.parse import kw
 
@@ -53,6 +52,7 @@ def widgets(*widgets_args):
   args to decorators.
   
   """
+  from ipywidgets import interact, fixed
   @traced
   @logged
   def widgets_actual_decorator(func):
