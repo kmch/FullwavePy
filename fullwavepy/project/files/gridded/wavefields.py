@@ -80,7 +80,14 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
     
     suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
     self.fname = self.path + self.proj.name + '-' + suffix + '.vtr'
-    
+
+   # -----------------------------------------------------------------------------
+
+  # -----------------------------------------------------------------------------
+
+  # def read(self, *args, **kwargs):
+  #   self.
+  
   # -----------------------------------------------------------------------------
   
   def plot(self, **kwargs):

@@ -5,18 +5,26 @@ Unit tests of ..basic module.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
+import time
 from autologging import logged, traced
 from unittest import TestCase
+
 from ..basic import *
-
-
-# -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class TestProjSyn(TestCase):
   """
+  Priorities: 
+  - sgy/vtr
+  - 2d/3d
+  - immerse
+  - wavefields
+  - management of files
+
+  Less urgent:
+  - anisotropy, Q, elastic
   """
   def setUp(self):
     """
@@ -26,6 +34,8 @@ class TestProjSyn(TestCase):
     """
     from fullwavepy.logging_config import log_lvl
     log_lvl(40)
+    self.startTime = time.time()
+
     self.pname = 'tmp'
     self.path = './'
     self.default_args = [self.pname]
@@ -41,13 +51,17 @@ class TestProjSyn(TestCase):
     """
     from fullwavepy.generic.system import bash
     cmd = 'rm -r %s/%s' % (self.path, self.pname)
+    t = time.time() - self.startTime
+    
+    # print('Ran %s in %.3f s' % (self.id(), t))
+    print('Ran in %.3f s' % (t))
     # bash(cmd)
     # self.__log.warning(cmd)
 
   # -----------------------------------------------------------------------------
   
-  # def test_basic_init(self):
-  #   p = ProjSyn(*self.default_args, **self.default_kwargs)
+  def test_basic_init(self):
+    p = ProjSyn(*self.default_args, **self.default_kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -104,6 +118,9 @@ class TestProjSyn(TestCase):
     for attr in attrs:
       answer = hasattr(p, attr)
       self.assertTrue(answer, msg='Missing attribute %s' % attr)
+
+  # -----------------------------------------------------------------------------
+
 
   # -----------------------------------------------------------------------------
 
