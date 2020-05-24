@@ -49,7 +49,7 @@ class GenericPoint(np.ndarray):
     to be the last and thus fastest-changing (np.arrays are row-major) index.
     
     """
-    from fullwavepy.math.generic import neighs1d
+    from fullwavepy.numeric.generic import neighs1d
 
     ranges = []
     for i in self:

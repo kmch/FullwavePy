@@ -13,7 +13,7 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.ndat.arrays import Arr3d
 from fullwavepy.ndat.points import GenericPoint, Points3d
-from fullwavepy.math.funcs import kaiser, sinc, dsinc_dx
+from fullwavepy.numeric.funcs import kaiser, sinc, dsinc_dx
 
 
 # FIXME sync it somehow with hick_sources.f90

@@ -79,7 +79,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
     center_cmap = False
     
   if spect is not None:
-    from fullwavepy.math.fourier import dft_freqs
+    from fullwavepy.numeric.fourier import dft_freqs
     ntraces, nsamps = image.shape
     plot_image._log.debug('nsamps=%s, ntraces=%s' % (nsamps, ntraces))
     y = dft_freqs(nsamps, which='positive', **kwargs)

@@ -175,7 +175,7 @@ class PbsFileArcher(PbsFile):
   # -----------------------------------------------------------------------------
   
   def _find_optimal_resources(self, optimize='idle', **kwargs):
-    from fullwavepy.math.generic import divisors_of, decimal
+    from fullwavepy.numeric.generic import divisors_of, decimal
     
     nshots = int(self.proj.inp.runfile.read()['ncomp'])
     self.__log.info('No. of shots in the runfile (ncomp): ' + str(nshots))

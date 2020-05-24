@@ -966,9 +966,9 @@ def _set_tracewise_modifiers(**kwargs):
   Clipping is done before normalization.
   
   """
-  from fullwavepy.math.generic import normalize
-  from fullwavepy.math.operators import derivative
-  from fullwavepy.math.fourier import dft
+  from fullwavepy.numeric.generic import normalize
+  from fullwavepy.numeric.operators import derivative
+  from fullwavepy.numeric.fourier import dft
   
   modifiers = kw('tracewise_modifiers', [], kwargs)
   norm = kw('norm', None, kwargs)

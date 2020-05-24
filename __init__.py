@@ -19,8 +19,8 @@ from fullwavepy.logging_config import *
 from fullwavepy.generic.system import *
 from fullwavepy.generic.parse import *
 
-from fullwavepy.math.generic import *
-from fullwavepy.math.funcs import *
+from fullwavepy.numeric.generic import *
+from fullwavepy.numeric.funcs import *
 
 from fullwavepy.ioapi.generic import save_txt, read_txt, read_any
 from fullwavepy.ioapi.fw3d import TtrFile, VtrFile, read_vtr, save_vtr
