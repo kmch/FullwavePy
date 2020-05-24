@@ -30,9 +30,17 @@ release = '0.0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', \
+
+# If you prefer NumPy or Google style docstrings over reStructuredText, you can 
+# also enable the napoleon extension. napoleon is a preprocessor 
+# that converts your docstrings to correct reStructuredText before 
+# autodoc processes them.
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary', \
     'sphinxcontrib.napoleon'
 ]
+
+
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
