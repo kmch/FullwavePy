@@ -70,7 +70,7 @@ def exten(fname, **kwargs):
   if len(split) >= 2:
     ext = split[-1]
     if len(split) > 2:
-      exten._log.warn(fname + ' contains more than 1 full stop ' +
+      exten._log.warning(fname + ' contains more than 1 full stop ' +
                       'separated by other chars. ' + 
                       'Taking the last bit as an extension.')
   else:
@@ -261,7 +261,7 @@ def del_kw(kwarg_name, kwargs, warning=False):
     del kwargs[kwarg_name]
   except KeyError:
     if warning:
-      del_kw._log.warn('Value of ' + kwarg_name + ' was not specified.')
+      del_kw._log.warning('Value of ' + kwarg_name + ' was not specified.')
   
   return kwargs
 

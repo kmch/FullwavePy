@@ -73,7 +73,7 @@ def plot_image(image, widgets=False, center_cmap=False, cbar=True, **kwargs):
   lognorm = kw('lognorm', False, kwargs)
   norm = LogNorm() if lognorm else None
   if lognorm:
-    plot_image._log.warn('lognorm on => setting vmin,vmax to None and center_cmap to False')
+    plot_image._log.warning('lognorm on => setting vmin,vmax to None and center_cmap to False')
     vmin = None
     vmax = None
     center_cmap = False

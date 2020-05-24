@@ -84,7 +84,7 @@ class IterFileList(ProjFileList):
     try:
       self.nits_total = self.proj.inp.runfile.read_nits(**kwargs)
     except FileNotFoundError:
-      self.__log.warn(self.proj.name + ' has no runfile yet, unable to set' + 
+      self.__log.warning(self.proj.name + ' has no runfile yet, unable to set' + 
                       ' self.nits_total')
     
 
@@ -114,11 +114,11 @@ class ShotFileList(ProjFileList):
     try:
       sids_all = [s.ID for s in self.proj.inp.s.read(dx=1).li] # dx IS DUMMY HERE
     except AttributeError as err:
-      self.__log.warn(str(err))
+      self.__log.warning(str(err))
       return []
 
     except FileNotFoundError as err:
-      self.__log.warn('Returning [] due to FileNotFoundError: ' + str(err)) #FIXME: WHY DOESN'T err CONTAIN FileNotFoundError
+      self.__log.warning('Returning [] due to FileNotFoundError: ' + str(err)) #FIXME: WHY DOESN'T err CONTAIN FileNotFoundError
       return []
     
     # .get IS A dict's METHOD

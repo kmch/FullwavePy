@@ -71,7 +71,7 @@ class DataFileSgy(DataFile, SgyFile):
     self.__log.debug('this_class: ' + str(this_class))
     
     if not exists(self.fname):
-      self.__log.warn(self.fname + ' not found. Returning.')
+      self.__log.warning(self.fname + ' not found. Returning.')
       return
     
     skey = self.proj.sgyhw['sid']
@@ -84,12 +84,12 @@ class DataFileSgy(DataFile, SgyFile):
     if lkey is not None:
       fname = strip(self.fname) + '_' + str(skey) + str(sids[0]) + '.' + exten(self.fname)
       if exists(fname):
-        self.__log.warn('Assuming each source gather contains the same lines')
+        self.__log.warning('Assuming each source gather contains the same lines')
         lids = sugethw(fname, key=lkey, unique_values=True, int_values=True, timer=True)
       else:
         lids = sugethw(self.fname, key=lkey, unique_values=True, int_values=True, timer=True)
     else:
-      self.__log.warn('(Shot) line ID is not set in SEGY mapping. Files will not be split into lines.')
+      self.__log.warning('(Shot) line ID is not set in SEGY mapping. Files will not be split into lines.')
       lids = []
       
     self.gather = {} # IS IT A GOOD IDEA?
@@ -357,7 +357,7 @@ class RawSignFile(DataFileSgy):
       
       elif wavelet == 'gauss':
         from fullwavepy.math.funcs import gauss
-        self.__log.warn('Actually fpeak is WRONG, it is tpeak')
+        self.__log.warning('Actually fpeak is WRONG, it is tpeak')
         sigma = kw('sigma', 1, kwargs)
         self.__log.info('Assuming sigma=%s' % sigma)
         array = gauss(np.arange(self.proj.ns), mu=fpeak, sigma=sigma)

@@ -47,7 +47,7 @@ class MetaDataProjFile(CsvFile, AsciiProjFile): # IS IT USED AT ALL?
     
     """
     if (not hasattr(self, 'df')) or overwrite:
-      self.__log.warn('{}.df does not exist and will be read.'.format(type(self)))
+      self.__log.warning('{}.df does not exist and will be read.'.format(type(self)))
       self.df = super().read(**kwargs)
     return self.df  
 
@@ -144,7 +144,7 @@ class LastCheckpointFile(AsciiProjFile):
       proj.lastcp = self.read()
       self.__log.info('Last checkpoint: ' + str(proj.lastcp))
     except FileNotFoundError:
-      self.__log.warn(self.fname + ' not found. Setting proj.lastcp to 1')
+      self.__log.warning(self.fname + ' not found. Setting proj.lastcp to 1')
       proj.lastcp = 1
     
     super().__init__(proj, path, **kwargs)
@@ -156,7 +156,7 @@ class LastCheckpointFile(AsciiProjFile):
       cp = super().read(**kwargs)
       cp = int(cp[0][0])
     except FileNotFoundError:
-      self.__log.warn(self.fname + ' not found. Setting last checkpoint to 0')
+      self.__log.warning(self.fname + ' not found. Setting last checkpoint to 0')
       cp = 0
     return cp
 
@@ -299,7 +299,7 @@ class RawSeisTxtFile(AsciiProjFile):
     
     
     if len(bad_IDs) == 0:
-      self.__log.warn('len(bad_IDs)=0, selecting all the data' +
+      self.__log.warning('len(bad_IDs)=0, selecting all the data' +
                       ' contained in the box...')
     
     nfnames = []

@@ -100,12 +100,12 @@ class ModelFileSgy(ModelFile, SgyFile):
     because suwind tmin=... takes values in microseconds!
     
     """    
-    self.__log.warn('Resize disabled until debugged')
+    self.__log.warning('Resize disabled until debugged')
     #self.__log.info('Assuming integer box coords, as required by SEGY')
     #box = [int(i) for i in self.proj.box]
     #x1, x2, y1, y2, z1, z2 = box
     #
-    #self.__log.warn('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
+    #self.__log.warning('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
     ##z1 -= file_z0
     ##z2 -= file_z0
     #
@@ -172,7 +172,7 @@ class ModelFileSgy(ModelFile, SgyFile):
     try:
       kwargs['nx'] = kw('nx', self.proj.dims[0], kwargs)
     except AttributeError:
-      self.__log.warn('self.proj.dims not defined') 
+      self.__log.warning('self.proj.dims not defined') 
     
     self.__log.debug("Set kwargs['nx'] to " + str(kwargs['nx']))
     self.array = super().read(**kwargs)

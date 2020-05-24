@@ -28,7 +28,7 @@ class SchedFileList(IterFileList):
       try:
         f.read(**kwargs)
       except FileNotFoundError as err:
-        self.__log.warn(err)    
+        self.__log.warning(err)    
   
   # -----------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ class SlaveFileList(SchedFileList, ShotFileList):
         try:
           f.read(**kwargs)
         except FileNotFoundError as err:
-          self.__log.warn(err)    
+          self.__log.warning(err)    
   
   def plot(self, **kwargs):
     for it in self.it[1: ]: # SKIP ITER. 0
@@ -97,7 +97,7 @@ class SlaveFileList(SchedFileList, ShotFileList):
           f.plot(**kwargs)
           plt.figure()
         except FileNotFoundError as err:
-          self.__log.warn(err)
+          self.__log.warning(err)
 
 
 # -------------------------------------------------------------------------------

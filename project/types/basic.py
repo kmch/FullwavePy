@@ -63,7 +63,7 @@ class Proj(object):
     self.exe = kw('exe', {}, kwargs)
     #self.__log.debug('Paths to executables: ' + str(self.exe))
     #if len(self.exe) == 0:
-    #  self.__log.warn('Empty paths to executables (exe dictionary)')
+    #  self.__log.warning('Empty paths to executables (exe dictionary)')
     
     # IMMERSED BOUNDARY
     #self.immerse = kw('immerse', False, kwargs)
@@ -247,7 +247,7 @@ class ProjSyn(Proj):
       self.i.sp.run()
       self.i.rnf.prep(**kwargs)
     else:
-      self.__log.warn('You need to i.sp.run and i.rnf.prep!')
+      self.__log.warning('You need to i.sp.run and i.rnf.prep!')
 
   # -----------------------------------------------------------------------------
       
@@ -434,7 +434,7 @@ class ProjInv(Proj):
             #  'rawprec': ['RawPrec', None, PrecFile]
              }
     
-    #self.__log.warn('Disabled init of cp file for now (until debug)')
+    #self.__log.warning('Disabled init of cp file for now (until debug)')
     #
     for attr, [file_id, file_start, file_class] in cpnts.items():
       self.__log.debug('attr=%s, file_id=%s, file_start=%s, file_class=%s' % \
@@ -504,7 +504,7 @@ class ProjInv(Proj):
         # r_hicks = 2
         # rmax = 5        
     else:
-      self.__log.warn('You still need to:\n' + \
+      self.__log.warning('You still need to:\n' + \
         '1. Run %s with p.i.sp.run()\n' % self.i.sp.name + \
         '2. Prepare %s with p.i.rnf.prep()\n' % self.i.rnf.name + \
         '3. Run FsPrep with p.i.fs.run() (if extra nodes changed).')
@@ -514,7 +514,7 @@ class ProjInv(Proj):
                          mute_kwargs=dict(**kwargs['mute_kwargs'], 
                                           syn_file=syn_proj.o.syn))
     else:
-      self.__log.warn('You need to i.obs.process!')
+      self.__log.warning('You need to i.obs.process!')
                       
   # -----------------------------------------------------------------------------
   

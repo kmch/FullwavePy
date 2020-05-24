@@ -160,10 +160,10 @@ def read_vtr(fname, **kwargs):
   nx3_dat = data.shape[2]
   
   if (nx1_dat != nx1 or nx2_dat != nx2 or nx3_dat != nx3):
-    read_vtr._log.warn('Shape of the data-array inconsistent with the header:')
-    read_vtr._log.warn('nx1: data ' + str(nx1_dat) + ', header ' + str(nx1) + '\n')
-    read_vtr._log.warn('nx2: data ' + str(nx2_dat) + ', header ' + str(nx2) + '\n')
-    read_vtr._log.warn('nx3: data ' + str(nx3_dat) + ', header ' + str(nx3) + '\n')
+    read_vtr._log.warning('Shape of the data-array inconsistent with the header:')
+    read_vtr._log.warning('nx1: data ' + str(nx1_dat) + ', header ' + str(nx1) + '\n')
+    read_vtr._log.warning('nx2: data ' + str(nx2_dat) + ', header ' + str(nx2) + '\n')
+    read_vtr._log.warning('nx3: data ' + str(nx3_dat) + ', header ' + str(nx3) + '\n')
   
   read_vtr._log.debug('min value: %s' % np.min(data))
   read_vtr._log.debug('max value: %s' % np.max(data))
@@ -225,7 +225,7 @@ def read_ttr(fname, **kwargs):
 
   len_max = 40
   if len(name) > len_max:
-    read_ttr._log.warn('File name %s is longer than %s and may not be suitable for ttr2vtr code yet' % \
+    read_ttr._log.warning('File name %s is longer than %s and may not be suitable for ttr2vtr code yet' % \
       (name, len_max))
 
 

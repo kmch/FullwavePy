@@ -61,7 +61,7 @@ class CPFileList(SchedFileList):
       for it in range(1, self.nits_total + 1):
         self.it[it] = FileClass(suffix(file_id, it), proj, proj.out.path, **kwargs)      
     else:
-      self.__log.warn(self.init_err)
+      self.__log.warning(self.init_err)
       
   # -----------------------------------------------------------------------------
   
@@ -106,7 +106,7 @@ class DumpFileList(SlaveFileList):
     
     """
     super().__init__(proj, **kwargs)
-    self.__log.warn('fwd set to %s' % fwd)
+    self.__log.warning('fwd set to %s' % fwd)
     self.__log.debug('file_id:' + file_id)
     
     # THIS COULD BE PUT SOMWHERE ELSE IF NEEDED
@@ -124,7 +124,7 @@ class DumpFileList(SlaveFileList):
           self.it[it][sid] = FileClass(suffix(file_id, it, sid, fwd), 
                                        proj, proj.out.path, it=it, sid=sid, **kwargs)
     else:
-      self.__log.warn(self.init_err)
+      self.__log.warning(self.init_err)
     
   # -----------------------------------------------------------------------------
   
@@ -192,7 +192,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
           for ts in tsteps:
             self.it[it][sid][ts] = FileClass(proj, ts, sid, it, **kwargs)
     else:
-      self.__log.warn(self.init_err)
+      self.__log.warning(self.init_err)
   
   # ----------------------------------------------------------------------------- 
   
@@ -216,7 +216,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
         raise ValueError('SLAVES_WAVEFIELDSVTR=%s' % step)
       
     else:
-      self.__log.warn('SLAVES_WAVEFIELDSVTR not set - returning empty list...')
+      self.__log.warning('SLAVES_WAVEFIELDSVTR not set - returning empty list...')
       tsteps = []
     
     self.__log.debug('tsteps: %s' % str(tsteps))
@@ -238,7 +238,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
   def plot_all(self, **kwargs):
     """
     """
-    self.__log.warn('assuming it[1: ] even for ProjSyn')
+    self.__log.warning('assuming it[1: ] even for ProjSyn')
     for it in self.it[1: ]:
       for sid in it.values():
         for f in sid.values():
@@ -246,7 +246,7 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
             f.plot(**kwargs)
             plt.figure()
           except FileNotFoundError as err:
-            self.__log.warn(err)
+            self.__log.warning(err)
   
   # -----------------------------------------------------------------------------
 

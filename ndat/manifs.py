@@ -76,7 +76,7 @@ class Plane(Surf):
     from fullwavepy.math.funcs import linear
     assert len(dims) == 3
     if dims[-1] != 1:
-      cls.__log.warn('Replacing nz=%s with nz=1' % dims[-1])
+      cls.__log.warning('Replacing nz=%s with nz=1' % dims[-1])
       dims = np.copy(dims) # OTHERWISE OVERWRITES proj.dims IF PASSED AS DIMS
       dims[-1] = 1
     

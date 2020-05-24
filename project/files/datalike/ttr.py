@@ -40,12 +40,12 @@ class DataFileTtr(DataFile, TtrFile):
   # ----------------------------------------------------------------------------- 
 
   def split(self, **kwargs):
-    self.__log.warn('Not implemented. Skipping.')
+    self.__log.warning('Not implemented. Skipping.')
 
   # -----------------------------------------------------------------------------
   
   def files(self, **kwargs):
-    self.__log.warn('Not implemented. Skipping.')
+    self.__log.warning('Not implemented. Skipping.')
 
   # -----------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ class SignatureFileTtr(DataFileTtr):
     try:
       self.array = super().read(**kwargs)
     except FileNotFoundError as err: #FIXME? MOVE TO A MORE GENERAL CLASS
-      self.__log.warn('%s not found. Now looking for a txt version...' % err)
+      self.__log.warning('%s not found. Now looking for a txt version...' % err)
       fname = self.fname
       self.fname = strip(fname) + '.txt'
       self.array = super().read(**kwargs)
@@ -213,7 +213,7 @@ class DumpCompareFile(DataFileTtr):
         df = df[df.fldr == self.sid]
       
       # CALCULATE THE OFFSET
-      self.__log.warn('Taking -gelev as this is positive for OBS PROTEUS, double-check land stations!')
+      self.__log.warning('Taking -gelev as this is positive for OBS PROTEUS, double-check land stations!')
       df['offset3d'] = np.sqrt((df['sx'] - df['gx'])**2 + 
                                (df['sy'] - df['gy'])**2 + 
                                (df['selev'] + df['gelev'])**2)

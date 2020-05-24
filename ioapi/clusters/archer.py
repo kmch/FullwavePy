@@ -85,7 +85,7 @@ class PbsFileArcher(PbsFile):
       ncpus_max = 12    
       mem_min = 1
       mem_max = 46
-      self.__log.warn('mem_max={}. Likely to exceed it and kill the job'.format(mem_max))
+      self.__log.warning('mem_max={}. Likely to exceed it and kill the job'.format(mem_max))
     
     elif q == 'debug':
       select_min = 1
@@ -245,7 +245,7 @@ class PbsFileArcher(PbsFile):
                         ', ompthreads: ' + str(omp))
         if mpi > mpi_max:
           best = [mpi, omp]
-      self.__log.warn('Choosing the largest mpiprocs')
+      self.__log.warning('Choosing the largest mpiprocs')
       self.mpiprocs = best[0]
       self.ompthreads = best[1]
     else:
@@ -383,7 +383,7 @@ class PbsFileArcher(PbsFile):
     """
     f.write('\n# RUN FULLWAVE \n')
     if True:
-      self.__log.warn('Apparently after 1Feb2020 pbsexec (grace period) does not work (regardless of the queue)')
+      self.__log.warning('Apparently after 1Feb2020 pbsexec (grace period) does not work (regardless of the queue)')
       pbsexec = ''
     else: # NOW IT'S NOT RECOGNIZED BY ANY QUEUE
       pbsexec = 'pbsexec '

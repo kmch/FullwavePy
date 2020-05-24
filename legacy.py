@@ -126,7 +126,7 @@ def slice_array(A, **kwargs):
 
   # 1D ARRAY CONTAINING A SINGLE 1D TIME-SERIES
   if len(dims) == 1:
-    slice_array._log.warn('1D array detected. Passing it on intact')
+    slice_array._log.warning('1D array detected. Passing it on intact')
     return A
   
   # 3D ARRAY CONTAINING A SINGLE 1D TIME-SERIES
@@ -150,7 +150,7 @@ def slice_array(A, **kwargs):
     A = [[j[svalue] for j in i] for i in A]
   
   elif scoord is None:
-    slice_array._log.warn('No slicing applied')
+    slice_array._log.warning('No slicing applied')
   
   else:
     raise ValueError('Wrong slice coord: ' + scoord)

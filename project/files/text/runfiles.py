@@ -64,7 +64,7 @@ class ParameterFile(AsciiProjFile):
     content = read_txt_raw(fname)
     
     if len(kwargs) == 0:
-      self.__log.warn('Empty kwargs. Returning.')
+      self.__log.warning('Empty kwargs. Returning.')
       return
     
     f = open(self.fname, 'w')
@@ -101,7 +101,7 @@ class ParameterFile(AsciiProjFile):
       key = key.lower()
       if isinstance(value, str): value = value.lower()      
       if key not in found_keys:
-        self.__log.warn('Parameter ' + key + 
+        self.__log.warning('Parameter ' + key + 
                         ' not found and its value will be appended, not modified')
         f.write('     ' + '{:<13}'.format(key) + ' : ' + str(value) + '\n')
     
@@ -119,7 +119,7 @@ class ParameterFile(AsciiProjFile):
     self.__log.debug(cmd)
     self.__log.debug(o)
     if len(e) > 0:
-      self.__log.warn(e)
+      self.__log.warning(e)
     
     
   # -----------------------------------------------------------------------------
@@ -170,13 +170,13 @@ class SegyPrepFile(ParameterFile):
     
     ztype_default = 'ibfs'
     if 'ztype' not in kwargs:
-      self.__log.warn('Setting z type to (kmc custom) default: %s' % str(ztype_default))
+      self.__log.warning('Setting z type to (kmc custom) default: %s' % str(ztype_default))
     segyprep['ztype'] = kw('ztype', ztype_default, kwargs)
    
     segyprep['problem'] = kw('problem', proj.problem, kwargs)
     segyprep['io'] = kw('io', proj.io, kwargs)  
     segyprep['reciprocity'] = kw('reciprocity', 0, kwargs)
-    self.__log.warn('Reciprocity: ' + str(bool(segyprep['reciprocity'])))
+    self.__log.warning('Reciprocity: ' + str(bool(segyprep['reciprocity'])))
     segyprep['fixedarray'] = kw('fixedarray', 'yes', kwargs)
     segyprep['unique'] = kw('unique', 'yes', kwargs)
     
@@ -210,7 +210,7 @@ class SegyPrepFile(ParameterFile):
     
     # WARN ABOUT ANOMALOUS BEHAVIOUR
     if segyprep['text'] != 'yes':
-      self.__log.warn("'text'=" + segyprep['text'] + ". No .hed files " +
+      self.__log.warning("'text'=" + segyprep['text'] + ". No .hed files " +
                       "will be generated which will affect e.g. the phasubplots.")
                       
   # -----------------------------------------------------------------------------
@@ -436,7 +436,7 @@ class Runfile(ParameterFile):
       self.proj.efront = int(d['efro'])  
       self.proj.eback  = int(d['ebac']) 
     except KeyError as err:
-      self.__log.warn('Description of boundaries in the Runfile is not complete: ' + str(err))
+      self.__log.warning('Description of boundaries in the Runfile is not complete: ' + str(err))
 
   # -----------------------------------------------------------------------------
 
@@ -455,7 +455,7 @@ class Runfile(ParameterFile):
       p_self = float(self.params[param])
       p_proj = float(getattr(self.proj, param))
       if p_self != p_proj:
-        self.__log.warn('Found inconsistency for ' + param + '\n' + 
+        self.__log.warning('Found inconsistency for ' + param + '\n' + 
                          self.fname + '.' + param + ' = ' + str(p_self) + 
                          '\n' +'proj.' + param + ' = ' + str(p_proj))
         params2overwrite[param] = p_proj
@@ -510,7 +510,7 @@ class Runfile(ParameterFile):
                   NCOMP=skeleton['ncomp'], 
                   NSHOTS=skeleton['nshot'])    
     else:
-      self.__log.warn('File ' + skelet_fname + ' not found. ' + 
+      self.__log.warning('File ' + skelet_fname + ' not found. ' + 
                       'No merge with template will be applied.')
     
     # APPLY THE REMAINDER 

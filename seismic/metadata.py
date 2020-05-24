@@ -51,7 +51,7 @@ class MetadataFile(CsvFile, AsciiFile):
     
     """
     if hasattr(self, 'df') and overwrite == True:
-       self.__log.warn('{}.df exists but it will be overwritten (overwrite=True).'.format(type(self)))    
+       self.__log.warning('{}.df exists but it will be overwritten (overwrite=True).'.format(type(self)))    
     
     if not (hasattr(self, 'df') and overwrite == False):
       self.df = Metadata(super().read(**kwargs))

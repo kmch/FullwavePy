@@ -32,11 +32,11 @@ def su_process(A, func, dt, *args, **kwargs):
   from fullwavepy.ioapi.generic import read_any
   from fullwavepy.ioapi.segy import array2sgy
   
-  #su_process._log.warn('shh %s' % A.shape)
-  #su_process._log.warn('fffunc %s' % func)
-  #su_process._log.warn('dddt %s' % dt)
-  #su_process._log.warn('ars %s' % args)
-  #su_process._log.warn('kars %s' % kwargs)
+  #su_process._log.warning('shh %s' % A.shape)
+  #su_process._log.warning('fffunc %s' % func)
+  #su_process._log.warning('dddt %s' % dt)
+  #su_process._log.warning('ars %s' % args)
+  #su_process._log.warning('kars %s' % kwargs)
   
   fsgy = 'tmp.sgy'
   array2sgy(fsgy, A, dt, **kwargs)

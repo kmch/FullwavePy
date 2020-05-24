@@ -84,7 +84,7 @@ class Data(Arr3d):
   #   ph_type : syn/obs/dif
   #   """
   #   if not hasattr(self, 'head'):
-  #     self.__log.warn('self.head not found. Returning')
+  #     self.__log.warning('self.head not found. Returning')
   #     return
     
   #   plt.scatter(self.head.sx, self.head.sy, vmin=-np.pi, vmax=+np.pi,

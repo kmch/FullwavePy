@@ -237,7 +237,7 @@ class FsFile(SurfZFile, GridProjFile):
     o, e = bash(cmd, path=self.proj.inp.path, **kwargs)
     self.__log.info(o) 
     if len(e) > 0:
-      self.__log.warn(e)
+      self.__log.warning(e)
   
 
 # -------------------------------------------------------------------------------  

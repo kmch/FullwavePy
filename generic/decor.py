@@ -83,7 +83,7 @@ def widgets(*widgets_args):
         sids = sorted(list(proj.i.s.d.keys()))
         #it_max = proj.i.rnf.nits_total
       except AttributeError as err:
-        wrapper_widgets._log.warn('Setting sids to [] because of %s' % str(err))
+        wrapper_widgets._log.warning('Setting sids to [] because of %s' % str(err))
         sids = []
         
       ##print('wow', args[0]) USE THIS TO ACCESS PROJECT METADATA! FIXME

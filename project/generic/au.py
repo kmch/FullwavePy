@@ -89,7 +89,7 @@ class ProjGeometry(object):
         # THIS SHOULD CREATE f.params DICTIONARY
         f.read()
       else:
-        self.__log.warn(f.fname + ' not found.')
+        self.__log.warning(f.fname + ' not found.')
     
     self._set_discret(**kwargs)
     self._extend_grid(**kwargs)
@@ -226,7 +226,7 @@ class ProjGeometry(object):
     runfile = self.proj.inp.runfile
     
     if not exists(runfile.fname):
-      self.__log.warn(runfile.fname + ' not found. Cannot read extra nodes.')
+      self.__log.warning(runfile.fname + ' not found. Cannot read extra nodes.')
       return
     
     err = False
@@ -243,10 +243,10 @@ class ProjGeometry(object):
         setattr(self.proj, param, val)
       except KeyError:
         err = True
-        self.__log.warn(param + ' missing from ' + runfile.fname)
+        self.__log.warning(param + ' missing from ' + runfile.fname)
         
     if err:    
-      self.__log.warn('Failed to extend_grid. Some of the boundaries info missing.')
+      self.__log.warning('Failed to extend_grid. Some of the boundaries info missing.')
     else:
       if (self.proj.btop == 0) and (self.proj.etop < 2):
         self.proj.etop += 2

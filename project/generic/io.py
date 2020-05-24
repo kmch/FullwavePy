@@ -69,12 +69,12 @@ class ProjThroughput(object):
       nfname = path_leave(fname)
       
       if exten(fname) == 'pbs': 
-        self.__log.warn('Skipping PBS script ' + fname + 
+        self.__log.warning('Skipping PBS script ' + fname + 
                         ' prepare it yourself.')
         continue
 
       if 'Job' in fname or (('Out' in fname or 'Err' in fname) and exten(fname) == 'log'):
-        self.__log.warn('Skipping ' + fname)
+        self.__log.warning('Skipping ' + fname)
         continue
     
       nfname = self.path + self.proj.name + nfname[len(project_name): ]
@@ -152,7 +152,7 @@ class ProjThroughput(object):
     o, e = bash(cmd)
     self.__log.info(str(o))
     if len(e) < 0:
-      self.__log.warn(str(e))
+      self.__log.warning(str(e))
 
 
   # -----------------------------------------------------------------------------
@@ -368,8 +368,8 @@ class ProjInput(ProjThroughput):
     else:
       err = True
     
-    self.__log.warn('Note, accuracy criterion is not checked by Fullwave.')
-    self.__log.warn('Make sure log_lvl<=20 in order to see the full log.')
+    self.__log.warning('Note, accuracy criterion is not checked by Fullwave.')
+    self.__log.warning('Make sure log_lvl<=20 in order to see the full log.')
     self.__log.info(o)
     if len(e) > 0:
       self.__log.info(e)

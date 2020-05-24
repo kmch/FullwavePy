@@ -49,7 +49,7 @@ def vp2rho(vp, **kwargs):
   
   if (vp < vp_min):
     vp2rho._log.warno("vp=%s < vp_min=%s of Gardner's relation, setting water density")
-    vp2rho._log.warn("Sync vp_min with Fullwave3D's Gardner cutoff etc.")
+    vp2rho._log.warning("Sync vp_min with Fullwave3D's Gardner cutoff etc.")
     rho = 1000
   elif (vp > vp_max):
     raise ValueError("Gardner relation not valid for this vp=%s > vp_max=%s" % (vp, vp_max))
@@ -492,7 +492,7 @@ class VolumeSR(Arr3d):
       elif len(Gs) > 1:
         raise ValueError('More than one ghost found: ' + str(Gs))
       else:
-        self.__log.warn('No ghost found for the outside node %s. Skipping it.' % str([x,y,z]))
+        self.__log.warning('No ghost found for the outside node %s. Skipping it.' % str([x,y,z]))
         continue
       
       I = np.array(iss[np.where(np.all(ghs==G, axis=1))[0][0]])

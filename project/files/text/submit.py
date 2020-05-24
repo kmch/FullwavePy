@@ -64,16 +64,16 @@ class PbsFile(JobFile, AsciiProjFile):
     #for f in [proj.out.out, proj.out.err, proj.out.jobout, proj.out.joberr]:
     #  fname = strip(f.fname) + str(run_id) + '.' + exten(f.fname)
     #  if exists(fname):
-    #    self.__log.warn(fname + ' already present.')
+    #    self.__log.warning(fname + ' already present.')
     #    found.append(fname)
     #   
     #if problem == 'synthetic':
-    #  self.__log.warn('lastcp not available for synthetic runs.')
+    #  self.__log.warning('lastcp not available for synthetic runs.')
     #  return
     #
     ## START FROM A GIVEN CHECKPOINT
     ##lastcp_txt = proj.out.lastcp.read()
-    #self.__log.warn('lastcp should be selectable! implement it')
+    #self.__log.warning('lastcp should be selectable! implement it')
     #
     #lastcp = proj.out.lastcp.read()
     #if (run_id == 1) and (lastcp > 0):
@@ -85,7 +85,7 @@ class PbsFile(JobFile, AsciiProjFile):
     #                    ' (as run_id=' + str(run_id) + ' indicates)' +
     #                    ' choose force=True. Otherwise choose run_id=2')
     #  else:
-    #    self.__log.warn('Run_ID=1, removing ' + proj.out.lastcp.fname +
+    #    self.__log.warning('Run_ID=1, removing ' + proj.out.lastcp.fname +
     #                    ' with last checkpoint equal to ' + str(lastcp) + 
     #                    '.\nIf you want instead to restart the job, re-create' +
     #                    proj.out.lastcp.fname + ' and set run_id=2')
@@ -97,7 +97,7 @@ class PbsFile(JobFile, AsciiProjFile):
     #  for i in range(1, run_id):
     #    fname = strip(f.fname) + str(i) + '.' + exten(f.fname)
     #    if not exists(fname):
-    #      self.__log.warn(fname + ' not found.')
+    #      self.__log.warning(fname + ' not found.')
     #      not_found.append(fname)
     #      
     #if len(not_found) > 0:
@@ -325,7 +325,7 @@ class BashFile(JobFile, AsciiProjFile):
     if len(o) != 0 and cat:
       self.__log.info(o)
     if len(e) != 0:
-      self.__log.warn(e)
+      self.__log.warning(e)
 
   # -----------------------------------------------------------------------------
 

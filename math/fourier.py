@@ -123,7 +123,7 @@ def dft_freqs(N, which='all', **kwargs):  # DEL?
   dt = kw('dt', None, kwargs)
   if not dt:
     dt = 1
-    dft_freqs._log.warn('You should provide dt to scale freq. axis')  
+    dft_freqs._log.warning('You should provide dt to scale freq. axis')  
   
   T = dt*N
   df = 1. / T
@@ -177,7 +177,7 @@ def _dft_fmax_df(N, **kwargs): # DEL?
   dt = kw('dt', None, kwargs)
   if not dt:
     dt = 1
-    _dft_fmax_df._log.warn('You should provide dt to scale freq. axis')  
+    _dft_fmax_df._log.warning('You should provide dt to scale freq. axis')  
   
   T = dt*N
   df = 1. / T

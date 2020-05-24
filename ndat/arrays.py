@@ -827,7 +827,7 @@ def interleave_arrays(A1, A2, **kwargs):
   ncols = A.shape[0]
   
   if ncols < 2 * chunk_size:
-    interleave_arrays._log.warn('No. of columns=' + str(ncols) + 
+    interleave_arrays._log.warning('No. of columns=' + str(ncols) + 
            ' < 2 * chunk_size! Outputting empty array')
     return []
   

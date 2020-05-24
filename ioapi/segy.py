@@ -76,7 +76,7 @@ class SgyFile(ArrayFile):
     if not exists(self.fname):
       raise FileNotFoundError(self.fname)    
     #FIXME
-    self.__log.warn('suximage does not work here for some reason but it used to')
+    self.__log.warning('suximage does not work here for some reason but it used to')
     o, e = bash('segyread tape=' + self.fname + ' | ' +
                 'suximage', **kwargs)
     self.__log.info(e + '\n' + o)
@@ -176,7 +176,7 @@ class SgyFile(ArrayFile):
 
     if (win != selfwin) and (overwrite == False):
       overwrite = True
-      self.__log.warn('Changed overwrite to {} because provided win {} is different from the previous {}'.format(overwrite, win ,selfwin))
+      self.__log.warning('Changed overwrite to {} because provided win {} is different from the previous {}'.format(overwrite, win ,selfwin))
     
     if (not hasattr(self, 'array')) or overwrite:
       if win is None:
@@ -223,7 +223,7 @@ class SgyFile(ArrayFile):
     self.__log.info('Assuming integer box coords, as required by SEGY')
     x1, x2, y1, y2, z1, z2 = box
     
-    #self.__log.warn('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
+    #self.__log.warning('\n\n DISABLED BUGGY file_z0 CONVERSION!!!\n\n')
     #z1 -= file_z0
     #z2 -= file_z0
     
@@ -296,7 +296,7 @@ class SgyFile(ArrayFile):
     # THIS PREVENTS OVERWRITING AND OUTPUTS INTERMEDIATE STEPS TOO
     fname_out = su_filter_full(self.fname, pad, **kwargs)
     self.__log.info('Filtered data output to ' + fname_out)
-    self.__log.warn('Overwriting ' + self.fname)
+    self.__log.warning('Overwriting ' + self.fname)
     o, e = bash('mv {} {}'.format(fname_out, self.fname))
     
   # -----------------------------------------------------------------------------  
@@ -467,11 +467,11 @@ def array2sgy(fname, A, dt, **kwargs):
   if len(shape) == 3:
     An = A
   elif len(shape) == 2:
-    array2sgy._log.warn('Array 2D detected, adding Y-dimension of length 1')
+    array2sgy._log.warning('Array 2D detected, adding Y-dimension of length 1')
     An = np.zeros((shape[0], 1, shape[1]))
     An[:,0,:] = A
   elif len(shape) == 1:
-    array2sgy._log.warn('Array 1D detected, adding X- and Y- dimensions of length 1')
+    array2sgy._log.warning('Array 1D detected, adding X- and Y- dimensions of length 1')
     An = np.zeros((1, 1, shape[0]))
     An[0,0,:] = A
   else:
@@ -566,7 +566,7 @@ def sgy2vtr(fname, nx=None, **kwargs):
   o, e = bash(cmd)
   
   if len(e) > 0:
-    sgy2vtr._log.warn(e)
+    sgy2vtr._log.warning(e)
 
 
 # -------------------------------------------------------------------------------

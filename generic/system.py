@@ -203,7 +203,7 @@ def get_files(path, pattern, **kwargs):
   files_list = sorted([path + '/' + f for f in expand(ls(path), pattern)])
   
   if len(files_list) == 0:
-    get_files._log.warn('No files matching ' + 
+    get_files._log.warning('No files matching ' + 
                          pattern + ' in ' + path)  
   
   

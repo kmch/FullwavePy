@@ -39,12 +39,12 @@ class ProjInvSyn(ProjInv):
     
     """
     super().__init__(name, **kwargs)
-    self.__log.warn('Make sure ProjInvSyn kwargs match syn_proj ones!')
+    self.__log.warning('Make sure ProjInvSyn kwargs match syn_proj ones!')
     
     if 'syn_proj_path' in kwargs:
       syn_proj_path = kwargs['syn_proj_path']
     else:
-      self.__log.warn('syn_proj_path not provided. Assuming: ' + syn_proj_name)
+      self.__log.warning('syn_proj_path not provided. Assuming: ' + syn_proj_name)
       syn_proj_path = syn_proj_name
       
     self.__log.info('\n\nInitializing synthetic sub-project to copy data from\n')
@@ -84,18 +84,18 @@ class ProjInvSyn(ProjInv):
     
     self.i.obs.prep(dupl=self.psyn.o.syn.fname) #FOR 1ST ITER
     self.i.obs.raw.prep(dupl=self.psyn.o.syn.fname) #NOTE: raw!
-    self.__log.warn(self.i.obs.fname + ' is meant to be a processed version of ' +
+    self.__log.warning(self.i.obs.fname + ' is meant to be a processed version of ' +
                     self.i.obs.raw.fname + '. Note that if the processing changes ' +
                     'no. of srcs/recs, SegyPrep has to be re-run!')
     
     try:
       self.i.svp.prep(dupl=self.psyn.i.tvp.bckgnd.fname, file_z0=file_z0)
     except AttributeError as err:
-      self.__log.warn('Copying TrueVp because of: ' + str(err))
+      self.__log.warning('Copying TrueVp because of: ' + str(err))
       self.i.svp.prep(dupl=self.psyn.i.tvp.fname, file_z0=file_z0)
     
     
-    self.__log.warn('Runfile and PBS script need to be created manually!')
+    self.__log.warning('Runfile and PBS script need to be created manually!')
     
   # -----------------------------------------------------------------------------  
   

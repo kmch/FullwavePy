@@ -50,7 +50,7 @@ class MetaDataFile(CsvFile):
     
     """
     if (not hasattr(self, 'df')) or overwrite:
-      self.__log.warn('{}.df does not exist and will be read.'.format(type(self)))
+      self.__log.warning('{}.df does not exist and will be read.'.format(type(self)))
       self.df = super().read(**kwargs)
     return self.df 
 
