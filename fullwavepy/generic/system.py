@@ -195,7 +195,7 @@ def get_files(path, pattern, **kwargs):
   
   It gets reaaally slow if a no. of files in the path 
   is big (>10k)
-  
+
   """
   from os import listdir as ls
   from fnmatch import filter as expand
