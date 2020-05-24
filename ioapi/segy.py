@@ -281,7 +281,7 @@ class SgyFile(ArrayFile):
     
     """
     from fullwavepy.ioapi.su import sushw
-    from fullwavepy.signal.su import su_filter_full
+    from fullwavepy.dsp.su import su_filter_full
     
     self.__log.info('Using ' + str(pad) + ' samples of padding')
     self.__log.info('Setting dt in the header of: ' + self.fname)
@@ -304,7 +304,7 @@ class SgyFile(ArrayFile):
   def mute(self, fbreaks, ntaper=100, twin=1, **kwargs):
     """
     """
-    from fullwavepy.signal.su import su_mute
+    from fullwavepy.dsp.su import su_mute
     from fullwavepy.ioapi.generic import save_txt
     
     fbreaks = np.array(fbreaks)

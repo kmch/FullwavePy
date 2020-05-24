@@ -17,14 +17,14 @@ from fullwavepy.generic.parse import kw
 @logged
 def xcorr(data, target, **kwargs):
   """
-  Cross-correlate two 1D signals.
+  Cross-correlate two 1D.dsps.
   
   Notes
   -----
   Detrend / taper first?
   
   """
-  from scipy.signal import correlate
+  from scipy.dsp import correlate
 
   shift = np.argmax(correlate(data, target)) - len(target) #+ 10
   datan = np.zeros(len(data))# - shift)

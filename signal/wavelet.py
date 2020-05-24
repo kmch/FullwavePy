@@ -97,7 +97,7 @@ def read_sushaper(fname='shaper.txt', **kwargs):
 def shift_to_zero(A, fraction=0.001, **kwargs): # DEL BECAUSE fraction IS ARBITRARY?
   """
   """
-  from fullwavepy.signal.phase import first_breaks
+  from fullwavepy.dsp.phase import first_breaks
   
   Az = np.zeros(A.shape)
   nx, ny, nz = A.shape
@@ -124,7 +124,7 @@ def extract_wavelet(fname, proj_name, tend=1.5, ntaper=50, **kwargs):
   """
   from fullwavepy.ioapi.generic import read_any
   from fullwavepy.ioapi.su import sugethw
-  from fullwavepy.signal.su import su_process, su_mute, su_filter_full
+  from fullwavepy.dsp.su import su_process, su_mute, su_filter_full
   from fullwavepy.project.t import ProjSynVsObs
   
   f1 = 2
@@ -319,7 +319,7 @@ def align(A, i_target, **kwargs):
     of the array A.
   
   """
-  from fullwavepy.signal.generic import xcorr
+  from fullwavepy.dsp.generic import xcorr
   
   if A.shape[1] != 1:
     raise IOError('A shape must have ny=1')

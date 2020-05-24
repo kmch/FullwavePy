@@ -38,7 +38,7 @@ def dft(y, spect='ampl', **kwargs):
   -----
   "The values in the result follow so-called “standard” order: 
   If A = fft(a, n), then A[0] contains the zero-frequency term 
-  (the sum of the signal), which is always purely real for real inputs. 
+  (the sum of the.dsp), which is always purely real for real inputs. 
   Then A[1:n/2] contains the positive-frequency terms, and A[n/2+1:] 
   contains the negative-frequency terms, in order of decreasingly 
   negative frequency. 

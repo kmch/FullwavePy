@@ -49,4 +49,4 @@ from fullwavepy.seismic.srcrec import *
 from fullwavepy.seismic.wavefields import *
 from fullwavepy.seismic.wavelets import *
 
-from fullwavepy.signal.su import su_filter
+from fullwavepy.dsp.su import su_filter

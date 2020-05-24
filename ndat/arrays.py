@@ -908,7 +908,7 @@ def _set_array_modifiers(**kwargs):
   """
   
   """
-  #from ..signal.su import su_process
+  #from ..dsp.su import su_process
   
   modifiers = kw('array_modifiers', [], kwargs)  
   

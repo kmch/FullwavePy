@@ -115,7 +115,7 @@ class SynDataFile(DataFile):
     """
     
     """
-    from fullwavepy.signal.phase import first_breaks
+    from fullwavepy.dsp.phase import first_breaks
     
     fb_fname = strip(self.fname) + '_firstbreaks.txt'
     
@@ -156,7 +156,7 @@ class SynDataFile(DataFile):
     
     """
     if (not freq in self.phase) or overwrite:
-      from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
+      from fullwavepy.dsp.phase import first_breaks, extract_phase, wrap_phase
       from fullwavepy.math.generic import rms    
       self.__log.info('Getting phase info from ' + self.fname)
       

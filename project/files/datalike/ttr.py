@@ -257,7 +257,7 @@ class DumpCompareFile(DataFileTtr):
     Note: it is hard to merge with SynDataFile one.
     
     """
-    from fullwavepy.signal.phase import first_breaks    
+    from fullwavepy.dsp.phase import first_breaks    
     Asyn, Aobs, Adif = self.read(**kwargs)
     self.fb = np.ravel(first_breaks(Asyn, *args, **kwargs))
     return self.fb
@@ -287,7 +287,7 @@ class DumpCompareFile(DataFileTtr):
                        'above the iteration-block high-cut freq.: %s' % freq_max)
     
     if (not freq in self.phase) or overwrite:
-      from fullwavepy.signal.phase import first_breaks, extract_phase, wrap_phase
+      from fullwavepy.dsp.phase import first_breaks, extract_phase, wrap_phase
       from fullwavepy.math.generic import rms    
       self.__log.info('Getting phase info from ' + self.fname)
       

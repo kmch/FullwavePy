@@ -300,7 +300,7 @@ class ProjInput(ProjThroughput):
   
   def check_accuracy(self, **kwargs):
     from fullwavepy.fd.checks import check_accuracy
-    from fullwavepy.signal.wavelet import find_passband
+    from fullwavepy.dsp.wavelet import find_passband
     
     # READ SOURCE'S AMP. SPECTRUM
     self.__log.debug('Assuming there is only 1 wavelet, RawSign.')
@@ -319,7 +319,7 @@ class ProjInput(ProjThroughput):
   
   def check_propag_dists(self, **kwargs): 
     from fullwavepy.fd.checks import check_propag_dists
-    from fullwavepy.signal.wavelet import find_passband
+    from fullwavepy.dsp.wavelet import find_passband
     
     # READ SOURCE'S AMP. SPECTRUM
     self.__log.debug('Assuming there is only 1 wavelet, RawSign.')
