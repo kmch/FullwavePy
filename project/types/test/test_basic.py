@@ -25,7 +25,7 @@ class TestProjSyn(TestCase):
     function written in a test class.
     """
     from fullwavepy.logging_config import log_lvl
-    log_lvl(30)
+    log_lvl(40)
     self.pname = 'tmp'
     self.path = './'
     self.default_args = [self.pname]
