@@ -8,9 +8,8 @@ fullwavepy.dsp.generic
    .. rubric:: Functions
 
    .. autosummary::
-   
       xcorr
-   
+
    
 
    
