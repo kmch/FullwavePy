@@ -5,7 +5,14 @@
 
 FullwavePy: set up and diagnose your FWI
 ========================================
+Remember to add parent-path/fullwavepy to your PYTHONPATH.
+(parent-path is not enough since we have:
+parent-path/fullwavepy/fullwavepy/__init__.py).
 
+If the autogen fails to find one of the modules unlike all 
+the other modules, most likely there is a syntax error inside 
+this module. Try to import it from python interpreter to to track
+down the bug.
 
 .. autosummary::
    :toctree: modules

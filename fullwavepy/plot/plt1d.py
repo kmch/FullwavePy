@@ -222,7 +222,7 @@ def _set_xaxis_1d(y, dt=1, **kwargs): # make generic? (1-2D)
   
   """
   if 'extent' in kwargs:
-    x1, x2, y1, y2 = kwargs['extent']
+    x1, x2 = kwargs['extent'][0]
     x = np.linspace(x1, x2, len(y))
   else:  
     x = list(np.arange(len(y)) * dt)     

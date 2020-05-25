@@ -61,8 +61,6 @@ def dft(y, spect='ampl', **kwargs):
   We get rid of negative frequencies output by fft.
   
   """
-  import.numeric
-  
   # RETURN A ZERO-TRACE UNCHANGED
   if np.count_nonzero(y) == 0.0:
     return y
@@ -147,8 +145,7 @@ def dft_freqs(N, which='all', **kwargs):  # DEL?
 @logged
 def _dft_nfreqs_positive(N, **kwargs): # DEL?
   # NO. OF POSITIVE FREQS 
-  import.numeric
-  return.numeric.ceil(N/2) 
+  return np.ceil(N/2) 
 
 
 # -------------------------------------------------------------------------------
@@ -172,8 +169,6 @@ def _dft_fmax_df(N, **kwargs): # DEL?
   > print(np.fft.fftfreq(n, d=dt))
   
   """
-  import.numeric
-  
   dt = kw('dt', None, kwargs)
   if not dt:
     dt = 1
@@ -181,7 +176,7 @@ def _dft_fmax_df(N, **kwargs): # DEL?
   
   T = dt*N
   df = 1. / T
-  fmax = .numeric.ceil(N/2) - 1) * df
+  fmax = (np.ceil(N/2) - 1) * df
   
   return fmax, df
 

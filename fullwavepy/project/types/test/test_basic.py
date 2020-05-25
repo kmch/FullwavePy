@@ -60,6 +60,10 @@ class TestProjSyn(TestCase):
 
   # -----------------------------------------------------------------------------
   
+  # def test_init_only_pname(self):
+
+  # -----------------------------------------------------------------------------
+
   def test_basic_init(self):
     p = ProjSyn(*self.default_args, **self.default_kwargs)
 
@@ -121,7 +125,24 @@ class TestProjSyn(TestCase):
 
   # -----------------------------------------------------------------------------
 
-
+  def test_basic_prep_3D_sgy(self):
+    p = ProjSyn(*self.default_args, **self.default_kwargs)
+    p.i.rawsign.prep('ricker', fpeak=5)
+    p.i.rsg.plot()
+    
+    p.i.tvp.prep(np.full(p.dims, 2000)) # dims are crucial!
+    p.i.tvp.plot()
+    
+    p.i.sp.prep(geometry='regular', souz=p.nx3//2, 
+            soux0=p.nx1//2, soudx=1, sounx=1, 
+            souy0=p.nx2//2, soudy=1, souny=1,
+            recz=p.nx3//2, 
+            recx0=p.nx1//2, recnx=1, recdx=1,
+            recy0=p.nx2//2, recdy=1, recny=1)
+    p.i.sp.read()   
+    p.exe['segyprep'] = '/home/kmc3817/light_PhD/fullwave3D/segyprep_v3.16/bin/segyprep_v3.16'
+    p.i.sp.run()
+    
   # -----------------------------------------------------------------------------
 
 

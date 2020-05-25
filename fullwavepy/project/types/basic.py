@@ -153,6 +153,7 @@ class ProjSyn(Proj):
       kwargs['env'][key] = kwargs['env'].get(key, default)
     else:
       kwargs['env'] = {key : default}
+      self.__log.warning('Setting env to default: %s' % str(kwargs['env']))
     
     super().__init__(name, **kwargs)
     
