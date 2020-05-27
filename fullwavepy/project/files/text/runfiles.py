@@ -242,21 +242,22 @@ class SegyPrepFile(ParameterFile):
       az = a
       bz = b
       
-    segyprep['souz']  = (kwargs['souz']  + az) * bz
-    segyprep['recz']  = (kwargs['recz']  + az) * bz       
-    segyprep['soux0'] = (kwargs['soux0'] + a) * b
-    segyprep['soudx'] = (kwargs['soudx'] + a) * b
-    segyprep['sounx'] = kwargs['sounx']
-    segyprep['recx0'] = (kwargs['recx0'] + a) * b
-    segyprep['recnx'] = kwargs['recnx']
-    segyprep['recdx'] = (kwargs['recdx'] + a) * b
+    print(kwargs)
+    segyprep['souz']  = (float(kwargs['souz'] ) + az) * bz
+    segyprep['recz']  = (float(kwargs['recz'] ) + az) * bz       
+    segyprep['soux0'] = (float(kwargs['soux0']) + a) * b
+    segyprep['soudx'] = (float(kwargs['soudx']) + a) * b
+    segyprep['sounx'] = float(kwargs['sounx'])
+    segyprep['recx0'] = (float(kwargs['recx0']) + a) * b
+    segyprep['recnx'] = float(kwargs['recnx'])
+    segyprep['recdx'] = (float(kwargs['recdx']) + a) * b
     if self.proj.dims[1] > 1:
-      segyprep['souy0'] = (kwargs['souy0'] + a) * b
-      segyprep['soudy'] = (kwargs['soudy'] + a) * b
-      segyprep['souny'] = kwargs['souny']
-      segyprep['recy0'] = (kwargs['recy0'] + a) * b
-      segyprep['recny'] = kwargs['recny']
-      segyprep['recdy'] = (kwargs['recdy'] + a) * b
+      segyprep['souy0'] = (float(kwargs['souy0']) + a) * b
+      segyprep['soudy'] = (float(kwargs['soudy']) + a) * b
+      segyprep['souny'] = float(kwargs['souny'])
+      segyprep['recy0'] = (float(kwargs['recy0']) + a) * b
+      segyprep['recny'] = float(kwargs['recny'])
+      segyprep['recdy'] = (float(kwargs['recdy']) + a) * b
     else:
       segyprep['souy0'] = 0
       segyprep['soudy'] = 0

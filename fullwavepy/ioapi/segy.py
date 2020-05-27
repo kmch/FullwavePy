@@ -529,8 +529,8 @@ def vtr2sgy(fname, dt, **kwargs):
 @logged
 def sgy2vtr(fname, nx=None, **kwargs):
   """
-  Convert sgy to vtr using Fullwave's 
-  sgy2vtr utility.
+  Convert sgy to vtr using Fullwave3D's 
+  sgy2vtr Fortran utility.
   
   Parameters
   ----------
@@ -539,7 +539,7 @@ def sgy2vtr(fname, nx=None, **kwargs):
     to split the SEG-Y in a way that retaining its 3D
     structure (as we want especially for 
     models).
-    Default: None => set as a total no. 
+    Default: None => set as a total no. of traces.
   
   Returns
   -------
@@ -559,6 +559,7 @@ def sgy2vtr(fname, nx=None, **kwargs):
     raise FileNotFoundError(fname)  
   
   if nx is None:
+    sgy2vtr._log.debug('nx not provided, assuming nx=ntraces')
     nx = get_ntraces(fname, **kwargs)
   
   cmd = str('printf "yes\n' + fname + '\n' + str(nx) + '\n\nyes\n" | ' + 
@@ -567,6 +568,11 @@ def sgy2vtr(fname, nx=None, **kwargs):
   
   if len(e) > 0:
     sgy2vtr._log.warning(e)
+  
+  fname_vtr = strip(fname) + '.vtr'
+  if not exists(fname_vtr):
+    print(o, e)
+    raise OSError('Conversion failed, most likely due to incorrect nx: %s' % nx)
 
 
 # -------------------------------------------------------------------------------

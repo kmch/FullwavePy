@@ -23,8 +23,11 @@ from fullwavepy.plot.generic import figure
 @logged
 class Proj(object):
   """
-  Base class for all full-waveform projects.
-  
+  Parent class of all full-waveform projects.
+  Not meant to be used directly, it is just a code base
+  common for the child classes. 
+  Its __init__ method sets up all the project-related objects.
+
   """
   def __init__(self, name, **kwargs):
     """
@@ -248,7 +251,7 @@ class ProjSyn(Proj):
       self.i.sp.run()
       self.i.rnf.prep(**kwargs)
     else:
-      self.__log.warning('You need to i.sp.run and i.rnf.prep!')
+      self.__log.warning('You still need to call i.sp.run() and i.rnf.prep()!')
 
   # -----------------------------------------------------------------------------
       
@@ -470,13 +473,17 @@ class ProjInv(Proj):
       assert 'filt_kwargs' in kwargs
       assert 'mute_kwargs' in kwargs    
     
+    cat = kw('cat', 1, kwargs)
+
     # Check if extra nodes changed
     run_fsprep = False
     extra_kw = ['e_abs', 'e_top']
     for ekw in extra_kw:
-      if ekw in kwargs:
-        self.__log.info('%s found in kwargs => will run fsprep.' % ekw)
-        run_fsprep = True
+      if ekw in kwargs: # and kwargs[ekw] != syn_proj.i.rnf.read()[ekw]:
+        # self.__log.info('%s found in kwargs => will run fsprep.' % ekw)
+        # run_fsprep = True
+        self.__log.warning('%s found in kwargs => you should run fsprep ' % str(ekw)+\
+          'if it is different from synthetic project.' )
         break
     # If not, just copy the GhostData file
     if not run_fsprep:
@@ -484,15 +491,15 @@ class ProjInv(Proj):
       self.i.sdata.dupl(syn_proj.i.sdata.fname)
       self.i.rdata.dupl(syn_proj.i.rdata.fname)
     
-    self.i.fs.dupl(syn_proj.i.fs.fname)
+    self.i.fs.dupl(syn_proj.i.fs.fname) # FIXME: ONLY IF IMMERSE
     self.i.rsg.dupl(syn_proj.i.rsg.fname)
     self.i.svp.dupl(syn_proj.i.tvp.fname)
     self.i.obs.dupl(syn_proj.i.ose.fname)
     self.i.obs.raw.dupl(syn_proj.i.ose.fname) # NOTE
     self.i.rse.prep(fnames=[self.i.obs.raw.name])
-    self.i.sp.prep(**dict(syn_proj.i.sp.read(), problem=self.problem))
+    self.i.sp.prep(**dict(syn_proj.i.sp.read(), problem=self.problem), cat=cat)
     if run:
-      self.i.sp.run()
+      self.i.sp.run(cat=cat)
       self.i.rnf.prep(**kwargs)
       if run_fsprep:
         self.i.fs.run(**kwargs)

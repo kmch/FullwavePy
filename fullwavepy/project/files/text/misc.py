@@ -178,9 +178,6 @@ class InfoFile(AsciiProjFile):
   Use self.cat() to read it.
   
   """
-  
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, info=None, **kwargs):
     """
     Init. and save the file, if info is not None.
@@ -191,6 +188,7 @@ class InfoFile(AsciiProjFile):
     del_kw('path', kwargs)
     super().__init__(proj, proj.path, **kwargs) 
     self._write(info, **kwargs)
+    self.cat()
 
   # ----------------------------------------------------------------------------- 
 
@@ -201,7 +199,9 @@ class InfoFile(AsciiProjFile):
     """
     if info is not None:
       with open(self.fname, 'w') as f:
+        f.write('\n') # better looks
         f.write(info)
+        f.write('\n') # better looks
 
   # ----------------------------------------------------------------------------- 
 
