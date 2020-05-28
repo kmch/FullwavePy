@@ -10,6 +10,48 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw
 
 
+def save(fname, **kwargs):
+  """
+  Save current figure.
+
+  Notes
+  -----
+  save_as overwrites fname + suffix.
+  
+  """
+  return NotImplementedError('Debug')
+  # save_as = kw('save_as', None, kwargs)
+  # suffix = kw('suffix', None, kwargs)
+  
+  # if suffix is not None:
+  #   ext = exten(fname)
+  #   fname = strip(fname) + '_' + suffix + '.' + ext
+  #     # print(this_func, fname)
+  
+  # if not save_as:
+  #   save_as = fname     
+  
+  # return save_fig(save_as, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+
+
+def save_fig(fname, **kwargs):
+  """
+  
+  """
+  return NotImplementedError('Debug')
+  # core = strip(fname)
+  # plt.title(core)
+  # fname = core + '.png'
+  # plt.savefig(fname, format='png')
+  # plt.close()
+  
+  # return fname
+
+# -------------------------------------------------------------------------------
+
 @traced
 @logged
 def compare(arg1, arg2, **kwargs):

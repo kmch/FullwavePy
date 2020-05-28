@@ -149,6 +149,11 @@ class SegyPrepFile(ParameterFile):
     """
     Create a SegyPrep's runfile. 
     
+    Notes
+    -----
+    ztype=ibfs => taking sources and receivers ', &
+                  'depths as -selev, and +gelev respectively.
+
     """
     from fullwavepy.ioapi.generic import save_dict
     

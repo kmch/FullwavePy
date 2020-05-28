@@ -24,7 +24,7 @@ fullwavepy.seismic.models
       AmphibiousModel
       Anomaly
       Background
-      Chckr
+      Chckrbrd
       LandModel
       MarineModel
       Model

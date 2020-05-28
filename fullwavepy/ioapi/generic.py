@@ -42,7 +42,6 @@ class File(object):
     3. those can again call their parents
     
     """
-    
     dupl = kw('dupl', None, kwargs)
     
     if dupl is not None:
@@ -280,6 +279,11 @@ def read_any(fname, overwrite_mmp=False, **kwargs):
   """
   from .memmap import read_mmp, save_mmp
   
+  if overwrite_mmp:
+    read_any._log.info('Set overwrite_mmp=False for faster i/o!')
+  else:
+    read_any._log.info('If the array looks corrupted try overwrite_mmp=True.')
+
   shape = kw('shape', None, kwargs)
   
   fname_mmp = strip(fname) + '.mmp'

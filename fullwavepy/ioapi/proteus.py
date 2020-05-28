@@ -157,7 +157,7 @@ class ProteusBathyTopo(BathyTopo):
 
 @traced
 @logged
-class ProteusStartVp(StartVp, AmphibiousModel):
+class ProteusStartVp(StartVp):
   pass
 
 

@@ -208,6 +208,14 @@ class Arr(np.ndarray):
   def carve(self, box, **kwargs):
     """
     Carve a box out of an array.
+    
+    Parameters
+    ----------
+    box : list
+
+    Returns
+    -------
+    self
 
     """
     inds = self._box2inds(box, **kwargs)

@@ -18,6 +18,11 @@ from fullwavepy.ndat.arrays import Arr3d
 @traced
 @logged
 class Model(Arr3d):
+  """
+  Generic seismic model storing an arbitrary,
+  single parameter of the subsurface.
+
+  """
   def __new__(cls, *args, **kwargs):
     """
     Parameters
@@ -29,11 +34,70 @@ class Model(Arr3d):
       In Fullwave3D for btop = 0 sea level is at node 0
       i.e. one node above the model grid. 
       See caldera.ipynb for details.
+    
+    Notes
+    -----
+    Run is_marine_or_land every time?
 
     """
     obj = super().__new__(cls, *args, **kwargs)
     obj.k_fs = kw('k_fs', None, kwargs) # see the docstring
+    obj.vel_air = kw('vel_air', 0, kwargs)
+    obj.marine_or_land = kw('marine_or_land', 'both', kwargs)
     return obj
+
+  # -----------------------------------------------------------------------------
+
+  def carve(self, *args, **kwargs):
+    """
+    #FIXME
+    Two steps:
+    1. Do the standard Arr.carve()
+    2. Decide whether the extracted model is
+       marine, land or both.
+    """
+    obj = super().carve(*args, **kwargs)
+    # obj.marine_or_land = self.is_marine_or_land(**kwargs)
+    return obj
+
+
+  # -----------------------------------------------------------------------------
+
+  def is_marine_or_land(self, **kwargs):
+    """
+    Decide whether a model is marine, land or both, 
+    based on the topmost vertical slice and air-velocity.
+
+    """
+    raise NotImplementedError('Address chopped-topo and other special cases.')
+    vel_air = self.vel_air
+    top_slice = self[..., 0]
+
+    if np.all(top_slice == vel_air):
+      self.marine_or_land = 'land'
+    elif np.any(top_slice == vel_air):
+      self.marine_or_land = 'both'
+    else:
+      self.marine_or_land = 'marine'
+    
+    return self.marine_or_land
+  
+  # -----------------------------------------------------------------------------
+    
+  def topo_max(self, vel_air, **kwargs):
+    """
+    Find maximum elevation of land topography.
+    
+    """
+    if self.marine_or_land == 'marine':
+      self.__log.debug('Nothing to do here...')
+    else:
+      find_topo_max(vel_air, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# class EarthModel(Model):
 
 
 # -------------------------------------------------------------------------------
@@ -59,6 +123,18 @@ class Anomaly(Model):
 
 @traced
 @logged
+class Chckrbrd(Anomaly):
+  """
+  FIXME: Rename -> ModelCheckerboard
+  """
+  pass
+
+
+# ------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class ModelVp(Model):
   def plot(self, **kwargs):
     kwargs['cmap'] = kw('cmap', 'twilight', kwargs)
@@ -70,74 +146,51 @@ class ModelVp(Model):
     super().info(*args, **kwargs)
     
 
-
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
 class StartVp(ModelVp):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class LandModel(Model):
-  def extract_freesurf(self, **kwargs):
-    # self.__log.debug('self.extent %s' % self.extent)
-    # self.fs = np.clip(self, None, self.z_sea)
-    # self.fs.extent = self.extent
-    # return self.fs  
-    pass
-  
-  def topo_max(self, vel_air, **kwargs):
-    for k in range(self.shape[-1]):
-      if not np.all(self[...,k] == vel_air):
-        self.__log.info('Maximum land elevation has array index (along Z axis): %s' % k)
-        self.k_max_land = k
-        return self.k_max_land
-    raise ValueError('Maximum land elevation could not be found')
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class MarineModel(Model):
-  def extract_seabed(self, **kwargs):
-    # self.sb = np.clip(self, self.z_sea, None)
-    # self.sb.extent = self.extent
-    # return self.sb
-    pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class AmphibiousModel(LandModel, MarineModel):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Chckr(Model):
   """
-  Checkerboard model.
+  FIXME: Rename to ModelVpStart
   """
   pass
 
 
 # -------------------------------------------------------------------------------
+# SOME USEFUL FUNCTIONS
+# -------------------------------------------------------------------------------
 
+
+def find_topo_max(vel_air, **kwargs):
+  """
+  FIXME: rename -> find... once the whole package
+  is shippable and changes in the notebooks are easy
+  and reliable.
+  """
+  for k in range(self.shape[-1]):
+    if not np.all(self[...,k] == vel_air):
+      self.__log.info('Maximum land elevation has array index (along Z axis): %s' % k)
+      self.k_max_land = k
+      return self.k_max_land
+  raise ValueError('Maximum land elevation could not be found')
+
+
+# -------------------------------------------------------------------------------
+
+
+def merge_model_and_fs(model, fs, vel_air, **kwargs):
+  """
+  Merge the model and an independently-derived
+  free surface. 
+  """
+  pass
+
+
+# -------------------------------------------------------------------------------
+# GENERIC BACKGROUNDS AND ANOMALIES (MOVE AT THE EXPENSE OF COHESION?)
+# -------------------------------------------------------------------------------
 
 @traced
 @logged
@@ -199,4 +252,3 @@ def gauss(dims, centers, radius, **kwargs):
 
 
 # -------------------------------------------------------------------------------
-

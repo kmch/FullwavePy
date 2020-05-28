@@ -166,6 +166,8 @@ class ProjThroughput(object):
 class ProjInput(ProjThroughput):
   """
   Project's input.
+  Common for all Fullwave3D project types.
+  FIXME: Should be generic (NOT ONLY FULLWAVE)
 
   Notes
   -----
@@ -183,11 +185,7 @@ class ProjInput(ProjThroughput):
   
   def init(self, **kwargs):
     """
-    Common for all project types.
-    
-    Notes
-    -----
-    Also defined a couple of aliases to save typing-time.
+    Defines a couple of aliases to save typing-time.
     
     """
     from fullwavepy.project.files.datalike.sgy import RawSignFile, SignatureFileSgy

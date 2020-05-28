@@ -246,9 +246,6 @@ class RawSeisTxtFile(AsciiProjFile):
   We don't use RawSeis.sgy at the moment.
   
   """ 
-
-  # ----------------------------------------------------------------------------- 
-  
   def __init__(self, proj, path, **kwargs): # OK
     """
     

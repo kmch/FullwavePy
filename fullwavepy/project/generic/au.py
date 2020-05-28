@@ -307,6 +307,9 @@ class ProjGeometry(object):
     Should be checking if it's really int.
     """
     x1, x2, y1, y2, z1, z2 = box
+    assert x2 >= x1
+    assert y2 >= y1
+    assert z2 >= z1
     nx1 = int((x2 - x1) / dx) + 1 
     nx2 = int((y2 - y1) / dx) + 1  
     nx3 = int((z2 - z1) / dx) + 1     

@@ -229,15 +229,124 @@ class ProjSyn(Proj):
     self.out.fw = ForwardWavefieldFileList(self.proj, it_max=1, **kwargs) 
   
   # -----------------------------------------------------------------------------
-  
-  def prepare_input(self, pold, run=False, **kwargs):
+
+  def prepare_input(self, other_proj=None, run=False, **kwargs):
+    """
+    Framework method.
+
+    """
+    if other_proj is None:
+      self._prepare_input_from_scratch(run, **kwargs)
+    else:
+      self._prepare_input_from_another(other_proj, run, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def _prepare_input_from_scratch(self, run=False, **kwargs):  
+    """
+    """
+    wavelet = kw('wavelet', True, kwargs)
+    rawseis = kw('rawseis', True, kwargs)
+    sp = kw('sp', True, kwargs)
+    runfile = kw('runfile', True, kwargs)
+    
+    rm = kw('rm', True, kwargs)
+    run = kw('run', True, kwargs)
+    #plot = kw('plot', True, kwargs)
+    cat = kw('cat', True, kwargs)
+    #anim = kw('anim', False, kwargs) #NOTE
+    check = kw('check', True, kwargs)
+    
+    if rm:
+      self.inp.rm(**kwargs)
+      self.out.rm(**kwargs)
+    
+    obj_ids = ['rsg', 'tvp']
+    for obj_id in obj_ids:
+      self.__log.info('Preparing %s...\n' % obj_id)
+      
+      # MAKE SURE THE BASE OBJECT EXISTS
+      base_obj_id = 'base_%s' % obj_id
+      assert hasattr(self, base_obj_id)
+      
+      # PREPARE THE OBJECT FROM THE BASE ONE
+      getattr(self.inp, obj_id).prep(getattr(self, base_obj_id))
+
+    
+    self.__log.warning('RETURNING FOR NOW TMP')
+    return
+
+    # -----------------------------------------------------------------------------
+    # SOURCE WAVELET
+    # -----------------------------------------------------------------------------
+    if wavelet:
+      assert hasattr(self, 'base_rsg')
+      self.__log.info('\nPreparing the wavelet...\n') 
+      self.inp.rsg.prep(self.base_rsg)
+      #if plot > 0:
+        #self.inp.wavelet.Plot(**kwargs)
+
+
+    # -----------------------------------------------------------------------------
+    # RAWSEIS TEXT FILE
+    # -----------------------------------------------------------------------------    
+    if rawseis:
+      print(('\n\n' + 'Preparing RawSeis.txt...' + '\n\n'))      
+      self.inp.rawseis.Create(**kwargs)
+      if cat > 0:
+        self.inp.rawseis.Cat(**kwargs)      
+
+    # -----------------------------------------------------------------------------
+    # SEGYPREP RUNFILE & RUN
+    # -----------------------------------------------------------------------------    
+    if sp:
+      print('\n\n' + 'Preparing SegyPrep.key... (recipr=1)' + '\n\n')
+      self.inp.sp.Create(reciprocity=1, **kwargs)
+      if cat > 0:
+        self.inp.sp.Cat(**kwargs)
+      if run > 0:
+        self.inp.sp.Run(**kwargs)
+
+    
+    # -----------------------------------------------------------------------------
+    # SOURCES & RECEIVERS QC
+    # -----------------------------------------------------------------------------          
+    if cat > 0:
+      self.inp.sr.Cat(**kwargs)
+    #if plot > 0:
+      #kwargs['dx'] = self.dx
+      #self.inp.sr.Plot_All(**kwargs)
+      #self.inp.sr.Show_Offsets(**kwargs)
+    
+    
+    if runfile:
+      print(('\n\n' + 'Preparing the runfile...' + '\n\n'))
+      self.inp.runfile.Create(**kwargs)
+      if cat > 0:
+        self.inp.runfile.Cat(**kwargs)
+     
+    if verbos > 0:
+      print('Note, PBS must be created manually')
+    
+    if check > 0:
+      print('Checking all the input with Fullwave3D...')
+      self.inp.Check()
+
+  # -----------------------------------------------------------------------------
+
+  def _prepare_input_from_another(self, other_proj, run=False, **kwargs):
     """
     Prepare the input based on another syn project.
     
     run is False by default because SP will operate on
     full receiver gathers => slow.
     
+    FIXME: THIS WILL FAIL AS SOON AS DIMS OF pold ARE DIFFERENT!
+    (replace dupl with prep)
+
     """
+    assert pold.dims == self.dims
+
     # THESE ARE ASSUMED TO BE IDENTICAL
     for a in ['rsg', 'tvp', 'rse']:
       sobj = getattr(self.i, a)

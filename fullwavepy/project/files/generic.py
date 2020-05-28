@@ -82,6 +82,10 @@ class ArrayProjFile(ProjFile, ArrayFile):
     from fullwavepy.ioapi.fw3d import save_vtr
     save_vtr(array , strip(self.fname) + '.vtr')
 
+  # -----------------------------------------------------------------------------
+
+  # def prep()
+
 
 # -------------------------------------------------------------------------------
 
