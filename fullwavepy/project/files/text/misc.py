@@ -10,13 +10,13 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.ioapi.generic import CsvFile
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 
 
 
 @traced
 @logged
-class MetaDataProjFile(CsvFile, AsciiProjFile): # IS IT USED AT ALL?
+class MetaDataProjFile(CsvFile, TextProjFile): # IS IT USED AT ALL?
   """
   
   csv is MUCH faster for Panda's read/write than json.
@@ -130,7 +130,7 @@ class JobFile(object):
 
 @traced
 @logged
-class LastCheckpointFile(AsciiProjFile):
+class LastCheckpointFile(TextProjFile):
   """
   Stores a single number.
   
@@ -168,7 +168,7 @@ class LastCheckpointFile(AsciiProjFile):
 
 @traced
 @logged
-class InfoFile(AsciiProjFile):
+class InfoFile(TextProjFile):
   """
   A txt file with description
   of the PROJECT.
@@ -211,7 +211,7 @@ class InfoFile(AsciiProjFile):
 
 @traced
 @logged
-class JobInfoFile(JobFile, AsciiProjFile):
+class JobInfoFile(JobFile, TextProjFile):
   """
   A txt file with the job description
   output by the qsub command.
@@ -236,7 +236,7 @@ class JobInfoFile(JobFile, AsciiProjFile):
 
 @traced
 @logged
-class RawSeisTxtFile(AsciiProjFile):
+class RawSeisTxtFile(TextProjFile):
   """
   A txt file with paths to 
   data files used by SegyPrep.

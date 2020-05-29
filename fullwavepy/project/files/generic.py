@@ -10,7 +10,7 @@ from autologging import logged, traced
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.ioapi.generic import File, AsciiFile, BinaryFile, ArrayFile
+from fullwavepy.ioapi.generic import File, TextFile, BinaryFile, ArrayFile
 
 
 @traced
@@ -52,7 +52,7 @@ class ProjFile(File):
 
 @traced
 @logged
-class AsciiProjFile(ProjFile, AsciiFile):
+class TextProjFile(ProjFile, TextFile):
   """
   File storing some meta data,
   not directlfullwavepy.plottable as an array.

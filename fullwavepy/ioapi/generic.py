@@ -241,12 +241,12 @@ class BinaryFile(File):
 # -------------------------------------------------------------------------------
 
 
-class AsciiFileReader(object):
+class TextFileReader(object):
   pass
 
 @traced
 @logged
-class AsciiFile(File):
+class TextFile(File):
   """
   File storing some meta data,
   not directlfullwavepy.plottable as an array.
@@ -290,7 +290,7 @@ class CsvFileReader(object):
 
 @traced
 @logged
-class CsvFile(AsciiFile):
+class CsvFile(TextFile):
   @timer
   def read(self, **kwargs):
     from pandas import read_csv

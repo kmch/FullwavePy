@@ -10,7 +10,7 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 from fullwavepy.project.files.text.misc import JobFile
 
 
@@ -22,7 +22,7 @@ from fullwavepy.project.files.text.misc import JobFile
 
 @traced
 @logged
-class PbsFile(JobFile, AsciiProjFile):
+class PbsFile(JobFile, TextProjFile):
   """
   Script to submit a job to a PBSystem.
   
@@ -200,7 +200,7 @@ class PbsFile(JobFile, AsciiProjFile):
 
 @traced
 @logged
-class BashFile(JobFile, AsciiProjFile):
+class BashFile(JobFile, TextProjFile):
   """
   Script launching local.submit 
   in a Bash shell (not on a cluster).

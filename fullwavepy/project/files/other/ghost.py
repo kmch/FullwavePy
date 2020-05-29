@@ -9,12 +9,12 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import BinaryProjFile, AsciiProjFile
+from fullwavepy.project.files.generic import BinaryProjFile, TextProjFile
 
 
 @traced
 @logged
-class SRsDataFileTxt(AsciiProjFile):
+class SRsDataFileTxt(TextProjFile):
   pass
 
 
@@ -60,7 +60,7 @@ class GhostDataFileBin(BinaryProjFile):
 
 @traced
 @logged
-class GhostDataFileTxt(AsciiProjFile):
+class GhostDataFileTxt(TextProjFile):
   """
   """
   def __init__(self, proj, path, **kwargs):

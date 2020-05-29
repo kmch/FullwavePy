@@ -13,12 +13,12 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 
 
 @traced
 @logged
-class ParameterFile(AsciiProjFile):
+class ParameterFile(TextProjFile):
   """
   
   """

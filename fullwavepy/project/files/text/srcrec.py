@@ -9,13 +9,13 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 from fullwavepy.seismic.srcrec import SRs, PointSR, Sources, Receivers
 
 
 @traced
 @logged
-class SRFile(AsciiProjFile):
+class SRFile(TextProjFile):
   """
   Sources/receivers files.
   

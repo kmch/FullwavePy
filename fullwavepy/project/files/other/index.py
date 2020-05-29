@@ -9,7 +9,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import BinaryProjFile, AsciiProjFile
+from fullwavepy.project.files.generic import BinaryProjFile, TextProjFile
 from fullwavepy.ioapi.fw3d import TtrFile
 from fullwavepy.ioapi.segy import SgyFile
 

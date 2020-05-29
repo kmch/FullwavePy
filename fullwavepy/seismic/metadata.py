@@ -34,7 +34,7 @@ class Metadata(pd.DataFrame):
 
 @traced
 @logged
-class MetadataFile(CsvFile, AsciiFile):
+class MetadataFile(CsvFile, TextFile):
   def read(self, overwrite=True, **kwargs):
     """
   

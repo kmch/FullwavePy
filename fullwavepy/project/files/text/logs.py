@@ -9,13 +9,13 @@ from autologging import logged, traced
 
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 from fullwavepy.project.files.text.misc import JobFile
 
 
 @traced
 @logged
-class LogFile(JobFile, AsciiProjFile):
+class LogFile(JobFile, TextProjFile):
   """
   Log files produced either by executables 
   or a cluster's batch system.

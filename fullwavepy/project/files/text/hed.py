@@ -10,13 +10,13 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.ioapi.generic import CsvFile
-from fullwavepy.project.files.generic import AsciiProjFile
+from fullwavepy.project.files.generic import TextProjFile
 
 
 
 @traced
 @logged
-class HedFile(AsciiProjFile):
+class HedFile(TextProjFile):
   """
   ASCII version of the idx SEG-Y metadata 
   index files for QC.
