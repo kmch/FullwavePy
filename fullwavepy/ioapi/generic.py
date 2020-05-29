@@ -21,9 +21,9 @@ from fullwavepy.generic.system import exists, bash
 class FileCreator(object):
   """
   """
-  # def prep(self, *args, **kwargs)
   def prep(self, *args, **kwargs):
     """
+    Note, create is a method of child classes only!
     """
     dupl = kw('dupl', None, kwargs)
     

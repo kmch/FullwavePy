@@ -87,7 +87,6 @@ class ArrayProjFile(ProjFile, ArrayFile):
   We keep it as a generic interface because not all 
   project's array files are defined on a grid 
   (e.g. data files).
-  FIXME: create(array) breaks the Liskov principle!
   
   """
   def create(self, array, **kwargs):
