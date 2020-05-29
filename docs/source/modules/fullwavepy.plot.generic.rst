@@ -15,6 +15,8 @@ fullwavepy.plot.generic
       figax
       figure
       flipy
+      save
+      save_fig
       set_xlabels
    
    

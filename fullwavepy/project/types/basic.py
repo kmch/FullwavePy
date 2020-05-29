@@ -245,32 +245,37 @@ class ProjSyn(Proj):
   def _prepare_input_from_scratch(self, run=False, **kwargs):  
     """
     """
+    # PARSE kwargs
     wavelet = kw('wavelet', True, kwargs)
     rawseis = kw('rawseis', True, kwargs)
     sp = kw('sp', True, kwargs)
     runfile = kw('runfile', True, kwargs)
-    
     rm = kw('rm', True, kwargs)
     run = kw('run', True, kwargs)
     #plot = kw('plot', True, kwargs)
     cat = kw('cat', True, kwargs)
     #anim = kw('anim', False, kwargs) #NOTE
     check = kw('check', True, kwargs)
-    
     if rm:
       self.inp.rm(**kwargs)
       self.out.rm(**kwargs)
     
+    # PREPARE ALL THE OBJECTS, ONE AT A TIME
     obj_ids = ['rsg', 'tvp']
     for obj_id in obj_ids:
+      obj = getattr(self.inp, obj_id)
       self.__log.info('Preparing %s...\n' % obj_id)
       
       # MAKE SURE THE BASE OBJECT EXISTS
       base_obj_id = 'base_%s' % obj_id
-      assert hasattr(self, base_obj_id)
+      assert hasattr(self, base_obj_id) # FIXME: p.base_tvp SHOULD BE MOVED
       
       # PREPARE THE OBJECT FROM THE BASE ONE
-      getattr(self.inp, obj_id).prep(getattr(self, base_obj_id))
+      arr = getattr(self, base_obj_id)
+      # FIXME: TMP
+      if obj_id == 'tvp':
+        arr = arr.carve(self.box)
+      obj.prep(arr)
 
     
     self.__log.warning('RETURNING FOR NOW TMP')

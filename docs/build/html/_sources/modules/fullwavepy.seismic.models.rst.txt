@@ -9,8 +9,10 @@ fullwavepy.seismic.models
 
    .. autosummary::
    
+      find_topo_max
       gauss
       grad
+      merge_model_and_fs
       sphere
    
    
@@ -21,12 +23,9 @@ fullwavepy.seismic.models
 
    .. autosummary::
    
-      AmphibiousModel
       Anomaly
       Background
       Chckrbrd
-      LandModel
-      MarineModel
       Model
       ModelVp
       StartVp

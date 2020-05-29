@@ -81,11 +81,17 @@ Copywright: Ask for permission writing to <a class="reference external" href="ma
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gauss</span></code>(dims, centers, radius, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_topo_max</span></code>(vel_air, **kwargs)</p></td>
+<td><p>FIXME: rename -&gt; find…</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gauss</span></code>(dims, centers, radius, **kwargs)</p></td>
 <td><p>gaussian is a bottleneck, needs to be vectorized.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grad</span></code>(shape, vtop, vbot, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grad</span></code>(shape, vtop, vbot, **kwargs)</p></td>
 <td><p>Create a vertical gradient model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_model_and_fs</span></code>(model, fs, vel_air, **kwargs)</p></td>
+<td><p>Merge the model and an independently-derived free surface.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sphere</span></code>(dims, center, radius[, ampl])</p></td>
 <td><p>Create a spherical anomaly.</p></td>
@@ -99,31 +105,22 @@ Copywright: Ask for permission writing to <a class="reference external" href="ma
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AmphibiousModel</span></code></p></td>
-<td><p>FIXME: Rename -&gt; ModelMarine</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Anomaly</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Anomaly</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Background</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Background</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Chckrbrd</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Chckrbrd</span></code></p></td>
 <td><p>FIXME: Rename -&gt; ModelCheckerboard</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">LandModel</span></code></p></td>
-<td><p>FIXME: rename -&gt; ModelLand Model that contains irregular land topography.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></p></td>
+<td><p>Generic seismic model storing an arbitrary, single parameter of the subsurface.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MarineModel</span></code></p></td>
-<td><p>FIXME: Rename -&gt; ModelMarine</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelVp</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelVp</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">StartVp</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">StartVp</span></code></p></td>
 <td><p>FIXME: Rename to ModelVpStart</p></td>
 </tr>
 </tbody>

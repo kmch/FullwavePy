@@ -66,6 +66,15 @@ class GridProjFile(ArrayProjFile):
     return self.array
 
   # -----------------------------------------------------------------------------
+
+  # def prep(self, *args, **kwargs):
+  #   # p.base_tvp.carve(self.proj.box)
+  #   super().prep(*args, **kwargs)
+
+  # def resize(self, *args, **kwargs):
+  #   pass
+
+  # -----------------------------------------------------------------------------
   
   def widg_plot_3slices(self):
     """
@@ -83,6 +92,7 @@ class GridProjFile(ArrayProjFile):
    
   def wp3s(self, *args, **kwargs):
     return self.widg_plot_3slices(*args, **kwargs)
+  
   # -----------------------------------------------------------------------------
 
 

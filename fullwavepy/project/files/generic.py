@@ -36,6 +36,16 @@ class ProjFile(File):
 
   # -----------------------------------------------------------------------------
   
+  def _is_compatible(self, **kwargs):
+    raise NotImplementedError('Only in child classes')
+
+  # -----------------------------------------------------------------------------
+   
+  def _make_compatible(self, **kwargs):
+    raise NotImplementedError('Only in child classes')
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------  
 
@@ -74,13 +84,15 @@ class BinaryProjFile(ProjFile, BinaryFile):
 @logged
 class ArrayProjFile(ProjFile, ArrayFile):
   """
-  We keep it because not all project's 
-  array files are defined on a grid 
+  We keep it as a generic interface because not all 
+  project's array files are defined on a grid 
   (e.g. data files).
+  FIXME: create(array) breaks the Liskov principle!
+  
   """
   def create(self, array, **kwargs):
     from fullwavepy.ioapi.fw3d import save_vtr
-    save_vtr(array , strip(self.fname) + '.vtr')
+    save_vtr(array, strip(self.fname) + '.vtr')
 
   # -----------------------------------------------------------------------------
 

@@ -18,44 +18,43 @@ from fullwavepy.generic.system import exists, bash
 
 @traced
 @logged
-class File(object):
+class FileCreator(object):
   """
   """
-  def __init__(self, name, path, **kwargs):
-    self.name = name
-    self.path = path
-    self.fname = path + '/' + name
-
-  # -----------------------------------------------------------------------------
-  
-  def prepare(self, *args, **kwargs):
+  # def prep(self, *args, **kwargs)
+  def create(self, *args, **kwargs):
     """
-    Prepare means either duplicate 
-    (as long as a source file is provided, dupl=...) 
-    or create from scratch.
-    
-    Notes
-    -----
-    The flow is a bit convoluted:
-    1. child.prepare calls this.
-    2. this calls child.dupl/child.create!
-    3. those can again call their parents
-    
     """
     dupl = kw('dupl', None, kwargs)
     
-    if dupl is not None:
-      self.__log.debug('Using dupl='+dupl)
+    if dupl is None:
+      self.create(*args, **kwargs)
+    else:
       del_kw('dupl', kwargs)
       self.dupl(dupl, *args, **kwargs)
-    else:
-      self.create(*args, **kwargs)
-    
-  def prep(self, *args, **kwargs):
-    self.prepare(*args, **kwargs)
-    
+
   # -----------------------------------------------------------------------------
 
+  def _from_other_file(self, *args, **kwargs): # FIXME DUPL
+    pass
+
+  # -----------------------------------------------------------------------------
+  
+  def _from_scratch(self, *args, **kwargs): # FIXME: AKA CREATE
+    pass
+
+  # -----------------------------------------------------------------------------
+  
+
+
+  # -----------------------------------------------------------------------------
+
+  def _get(self, *args, **kwargs):
+    pass
+
+  # -----------------------------------------------------------------------------  
+  
+  # FIXME: -> _create
   def create(self, *args, **kwargs):
     #raise NotImplementedError('Define in a child class.') # with this, a lot fails
     pass
@@ -66,9 +65,6 @@ class File(object):
     """
     Duplicate (cp/mv/ln) a file.
     
-    Notes
-    -----
-    
     """
     from fullwavepy.generic.parse import exten
     from fullwavepy.generic.system import duplicate
@@ -76,14 +72,24 @@ class File(object):
     destination = self.fname
     
     if exten(source) != exten(destination):
-      raise IOError('Extension of source and destination must be the same.')    
+      raise IOError('File extensions of source and destination '\
+                    'must be the same.')    
     
+    self.__log.debug('Duplicating %s...' % source)    
     duplicate(source, destination, cmd)
-    
+
   # -----------------------------------------------------------------------------
-  
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class FileRemover(object): #FIXME: bash -> abstraction 
   def rm(self, cmd='trash', backup=True, **kwargs):
     """
+    
     """
     if backup:
       bckp = self.fname + '_bckp'
@@ -95,18 +101,42 @@ class File(object):
     
   # -----------------------------------------------------------------------------
 
-  def compare(self, other_file, *args, **kwargs): #gs=None, **kwargs):
-    arr1 = self.read(**kwargs)
-    arr2 = other_file.read(**kwargs)
-    # arr1.compare(arr2, fig, gs, **kwargs)
-    arr1.compare(arr2, *args, **kwargs)
-
-  # -----------------------------------------------------------------------------
-
 
 # -------------------------------------------------------------------------------
 
 
+@traced
+@logged
+class File(FileCreator, FileRemover):
+  """
+  Generic file.
+
+  Notes
+  -----
+  Inherits from mix-ins to avoid violation of SRP 
+  and god-class appearance, in particular.
+  
+  """
+  def __init__(self, name, path, **kwargs):
+    self.name = name
+    self.path = path
+    self.fname = path + '/' + name
+
+  # -----------------------------------------------------------------------------
+
+ 
+# -------------------------------------------------------------------------------
+
+
+class ArrayFileReader(object):
+  pass
+
+
+class ArrayFilePlotter(object):
+  pass
+
+
+# FIXME THIS SHOULD PROBABLY BE A MIXIN OR STH...
 @traced
 @logged
 class ArrayFile(File):
@@ -192,11 +222,22 @@ class ArrayFile(File):
     return tracker
     #return tracker.onscroll
 
+  # -----------------------------------------------------------------------------
+
+  def compare(self, other_file, *args, **kwargs): #gs=None, **kwargs):
+    arr1 = self.read(**kwargs)
+    arr2 = other_file.read(**kwargs)
+    # arr1.compare(arr2, fig, gs, **kwargs)
+    arr1.compare(arr2, *args, **kwargs)
+
   # ----------------------------------------------------------------------------
   
 
 # -------------------------------------------------------------------------------
 
+
+class AsciiFileReader(object):
+  pass
 
 @traced
 @logged
@@ -238,6 +279,10 @@ class AsciiFile(File):
 # -------------------------------------------------------------------------------
 
 
+class CsvFileReader(object):
+  pass
+
+
 @traced
 @logged
 class CsvFile(AsciiFile):
@@ -248,15 +293,6 @@ class CsvFile(AsciiFile):
     df = read_csv(self.fname, usecols=usecols)
     return df
 
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class BinaryFile(File):
-  pass
-  
 
 # ------------------------------------------------------------------------------- 
 # FUNCTIONS
