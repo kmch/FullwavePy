@@ -22,7 +22,7 @@ class FileCreator(object):
   """
   """
   # def prep(self, *args, **kwargs)
-  def create(self, *args, **kwargs):
+  def prep(self, *args, **kwargs):
     """
     """
     dupl = kw('dupl', None, kwargs)
@@ -232,6 +232,11 @@ class ArrayFile(File):
 
   # ----------------------------------------------------------------------------
   
+
+@traced
+@logged
+class BinaryFile(File):
+  pass
 
 # -------------------------------------------------------------------------------
 
