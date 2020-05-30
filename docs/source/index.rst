@@ -3,8 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-FullwavePy: set up and diagnose your FWI
-========================================
+FullwavePy: FWI workflow in Jupyter
+===================================
+
+
+Requirements
+------------
 Remember to add parent-path/fullwavepy to your PYTHONPATH.
 (parent-path is not enough since we have:
 parent-path/fullwavepy/fullwavepy/__init__.py).

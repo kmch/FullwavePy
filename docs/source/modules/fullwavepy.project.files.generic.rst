@@ -14,9 +14,9 @@ fullwavepy.project.files.generic
    .. autosummary::
    
       ArrayProjFile
-      AsciiProjFile
       BinaryProjFile
       ProjFile
+      TextProjFile
    
    
 

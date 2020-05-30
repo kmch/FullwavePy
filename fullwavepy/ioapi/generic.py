@@ -18,7 +18,7 @@ from fullwavepy.generic.system import exists, bash
 
 @traced
 @logged
-class FileCreator(object):
+class _FilePreparer(object):
   """
   """
   def prep(self, *args, **kwargs):
@@ -86,7 +86,7 @@ class FileCreator(object):
 
 @traced
 @logged
-class FileRemover(object): #FIXME: bash -> abstraction 
+class _FileRemover(object): #FIXME: bash -> abstraction 
   def rm(self, cmd='trash', backup=True, **kwargs):
     """
     
@@ -107,7 +107,7 @@ class FileRemover(object): #FIXME: bash -> abstraction
 
 @traced
 @logged
-class File(FileCreator, FileRemover):
+class File(_FilePreparer, _FileRemover):
   """
   Generic file.
 

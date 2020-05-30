@@ -19,6 +19,108 @@ from fullwavepy.ioapi.clusters.archer import *
 from fullwavepy.ioapi.clusters.thomas import *
 
 
+class _PreprocSynInp():
+  attrs = ['rawsigns', 'rawseis', 'truemods', 'params']  
+
+class _PreprocSynOut():
+  attrs = ['wavelets', 'rawseis', 'truemods', 'params']  
+
+# NOTE ENSURE PreprocOut = ProjInp
+
+class _ProjSynInp():
+  attrs = ['wavelets', 'rawseis', 'truemods', 'params']
+
+
+
+class _InpListSegy(object):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+class _InpListFw3d(object):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+
+class _InpIniter(object):
+  pass
+
+
+# -------------------------------------------------------------------------------
+
+# @traced
+# @logged
+# class _InpPreparer(_PreprocInpPreparer):
+#   def prepare_input(self, other_proj=None, run=False, **kwargs):
+#     pass
+    
+
+# class _PreprocInpPreparer
+
+@traced
+@logged
+class _InpPreparer(object):
+  """
+  Mix-in providing input-preparing functionality.
+
+  """
+  def prepare_input(self, other_proj=None, run=False, **kwargs):
+    """
+    Interface.
+    
+    Notes
+    -----
+    If we want to prepare some files from scratch and some 
+    from another project, we need to do it manually for all
+    of them or just overwrite selected ones. We need to 
+
+    To pass run=True, we need to pass first arg too.
+
+    """
+    rm = kwargs.get('rm', True)
+    if rm:
+      self.inp.rm(**kwargs)
+    
+    if other_proj is None:
+      self._prep_inp_from_scratch(**kwargs)
+    else:
+      self._prep_inp_from_another(other_proj, **kwargs)
+    
+    self._preprocess(**kwargs)
+    self._postprocess(**kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def _preprocess(self, *args, **kwargs):
+    self.inp.sp.run(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def _postprocess(self, *args, **kwargs):
+    self.inp.rnf.prep(*args, **kwargs)
+
+
+  # -----------------------------------------------------------------------------
+
+  def _prep_inp_from_scratch(self, **kwargs):
+    skip = kwargs.get('skip', [])
+    obj_ids = [i for i in ['rsg', 'tvp', 'rse', 'sp'] if not i in skip]
+    objects = [getattr(self.inp, obj_id) for obj_id in obj_ids]
+    
+    for obj in objects:
+      self.__log.info('Preparing %s...\n' % obj.name)
+      obj.prep(obj.base, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
 @traced
 @logged
 class ProjThroughput(object):

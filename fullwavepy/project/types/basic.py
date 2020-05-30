@@ -18,15 +18,51 @@ from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists, current_dir
 from fullwavepy.plot.generic import figure
 
+# FIXME: tmp
+from fullwavepy.project.generic.io import _InpPreparer 
+
 
 @traced
 @logged
-class Proj(object):
+class _ProjSyncer(object):
+  def rsync(self, *args, **kwargs):
+    """
+    Sync with remote host.
+
+    """
+    self.__log.debug('Assuming inp and out rsync have the same (kw)args...')
+    self.inp.rsync(*args, **kwargs)
+    self.out.rsync(*args, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class _ProjLister(object):
+  def ls(self, **kwargs):
+    """
+    List content of project dirs.
+    
+    """
+    self.inp.ls(**kwargs)
+    self.out.ls(**kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class Proj(_ProjSyncer, _ProjLister):
   """
-  Parent class of all full-waveform projects.
-  Not meant to be used directly, it is just a code base
-  common for the child classes. 
-  Its __init__ method sets up all the project-related objects.
+  Abstract parent class of all full-waveform projects.
+  It initializes all the project-related objects.
 
   """
   def __init__(self, name, **kwargs):
@@ -49,7 +85,7 @@ class Proj(object):
     Notes
     -----
     One usually initializes various projects in the 
-    notebook many times.
+    notebook many times => it needs to be fast.
     
     """
     from fullwavepy.project.generic.io import ProjInput, ProjOutput
@@ -103,38 +139,13 @@ class Proj(object):
     
   # -----------------------------------------------------------------------------
   
-  def init_input(self, **kwargs):
-    raise NotImplementedError('Proj class is not meant to be used directly. '\
-                              'Instead use child classes - ProjSyn, ProjInv etc.')
-
-  # -----------------------------------------------------------------------------
-  
-  def ls(self, **kwargs):
-    """
-    List content of project dirs.
-    
-    """
-    self.inp.ls(**kwargs)
-    self.out.ls(**kwargs)
-
-  # -----------------------------------------------------------------------------
-  
-  def rsync(self, *args, **kwargs):
-    """
-    Sync with remote host.
-
-    """
-    self.__log.debug('Assuming inp and out rsync have the same (kw)args...')
-    self.inp.rsync(*args, **kwargs)
-    self.out.rsync(*args, **kwargs)
-
 
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
-class ProjSyn(Proj):
+class ProjSyn(_InpPreparer, Proj):
   """
   Generate synthetic data.
   
@@ -230,26 +241,14 @@ class ProjSyn(Proj):
   
   # -----------------------------------------------------------------------------
 
-  def prepare_input(self, other_proj=None, run=False, **kwargs):
-    """
-    Framework method.
-
-    """
-    if other_proj is None:
-      self._prepare_input_from_scratch(run, **kwargs)
-    else:
-      self._prepare_input_from_another(other_proj, run, **kwargs)
-
-  # -----------------------------------------------------------------------------
-
-  def _prepare_input_from_scratch(self, run=False, **kwargs):  
+  def _TODELETE_prep_inp_from_scratch(self, run=False, **kwargs):  
     """
     """
     # PARSE kwargs
-    wavelet = kw('wavelet', True, kwargs)
-    rawseis = kw('rawseis', True, kwargs)
-    sp = kw('sp', True, kwargs)
-    runfile = kw('runfile', True, kwargs)
+    # wavelet = kw('wavelet', True, kwargs)
+    # rawseis = kw('rawseis', True, kwargs)
+    # sp = kw('sp', True, kwargs)
+    # runfile = kw('runfile', True, kwargs)
     rm = kw('rm', True, kwargs)
     run = kw('run', True, kwargs)
     #plot = kw('plot', True, kwargs)
@@ -258,13 +257,13 @@ class ProjSyn(Proj):
     check = kw('check', True, kwargs)
     if rm:
       self.inp.rm(**kwargs)
-      self.out.rm(**kwargs)
+      # self.out.rm(**kwargs)
     
     # PREPARE ALL THE OBJECTS, ONE AT A TIME
     obj_ids = ['rsg', 'tvp']
     for obj_id in obj_ids:
       obj = getattr(self.inp, obj_id)
-      self.__log.info('Preparing %s...\n' % obj_id)
+      self.__log.info('Preparing %s...\n' % obj.name)
       
       # MAKE SURE THE BASE OBJECT EXISTS
       base_obj_id = 'base_%s' % obj_id
@@ -339,7 +338,7 @@ class ProjSyn(Proj):
 
   # -----------------------------------------------------------------------------
 
-  def _prepare_input_from_another(self, other_proj, run=False, **kwargs):
+  def _prep_inp_from_another(self, other_proj, **kwargs):
     """
     Prepare the input based on another syn project.
     
@@ -361,11 +360,11 @@ class ProjSyn(Proj):
     # THIS CAN HAVE CHANGES, E.G. TOTALTIME
     self.i.sp.prep(reciprocity=bool(pold.i.sp.read()['reciprocity']))
     
-    if run:
-      self.i.sp.run()
-      self.i.rnf.prep(**kwargs)
-    else:
-      self.__log.warning('You still need to call i.sp.run() and i.rnf.prep()!')
+    # if run:
+    #   self.i.sp.run()
+    #   self.i.rnf.prep(**kwargs)
+    # else:
+    #   self.__log.warning('You still need to call i.sp.run() and i.rnf.prep()!')
 
   # -----------------------------------------------------------------------------
       

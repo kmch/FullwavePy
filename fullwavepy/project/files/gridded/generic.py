@@ -67,9 +67,9 @@ class GridProjFile(ArrayProjFile):
 
   # -----------------------------------------------------------------------------
 
-  # def prep(self, *args, **kwargs):
-  #   # p.base_tvp.carve(self.proj.box)
-  #   super().prep(*args, **kwargs)
+  def prep(self, arr, **kwargs):
+    arr = arr.carve(self.proj.box)
+    super().prep(arr, **kwargs)
 
   # def resize(self, *args, **kwargs):
   #   pass

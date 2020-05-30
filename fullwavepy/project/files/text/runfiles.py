@@ -145,7 +145,7 @@ class SegyPrepFile(ParameterFile):
 
   # -----------------------------------------------------------------------------    
   
-  def create(self, **kwargs):
+  def create(self, dummy=None, **kwargs):
     """
     Create a SegyPrep's runfile. 
     
@@ -445,8 +445,9 @@ class Runfile(ParameterFile):
       self.__log.warning('Description of boundaries in the Runfile is not complete: ' + str(err))
 
   # -----------------------------------------------------------------------------
-
-  def prepare(self, **kwargs):
+  
+  #FIXME: dummy
+  def prep(self, dummy=None, **kwargs):
     """
     
     """
@@ -474,7 +475,7 @@ class Runfile(ParameterFile):
     
   # -----------------------------------------------------------------------------
 
-  def create(self, **kwargs):
+  def create(self, dummy=None, **kwargs):
     """
     1. Copy a template
     2. Update with values from Skeleton

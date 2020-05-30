@@ -50,6 +50,7 @@ class ProjFile(File):
 # -------------------------------------------------------------------------------  
 
 
+# FIXME: MOVE TO text
 @traced
 @logged
 class TextProjFile(ProjFile, TextFile):
@@ -58,8 +59,8 @@ class TextProjFile(ProjFile, TextFile):
   not directlfullwavepy.plottable as an array.
   
   """
-  def prepare(self, **kwargs):
-    super().prepare(**kwargs)
+  def prep(self, *args, **kwargs):
+    super().prep(*args, **kwargs)
     
     cat = kw('cat', True, kwargs)
     if cat:
@@ -71,6 +72,7 @@ class TextProjFile(ProjFile, TextFile):
 # -------------------------------------------------------------------------------
 
 
+# FIXME: DEL
 @traced
 @logged
 class BinaryProjFile(ProjFile, BinaryFile):
