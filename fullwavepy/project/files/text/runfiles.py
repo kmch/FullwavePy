@@ -454,7 +454,7 @@ class Runfile(ParameterFile):
     cat = kw('cat', True, kwargs)
     self.__log.debug('Setting cat=0')
     kwargs['cat'] = 0 # WILL CAT IN THE END
-    super().prepare(**kwargs)
+    super().prep(**kwargs)
     
     self.read(**kwargs)
     params2overwrite = {}
