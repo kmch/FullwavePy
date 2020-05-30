@@ -17,6 +17,24 @@ from fullwavepy.ioapi.segy import SgyMapp
 
 @traced
 @logged
+class ProjBaseFiles(object):
+  """
+  """
+  def __init__(self, proj, **kwargs):
+    self.proj = proj
+    base = kwargs.get('base', {})
+    for key, val in base.items():
+      setattr(self, key, val)
+      # REDUNDANCY
+      obj = getattr(self.proj.inp, key)
+      setattr(obj, 'base', val) 
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class ProjBox(object):
   """
   """

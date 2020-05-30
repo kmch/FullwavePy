@@ -101,8 +101,8 @@ class _InpPreparer(object):
   # -----------------------------------------------------------------------------
 
   def _postprocess(self, *args, **kwargs):
-    self.inp.rnf.prep(*args, **kwargs)
-
+    rnf_kwargs = kwargs.get('rnf_kwargs', {})
+    self.inp.rnf.prep(*args, **rnf_kwargs)
 
   # -----------------------------------------------------------------------------
 
@@ -364,12 +364,9 @@ class ProjInput(ProjThroughput):
 
   # -----------------------------------------------------------------------------
   
-  def prepare(self, *args, **kwargs):
+  def prep(self, *args, **kwargs):
     self.proj.prepare_input(*args, **kwargs)
 
-  def prep(self, *args, **kwargs):
-    self.prepare(*args, **kwargs)    
-    
   # ----------------------------------------------------------------------------- 
   
   def plot(self, *args, **kwargs):
@@ -551,18 +548,14 @@ class ProjOutput(ProjThroughput):
 
   # -----------------------------------------------------------------------------     
 
-  def prepare(self, *args, **kwargs):
+  def prep(self, *args, **kwargs):
     """
     Actions to take once the job finished running.
     
     """
     for f in [self.out, self.err, self.jobout, self.joberr]:
       f.prepare(**kwargs)
-    
     self.proj.prepare_output(*args, **kwargs)
-  
-  def prep(self, *args, **kwargs):
-    self.prepare(*args, **kwargs)
 
   # -----------------------------------------------------------------------------
 

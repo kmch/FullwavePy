@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
+from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import kw, del_kw, exten, strip
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.ioapi.generic import CsvFile
@@ -273,6 +274,7 @@ class RawSeisTxtFile(TextProjFile):
     
   # -----------------------------------------------------------------------------
   
+  @timer
   def _select_retained(self, fnames, bad_IDs=[], **kwargs):
     """
     fnames : 

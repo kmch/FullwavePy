@@ -24,6 +24,26 @@ from fullwavepy.project.generic.io import _InpPreparer
 
 @traced
 @logged
+class _FwiRunner(object):
+  def run(self, no=0, runner='bash', **kwargs):
+    self.out.rm()
+    if runner == 'bash':
+      runner = self.inp.bash.no[no]
+    else:
+      raise TypeError('Runner: %s' % str(runner))
+    runner.prep(**kwargs)
+    runner.run(**kwargs)
+    self.out.ls()
+    self.reinit()
+  
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
 class _ProjSyncer(object):
   def rsync(self, *args, **kwargs):
     """
@@ -59,7 +79,7 @@ class _ProjLister(object):
 
 @traced
 @logged
-class Proj(_ProjSyncer, _ProjLister):
+class Proj(_ProjSyncer, _ProjLister, _FwiRunner):
   """
   Abstract parent class of all full-waveform projects.
   It initializes all the project-related objects.
@@ -72,16 +92,9 @@ class Proj(_ProjSyncer, _ProjLister):
     Parameters
     ----------
     name : str 
-      Name of the project. It will be 
-      a prefix of all the input/output files.
-    kwargs : 
-      Print help of the called functions to get info 
-      about what kwargs are parsed.
-    
-    Returns
-    -------
-    None 
-    
+      Name of the project, 
+      prefix of all the input/output files.
+
     Notes
     -----
     One usually initializes various projects in the 
@@ -90,15 +103,16 @@ class Proj(_ProjSyncer, _ProjLister):
     """
     from fullwavepy.project.generic.io import ProjInput, ProjOutput
     from fullwavepy.project.generic.au import (ProjPath, ProjDirs, ProjDef, ProjGeometry, 
-                                               ProjEnv, ProjSgyMapp, ProjBox, ProjCluster)
+                                               ProjEnv, ProjSgyMapp, ProjBox, ProjCluster,
+                                               ProjBaseFiles)
     from fullwavepy.project.files.text.misc import InfoFile, MetaDataProjFile
     from fullwavepy.project.files.text.runfiles import Runfile
     
-    self.kwargs = kwargs # crucial to inherit from project to project!
+    self.kwargs = dict(kwargs) # crucial to inherit from project to project!
+    # dict prevents deleting the path
     self.parent_dir = current_dir()
     self.name = name
     self.proj = self # USED IN wrapper_widgets (self.proj.dims)
-    
     self.exe = kw('exe', {}, kwargs)
     #self.__log.debug('Paths to executables: ' + str(self.exe))
     #if len(self.exe) == 0:
@@ -117,7 +131,7 @@ class Proj(_ProjSyncer, _ProjLister):
     
     self.info = InfoFile(self, **kwargs)
     ProjDef(self, **kwargs)
-     
+    
     self.sgyhw = ProjSgyMapp(self, **kwargs)
     self.env = ProjEnv(self, **kwargs)
     self.cluster = ProjCluster(self, **kwargs)
@@ -132,13 +146,24 @@ class Proj(_ProjSyncer, _ProjLister):
 
     self.geom = ProjGeometry(self, **kwargs) # OUTPUT USES IT
     self.pbox = ProjBox(self, **kwargs)
-    
+    self.base = ProjBaseFiles(self, **kwargs)    
+
+
     self.out = ProjOutput(self, **kwargs)
     self.o = self.out # ALIAS
     self.out.init(**kwargs)
     
   # -----------------------------------------------------------------------------
   
+  def reinit(self):
+    """
+    An interim fix to update some project objects
+    automatically by the workflow.
+    """
+    self.__init__(self.name, **self.kwargs)
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 
@@ -411,7 +436,10 @@ class ProjSyn(_InpPreparer, Proj):
     
   # -----------------------------------------------------------------------------
   
-  def plot_output(self, figsize, layers, **kwargs):
+  def plot_output(self, **kwargs):
+    self.out.syn.plot(**kwargs)
+
+  def plot_output_FIXME(self, figsize, layers, **kwargs):
     """
     """
     from matplotlib.gridspec import GridSpec

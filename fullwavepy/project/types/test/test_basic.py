@@ -7,9 +7,162 @@ Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 """
 import time
 from autologging import logged, traced
+from inspect import currentframe
 from unittest import TestCase, skip
 
+
 from ..basic import *
+
+
+@traced
+@logged
+class GenericSetUp(object):
+  """
+  """
+  def generic_setup(self):
+    self.startTime = time.time()
+    self._set_path()
+    self._set_exe()
+    self._set_sgy_hw()
+    
+    self._set_experiment()
+    self._set_base() # NOTE experiment -> base
+    
+    self._set_geom()
+
+    self.kwargs = dict(path=self.path, exe=self.exe, sgy_hw=self.sgy_hw,\
+                       base=self.base, **self.geom)     
+
+  # -----------------------------------------------------------------------------
+
+  def _set_path(self):  
+    self.path = "/home/kmc3817/projects_datadrive1/code_fullwavepy_unittests/"
+
+  # -----------------------------------------------------------------------------
+
+  def _set_experiment(self):
+    from fullwavepy.ioapi.proteus import ProteusExperiment
+    self.exp = ProteusExperiment()    
+
+  # -----------------------------------------------------------------------------
+
+  def _set_sgy_hw(self):
+    self.sgy_hw = {'sid': 'tracf',
+                   'rid': 'fldr',
+                   'lid': 'ep',
+    }    
+
+  # -----------------------------------------------------------------------------
+
+  def _set_geom(self):
+    # geom_thin18short
+    dt = 0.0025 
+    ns = 1500    
+    dx = 50      
+    x1 = -13400
+    x2 = -10550
+    y1 = 1500
+    y2 = 3000
+    z1 = 0 # CUT AT THE SEA SURFACE
+    z2 = 500   
+    box = [x1, x2, y1, y2, z1, z2]
+    self.geom = {'box': box, 'dx': dx, 'ns': ns, 'dt': dt}  
+
+  # -----------------------------------------------------------------------------
+
+  def _set_exe(self):
+    self.exe = {'fullwave':       '~/PhD/fullwave3D/rev690/bin/fullwave3D.exe',
+       'fullwave_local': '/home/kmc3817/light_PhD/fullwave3D/rev690/bin/fullwave3D.exe',
+       'segyprep':       '/home/kmc3817/light_PhD/fullwave3D/segyprep_v3.16/bin/segyprep_v3.16',
+       'fsprep':         '/home/kmc3817/light_PhD/fsprep/fsprep',
+       'modprep':        '/home/kmc3817/light_PhD/fullwave3D/modprep/modprep.exe',
+    }      
+
+  # -----------------------------------------------------------------------------
+
+  def _set_base(self):
+    self.base = dict(tvp=self.exp.svp['bh']['18-04-24'],\
+                rsg=self.exp.wavelet['19-09-22'],\
+                rse=['/home/kmc3817/projects_datadrive1/code_fullwavepy_unittests/data/tmp-Synthetic.sgy'],\
+                sp=None)    
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class GenericTearDown(object):
+  """
+  """
+  def generic_teardown(self):
+    self._print_runtime()
+
+  # -----------------------------------------------------------------------------
+  
+  def _clean_dirs(self):
+    #cmd = 'rm -r %s/%s' % (self.path, self.pname)
+    pass
+
+  # ----------------------------------------------------------------------------- 
+  
+  def _print_runtime(self):
+    
+    t = time.time() - self.startTime    
+    print('Ran in %.3f s' % (t)) 
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class TestProjSynSegy3D(GenericSetUp, GenericTearDown, TestCase):
+  """
+  """
+  def setUp(self):
+    self.generic_setup() 
+
+    self.kwargs['io'] = 'sgy'
+    self.kwargs['dim'] = '3d'                   
+
+    self.inp_prep = dict(rm=1, reciprocity=1, rnf_kwargs=dict(b_abs=5, e_abs=10))
+    self.run = dict()
+    self.out_plot = dict()
+
+  # -----------------------------------------------------------------------------
+
+  def tearDown(self):
+    self.generic_teardown()  
+
+  # -----------------------------------------------------------------------------
+    
+  def test_prep_from_base_and_local_run(self):
+    p = ProjSyn('tmp', info=currentframe().f_code.co_name, **self.kwargs)
+    p.inp.prep(**self.inp_prep)    
+    p.run(**self.run)
+    p.out.plot(**self.out_plot)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @traced
@@ -130,7 +283,7 @@ class TestProjSyn(TestCase):
 
   # -----------------------------------------------------------------------------
   
- 
+
 # -------------------------------------------------------------------------------
 
 @traced
