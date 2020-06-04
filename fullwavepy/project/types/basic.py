@@ -26,14 +26,15 @@ from fullwavepy.project.generic.io import _InpPreparer
 @logged
 class _FwiRunner(object):
   def run(self, no=0, runner='bash', **kwargs):
-    self.out.rm()
+    self.out.rm(ls=False)
     if runner == 'bash':
       runner = self.inp.bash.no[no]
     else:
       raise TypeError('Runner: %s' % str(runner))
+
+    kwargs['cat'] = False
     runner.prep(**kwargs)
     runner.run(**kwargs)
-    self.out.ls()
     self.reinit()
   
   # -----------------------------------------------------------------------------

@@ -24,6 +24,8 @@ class _FilePreparer(object):
   def prep(self, *args, **kwargs):
     """
     Note, create is a method of child classes only!
+
+    FIXME: add more cases: but maybe only as _ProjFilePreparer(?)
     """
     dupl = kw('dupl', None, kwargs)
     

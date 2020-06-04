@@ -297,6 +297,9 @@ class SegyPrepFile(ParameterFile):
     o, e = bash(cmd, path=self.path)
     if cat:
       print(o, e)
+
+    if 'nothing to plot' in o:
+      raise ValueError(o)
     
   # -----------------------------------------------------------------------------  
   

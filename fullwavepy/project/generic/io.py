@@ -19,47 +19,63 @@ from fullwavepy.ioapi.clusters.archer import *
 from fullwavepy.ioapi.clusters.thomas import *
 
 
-class _PreprocSynInp():
-  attrs = ['rawsigns', 'rawseis', 'truemods', 'params']  
 
-class _PreprocSynOut():
-  attrs = ['wavelets', 'rawseis', 'truemods', 'params']  
+@traced
+@logged
+class FileManager(object):
+  """
+  """
+  def ls(self, **kwargs):
+    o, e = bash('pwd', path=self.path)
+    print('Content of ' + o)
+    o, e = bash('ls -lth ' + self.path)
+    print(o, e)
 
-# NOTE ENSURE PreprocOut = ProjInp
+  # -----------------------------------------------------------------------------
 
-class _ProjSynInp():
-  attrs = ['wavelets', 'rawseis', 'truemods', 'params']
-
-
-
-class _InpListSegy(object):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-class _InpListFw3d(object):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-
-class _InpIniter(object):
-  pass
-
-
-# -------------------------------------------------------------------------------
-
-# @traced
-# @logged
-# class _InpPreparer(_PreprocInpPreparer):
-#   def prepare_input(self, other_proj=None, run=False, **kwargs):
-#     pass
+  def rm(self, **kwargs):
+    """
+    Remove all the files from the self.path (!) NOTE
     
+    Notes
+    -----
+    It actually renames files (by adding a 'rm_' prefix) 
+    which need to be rm-ed manually (for safety).
+    
+    """
+    from fullwavepy.generic.system import get_files
+    from fullwavepy.generic.parse import path_leave
+    
+    ls = kwargs.get('ls', True)
 
-# class _PreprocInpPreparer
+    fnames = get_files(self.path, '*')
+    for fname in fnames:
+      fname = path_leave(fname)
+      o, e = bash('mv ' + fname + ' rm_' + fname, path=self.path)
+    
+    if ls: 
+      self.ls()
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+# class _PreprocSynInp():
+#   attrs = ['rawsigns', 'rawseis', 'truemods', 'params']  
+
+# class _PreprocSynOut():
+#   attrs = ['wavelets', 'rawseis', 'truemods', 'params']  
+
+# ENSURE PreprocOut = ProjInp
+
+# class _ProjSynInp():
+#   attrs = ['wavelets', 'rawseis', 'truemods', 'params']
+
+
+# -------------------------------------------------------------------------------
+
 
 @traced
 @logged
@@ -116,14 +132,14 @@ class _InpPreparer(object):
       obj.prep(obj.base, **kwargs)
 
   # -----------------------------------------------------------------------------
-
+  
 
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
-class ProjThroughput(object):
+class ProjThroughput(FileManager):
   """
   Parent class of input and output.
   
@@ -136,14 +152,6 @@ class ProjThroughput(object):
   """  
   def __init__(self, proj, **kwargs):
     self.proj = proj
-    
-  # -----------------------------------------------------------------------------
-  
-  def ls(self, **kwargs):
-    o, e = bash('pwd', path=self.path)
-    print('Content of ' + o)
-    o, e = bash('ls -lth ' + self.path)
-    print(o, e)
     
   # -----------------------------------------------------------------------------
   
@@ -184,28 +192,6 @@ class ProjThroughput(object):
 
   # -----------------------------------------------------------------------------    
 
-  def rm(self, **kwargs):
-    """
-    Remove all the files associated with this object.
-    
-    Notes
-    -----
-    It actually renames files (by adding a 'rm_' prefix) 
-    which need to be rm-ed manually (for safety).
-    
-    """
-    from fullwavepy.generic.system import get_files
-    from fullwavepy.generic.parse import path_leave
-    
-    fnames = get_files(self.path, '*')
-    for fname in fnames:
-      fname = path_leave(fname)
-      o, e = bash('mv ' + fname + ' rm_' + fname, path=self.path)
-
-    self.ls()
-
-  # -----------------------------------------------------------------------------
-  
   def _configure_remote(self, host_nick, **kwargs):
     if host_nick == 'cx1':
       from fullwavepy.ioapi.clusters.cx1 import proj_path_cx1

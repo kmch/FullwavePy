@@ -184,12 +184,14 @@ class InfoFile(TextProjFile):
     Init. and save the file, if info is not None.
     
     """
+    cat = kwargs.get('cat', True)
     self.name = proj.name + '-Info.txt'
     self.fname = proj.path + self.name
     del_kw('path', kwargs)
     super().__init__(proj, proj.path, **kwargs) 
     self._write(info, **kwargs)
-    self.cat()
+    if cat:
+      self.cat()
 
   # ----------------------------------------------------------------------------- 
 

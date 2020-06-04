@@ -10,8 +10,11 @@ from autologging import logged, traced
 from inspect import currentframe
 from unittest import TestCase, skip
 
-
+from fullwavepy.logging_config import log_lvl
 from ..basic import *
+
+# 40 - suppress warnings and below
+log_lvl(40)
 
 
 @traced
@@ -21,22 +24,23 @@ class GenericSetUp(object):
   """
   def generic_setup(self):
     self.startTime = time.time()
+    # MOST GENERIC
     self._set_path()
     self._set_exe()
     self._set_sgy_hw()
-    
+    # EXPERIMENT-SPECIFIC, BASE-FILES CAN CHANGE OVER TIME
     self._set_experiment()
     self._set_base() # NOTE experiment -> base
-    
+    # PROJECT SPECIFIC
     self._set_geom()
-
+    # WRAP-UP
     self.kwargs = dict(path=self.path, exe=self.exe, sgy_hw=self.sgy_hw,\
-                       base=self.base, **self.geom)     
+                       base=self.base, **self.geom, cat=0, ls=0)     
 
   # -----------------------------------------------------------------------------
 
   def _set_path(self):  
-    self.path = "/home/kmc3817/projects_datadrive1/code_fullwavepy_unittests/"
+    self.path = "/home/kmc3817/projects_datadrive1/code_fullwavepy_tests/"
 
   # -----------------------------------------------------------------------------
 
@@ -83,7 +87,7 @@ class GenericSetUp(object):
   def _set_base(self):
     self.base = dict(tvp=self.exp.svp['bh']['18-04-24'],\
                 rsg=self.exp.wavelet['19-09-22'],\
-                rse=['/home/kmc3817/projects_datadrive1/code_fullwavepy_unittests/data/tmp-Synthetic.sgy'],\
+                rse=['/home/kmc3817/projects_datadrive1/code_fullwavepy_tests/data/tmp-Synthetic.sgy'],\
                 sp=None)    
 
   # -----------------------------------------------------------------------------
@@ -113,37 +117,45 @@ class GenericTearDown(object):
     t = time.time() - self.startTime    
     print('Ran in %.3f s' % (t)) 
 
+  # ----------------------------------------------------------------------------- 
+
 
 # -------------------------------------------------------------------------------
 
-
 @traced
 @logged
-class TestProjSynSegy3D(GenericSetUp, GenericTearDown, TestCase):
+class TestProjSynFromBaseLocalRun(GenericSetUp, GenericTearDown, TestCase):
   """
   """
   def setUp(self):
     self.generic_setup() 
-
-    self.kwargs['io'] = 'sgy'
-    self.kwargs['dim'] = '3d'                   
-
-    self.inp_prep = dict(rm=1, reciprocity=1, rnf_kwargs=dict(b_abs=5, e_abs=10))
-    self.run = dict()
-    self.out_plot = dict()
+    self.kwargs_inp = dict(reciprocity=1, rm=1, cat=0, ls=0,
+                         rnf_kwargs=dict(b_abs=5, e_abs=10, cat=0))
+    self.kwargs_run = dict()
+    self.kwargs_out = dict()
 
   # -----------------------------------------------------------------------------
 
   def tearDown(self):
+    p = ProjSyn('tmp', info=currentframe().f_code.co_name, **self.kwargs)
+    p.inp.prep(**self.kwargs_inp)    
+    p.run(**self.kwargs_run)
+    p.out.plot(**self.kwargs_out)
     self.generic_teardown()  
 
   # -----------------------------------------------------------------------------
     
-  def test_prep_from_base_and_local_run(self):
-    p = ProjSyn('tmp', info=currentframe().f_code.co_name, **self.kwargs)
-    p.inp.prep(**self.inp_prep)    
-    p.run(**self.run)
-    p.out.plot(**self.out_plot)
+  #@skip('tmp')
+  def test_segy_3d(self):
+    self.kwargs['io'] = 'sgy'
+    self.kwargs['dim'] = '3d'  
+
+  # -----------------------------------------------------------------------------
+
+  @skip('tmp')  
+  def test_fw3d_3d(self):
+    self.kwargs['io'] = 'fw3d'
+    self.kwargs['dim'] = '3d'  
 
   # -----------------------------------------------------------------------------
 
@@ -167,7 +179,7 @@ class TestProjSynSegy3D(GenericSetUp, GenericTearDown, TestCase):
 
 @traced
 @logged
-class TestProjSyn(TestCase):
+class TestProjSynOLD(object): #TestCase):
   """
   Priorities: 
   - sgy/vtr

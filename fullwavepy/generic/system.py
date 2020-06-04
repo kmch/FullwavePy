@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
+from fullwavepy.logging_config import log_lvl
 from fullwavepy.generic.decor import timer
 
 
@@ -22,6 +23,7 @@ def current_dir(**kwargs):
   o, e = bash('pwd')
   dir_name = o.split('/')[-1].strip("\n") + '/'
   return dir_name
+
 
 # -------------------------------------------------------------------------------
 
