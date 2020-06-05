@@ -26,6 +26,7 @@ from fullwavepy.project.generic.io import _InpPreparer
 @logged
 class _FwiRunner(object):
   def run(self, no=0, runner='bash', **kwargs):
+    self.__log.info('Running a job no. %s' % no)
     self.out.rm(ls=False)
     if runner == 'bash':
       runner = self.inp.bash.no[no]

@@ -297,9 +297,17 @@ class SegyPrepFile(ParameterFile):
     o, e = bash(cmd, path=self.path)
     if cat:
       print(o, e)
-
-    if 'nothing to plot' in o:
-      raise ValueError(o)
+    
+    errors = ['Unable to decode SEG-Y headers']
+    raise_error = False
+    errors_raised = 'Errors raised: \n'
+    for err in errors:
+      if err in o:
+        raise_error = True
+        errors_raised += ' %s' % err
+    
+    if raise_error:
+      raise ValueError(str(o) + errors_raised)
     
   # -----------------------------------------------------------------------------  
   

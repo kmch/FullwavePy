@@ -152,7 +152,7 @@ class TestProjSynFromBaseLocalRun(GenericSetUp, GenericTearDown, TestCase):
 
   # -----------------------------------------------------------------------------
 
-  @skip('tmp')  
+  # @skip('tmp')  
   def test_fw3d_3d(self):
     self.kwargs['io'] = 'fw3d'
     self.kwargs['dim'] = '3d'  
@@ -220,7 +220,7 @@ class TestProjSynOLD(object): #TestCase):
     t = time.time() - self.startTime
     
     # print('Ran %s in %.3f s' % (self.id(), t))
-    print('Ran in %.3f s' % (t))
+    print('\nRan in %.3f s\n' % (t))
     # bash(cmd)
     # self.__log.warning(cmd)
 

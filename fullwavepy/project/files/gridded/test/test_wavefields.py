@@ -12,8 +12,7 @@ from fullwavepy.project.files.gridded.wavefields import *
 class TestFoo(TestCase):
   """
   """
-  def test_something_in_foo(self):
-    pass
+  pass
     # s = 'foobar'
     # self.assertEqual(core(s, ' ', 'bar'), 'foo')
     # self.assertEqual(core(s, 'foo', ' '), 'bar')

@@ -12,13 +12,6 @@ from fullwavepy.ioapi.segy import *
 class TestFoo(TestCase):
   """
   """
-  def test_something_in_foo(self):
-    pass
-    # s = 'foobar'
-    # self.assertEqual(core(s, ' ', 'bar'), 'foo')
-    # self.assertEqual(core(s, 'foo', ' '), 'bar')
-    # self.assertRaises(ValueError, core, s, '', 'bar')
-    # self.assertRaises(ValueError, core, s, 'foo', '')
-
+  pass
 
 # -------------------------------------------------------------------------------

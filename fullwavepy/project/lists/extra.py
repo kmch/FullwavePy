@@ -227,10 +227,15 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
   # -----------------------------------------------------------------------------
   
   def plot(self, **kwargs):
+    """
+    """
     it = kw('it', 1, kwargs)
     sid = kw('sid', sorted(self.it[it].keys())[0], kwargs)
     tstep = kw('tstep', sorted(self.it[it][sid].keys())[0], kwargs)
     self.__log.debug('it: {}, sid: {}, tstep: {}'.format(it, sid, tstep))
+    # it's unlikely to have >= 1e3 iterations and >= 1e4 tsteps
+    kwargs['title'] = 'it %s, sid %s, tstep %s' %\
+      (str(it).rjust(3,'0'), str(sid).rjust(5,'0'), str(tstep).rjust(5,'0'))
     self.it[it][sid][tstep].plot(**kwargs)
 
   # -----------------------------------------------------------------------------

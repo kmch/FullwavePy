@@ -463,7 +463,8 @@ class Arr3d(Arr):
         raise ValueError('Wrong slice_at: %s' % str(slice_at))
 
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
-    kwargs['title'] = 'slice at %s-node %s' % (slice_at, node)
+    prefix = kwargs.get('title', '')
+    kwargs['title'] = '%s; slice at %s-node %s' % (prefix, slice_at, node)
     del_kw('slice_at', kwargs) # JUST IN CASE
     
     ax = arr2d.plot(**kwargs)
