@@ -464,7 +464,8 @@ class Arr3d(Arr):
 
     arr2d = self.slice(slice_at, node, widgets=False, **kwargs)
     prefix = kwargs.get('title', '')
-    kwargs['title'] = '%s; slice at %s-node %s' % (prefix, slice_at, node)
+    prefix = prefix + ', ' if prefix != '' else prefix
+    kwargs['title'] = '%sslice at %s-node %s' % (prefix, slice_at, node)
     del_kw('slice_at', kwargs) # JUST IN CASE
     
     ax = arr2d.plot(**kwargs)

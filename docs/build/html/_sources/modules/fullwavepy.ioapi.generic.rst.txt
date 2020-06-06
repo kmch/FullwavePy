@@ -32,8 +32,6 @@ fullwavepy.ioapi.generic
       CsvFile
       CsvFileReader
       File
-      FileCreator
-      FileRemover
       TextFile
       TextFileReader
    

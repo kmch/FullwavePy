@@ -13,6 +13,7 @@ fullwavepy.project.generic.au
 
    .. autosummary::
    
+      ProjBaseFiles
       ProjBox
       ProjCluster
       ProjDef

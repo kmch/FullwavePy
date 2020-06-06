@@ -13,6 +13,7 @@ fullwavepy.project.generic.io
 
    .. autosummary::
    
+      FileManager
       ProjInput
       ProjOutput
       ProjThroughput
