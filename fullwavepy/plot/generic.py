@@ -7,50 +7,116 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
-from fullwavepy.generic.parse import kw
+from fullwavepy.generic.parse import kw, strip
 
 
-def save(fname, **kwargs):
-  """
-  Save current figure.
 
-  Notes
-  -----
-  save_as overwrites fname + suffix.
-  
-  """
-  return NotImplementedError('Debug')
-  # save_as = kw('save_as', None, kwargs)
-  # suffix = kw('suffix', None, kwargs)
-  
-  # if suffix is not None:
-  #   ext = exten(fname)
-  #   fname = strip(fname) + '_' + suffix + '.' + ext
-  #     # print(this_func, fname)
-  
-  # if not save_as:
-  #   save_as = fname     
-  
-  # return save_fig(save_as, **kwargs)
+@traced
+@logged
+class PlotPreprocessor(object):
+  def _preprocess(self, **kwargs):
+    pass
+
+
+# -------------------------------------------------------------------------------
+
+@traced
+@logged
+class PlotPostprocessor(object):
+  def _postprocess(self, grid={}, **kwargs):
+    assert isinstance(grid, dict)
+    if len(grid) > 0:
+      plt.grid(**grid)
 
 
 # -------------------------------------------------------------------------------
 
 
-def save_fig(fname, **kwargs):
+@traced
+@logged
+class Plotter(PlotPreprocessor, PlotPostprocessor):
   """
-  
+  Generic plotter.
+
   """
-  return NotImplementedError('Debug')
-  # core = strip(fname)
-  # plt.title(core)
-  # fname = core + '.png'
-  # plt.savefig(fname, format='png')
-  # plt.close()
-  
-  # return fname
+  def plot(self, *args, **kwargs):
+    self._init(**kwargs)
+    # self._preprocess(**kwargs)
+    self._plot(*args, **kwargs)
+    self._postprocess(**kwargs)
+    self._save(**kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def _init(self, **kwargs):
+    figure(**kwargs)
+
+  # -----------------------------------------------------------------------------
+
+  def _save(self, fname, fmt='png', close=True, **kwargs):
+    fname = strip(fname)
+    fname = '%s.%s' % (fname, fmt)
+    plt.savefig(fname)
+    if close:
+      plt.close()
+
+  # -----------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class FilePlotter(Plotter):
+  """
+  Generic file plotter.
+
+  """
+  def _save(self, *args, **kwargs):
+    """
+    Save the plot using the file's original 
+    name, just changing the extension.
+
+    Notes
+    -----
+    *args only to comply with the Liskov principle
+    """
+    assert hasattr(self, 'fname')
+    super()._save(self.fname, **kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
+@traced
+@logged
+class FileListPlotter(object):
+  """
+  """
+  def plot(self, max_files_no=None, **kwargs):
+    """
+    """
+    self.__log.debug('max no. of files allowed: %s' % max_files_no)
+    
+    files = self._all_files()
+
+    for i, f in enumerate(files):
+      if (max_files_no is not None) and (i == max_files_no): 
+        break # when put here, 0 value works as well
+      
+      self.__log.info('Plotting %s' % f.fname)
+      # NOTE can't use kwargs['title'], as it would get stuck at the first file
+      title = kwargs.get('title', f.name) # NOTE name (fname would be too long)
+      f.plot(**dict(kwargs, title=title))
+  
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
 
 @traced
 @logged

@@ -12,7 +12,7 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer, widgets
 from fullwavepy.generic.system import bash, exists
-from fullwavepy.generic.parse import kw
+from fullwavepy.generic.parse import kw, strip
 
 from fullwavepy.project.lists.basic import TimestepFileList
 from fullwavepy.project.lists.deriv import SchedFileList, SlaveFileList
@@ -152,6 +152,31 @@ class DumpFileList(SlaveFileList):
 # -------------------------------------------------------------------------------
 
 
+# FIXME
+@traced
+@logged
+class WavefieldPlotter(object):
+  """
+
+  """
+  def _plot_one(self, **kwargs):
+    """
+    """
+    it = kw('it', 1, kwargs)
+    sid = kw('sid', sorted(self.it[it].keys())[0], kwargs)
+    tstep = kw('tstep', sorted(self.it[it][sid].keys())[0], kwargs)
+    self.__log.debug('it: {}, sid: {}, tstep: {}'.format(it, sid, tstep))
+    # it's unlikely to have >= 1e3 iterations and >= 1e4 tsteps
+    kwargs['title'] = 'it %s, sid %s, tstep %s' %\
+      (str(it).rjust(3,'0'), str(sid).rjust(5,'0'), str(tstep).rjust(5,'0'))
+    self.it[it][sid][tstep].plot(**kwargs)
+
+  # -----------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+
+
 @traced
 @logged
 class WavefieldFileList(SlaveFileList, TimestepFileList):
@@ -226,33 +251,17 @@ class WavefieldFileList(SlaveFileList, TimestepFileList):
 
   # -----------------------------------------------------------------------------
   
-  def plot(self, **kwargs):
+  def _all_files(self, **kwargs):
     """
+    FIXME Should share same abstraction with __init__. 
     """
-    it = kw('it', 1, kwargs)
-    sid = kw('sid', sorted(self.it[it].keys())[0], kwargs)
-    tstep = kw('tstep', sorted(self.it[it][sid].keys())[0], kwargs)
-    self.__log.debug('it: {}, sid: {}, tstep: {}'.format(it, sid, tstep))
-    # it's unlikely to have >= 1e3 iterations and >= 1e4 tsteps
-    kwargs['title'] = 'it %s, sid %s, tstep %s' %\
-      (str(it).rjust(3,'0'), str(sid).rjust(5,'0'), str(tstep).rjust(5,'0'))
-    self.it[it][sid][tstep].plot(**kwargs)
-
-  # -----------------------------------------------------------------------------
-  
-  def plot_all(self, **kwargs):
-    """
-    """
-    self.__log.warning('assuming it[1: ] even for ProjSyn')
+    files = []
     for it in self.it[1: ]:
-      for sid in it.values():
-        for f in sid.values():
-          try:
-            f.plot(**kwargs)
-            plt.figure()
-          except FileNotFoundError as err:
-            self.__log.warning(err)
-  
+      for sid, sid_files in sorted(it.items()):
+        for tstep, tstep_file in sorted(sid_files.items()):
+          files.append(tstep_file)
+    return files
+
   # -----------------------------------------------------------------------------
 
 

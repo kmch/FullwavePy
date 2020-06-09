@@ -79,7 +79,8 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
      return
     
     suffix = strip(path_leave(fnames[0]))[len(proj.name + '-'): ]
-    self.fname = self.path + self.proj.name + '-' + suffix + '.vtr'
+    self.name = self.proj.name + '-' + suffix + '.vtr'
+    self.fname = self.path + self.name
 
    # -----------------------------------------------------------------------------
 

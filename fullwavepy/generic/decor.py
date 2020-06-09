@@ -14,6 +14,27 @@ from functools import wraps
 from fullwavepy.generic.parse import kw
 
 
+# def save(func):
+#   """
+#   Save a
+  
+#   """
+#   @wraps(func)
+#   def wrapper_save(*args, **kwargs):
+#     save = kwargs.get('save', True)
+#     value = func(*args, **kwargs)
+    
+#     if save:
+#       print('Saving.')
+#       plt.savefig(fname, format='png') # HOW TO ACCESS fname??? FIXME
+#       plt.close()
+#     return value
+#   return wrapper_save
+
+
+# -------------------------------------------------------------------------------
+
+
 def timer(func):
   """
   Print the time taken to run 

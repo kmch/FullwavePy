@@ -10,6 +10,8 @@ from fullwavepy.generic.decor import timer
 from fullwavepy.generic.parse import exten, strip, kw, del_kw
 from fullwavepy.generic.system import exists, bash
 
+from fullwavepy.plot.generic import FilePlotter
+
 
 # -------------------------------------------------------------------------------
 # CLASSES
@@ -134,14 +136,12 @@ class ArrayFileReader(object):
   pass
 
 
-class ArrayFilePlotter(object):
-  pass
 
 
 # FIXME THIS SHOULD PROBABLY BE A MIXIN OR STH...
 @traced
 @logged
-class ArrayFile(File):
+class ArrayFile(File, FilePlotter):
   """
   File storing data (model, seismograms, etc.) 
   as a custom Arr3d type of array which is a 
@@ -177,7 +177,7 @@ class ArrayFile(File):
 
   # ----------------------------------------------------------------------------
 
-  def plot(self, **kwargs):
+  def _plot(self, **kwargs):
     """
     We SHOULD self.read everytime, 
     see its docstring for rationale.

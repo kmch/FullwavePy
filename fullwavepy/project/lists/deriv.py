@@ -50,8 +50,8 @@ class SchedFileList(IterFileList):
   # ----------------------------------------------------------------------------- 
 
   ##@widgets('iter')
-  def plot(self, **kwargs):
-    pass
+  # def plot(self, **kwargs):
+  #   pass
 
   # -----------------------------------------------------------------------------
   
@@ -90,14 +90,18 @@ class SlaveFileList(SchedFileList, ShotFileList):
         except FileNotFoundError as err:
           self.__log.warning(err)    
   
-  def plot(self, **kwargs):
-    for it in self.it[1: ]: # SKIP ITER. 0
-      for f in it.values():
-        try:
-          f.plot(**kwargs)
-          plt.figure()
-        except FileNotFoundError as err:
-          self.__log.warning(err)
+  # -----------------------------------------------------------------------------    
+
+  # def plot(self, **kwargs):
+  #   for it in self.it[1: ]: # SKIP ITER. 0
+  #     for f in it.values():
+  #       try:
+  #         f.plot(**kwargs)
+  #         plt.figure()
+  #       except FileNotFoundError as err:
+  #         self.__log.warning(err)
+
+  # -----------------------------------------------------------------------------    
 
 
 # -------------------------------------------------------------------------------

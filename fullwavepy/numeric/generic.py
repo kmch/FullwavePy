@@ -222,12 +222,17 @@ def normalize(x, **kwargs):
   else:
     raise ValueError('Unknown norm: ' + norm)
   
+  normalize._log.debug('norm=%s' % norm)
+
   if norm > num_zero:
     x_normed = x / norm
   else:
     x_normed = np.zeros(x.shape)
   
   return x_normed  
+
+def norm_bulk_max(A, **kwargs):
+  return A / np.max(np.abs(A))
 
 
 # -------------------------------------------------------------------------------

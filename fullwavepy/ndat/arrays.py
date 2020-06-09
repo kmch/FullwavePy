@@ -378,7 +378,7 @@ class Arr2d(Arr):
     return ax
   
   # -----------------------------------------------------------------------------
-  
+
   def plot(self, *args, **kwargs):
     """
     """
@@ -700,7 +700,7 @@ class Arr3d(Arr):
     #return ax1, ax2, ax3
     
   # -----------------------------------------------------------------------------  
-
+    
   def plot(self, *args, **kwargs):
     """
     Framework plotter.
@@ -916,20 +916,32 @@ def modify_array(A, *args, **kwargs):
 @logged
 def _set_array_modifiers(**kwargs):
   """
-  
+  Notes
+  -----
+  norm_bulk acts on the whole array,
+  and norm acts trace-wise, but they both
+  call the same function. FIXME: common interface
   """
   #from ..dsp.su import su_process
-  
+  from fullwavepy.numeric.generic import norm_bulk_max
   modifiers = kw('array_modifiers', [], kwargs)  
   
   clip = kw('clip', None, kwargs)
   clip_min = kw('clip_min', None, kwargs)  
-  clip_max = kw('clip_max', None, kwargs)  
+  clip_max = kw('clip_max', None, kwargs)
+  norm_bulk = kw('norm_bulk', None, kwargs)  
   func = kw('func', None, kwargs)
-  
+
+  # bulk-normalization (BEFORE clipping)
+  if norm_bulk is not None:
+    modifiers.append(norm_bulk_max) 
+
   if clip is not None or clip_min is not None or clip_max is not None:
     modifiers.append(clip_array)
     
+   
+  
+  
   #if func is not None:
     #modifiers.append(su_process)
   

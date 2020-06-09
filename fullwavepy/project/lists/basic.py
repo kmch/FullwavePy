@@ -13,14 +13,12 @@ from autologging import logged, traced
 
 from fullwavepy.generic.decor import timer
 from fullwavepy.generic.system import bash, exists
-
-
-# -------------------------------------------------------------------------------  
+from fullwavepy.plot.generic import FileListPlotter
 
 
 @traced
 @logged
-class ProjFileList(object):
+class ProjFileList(FileListPlotter):
   """
   A handle for a collection of similar files.
   
@@ -36,6 +34,14 @@ class ProjFileList(object):
     self.proj = proj
   
   # -----------------------------------------------------------------------------  
+  
+  def _all_files(self, **kwargs):
+    """
+    Reminder what child classes must implement.
+    """
+    raise NotImplementedError()
+
+  # -----------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------  
@@ -86,9 +92,7 @@ class IterFileList(ProjFileList):
     except FileNotFoundError:
       self.__log.warning(self.proj.name + ' has no runfile yet, unable to set' + 
                       ' self.nits_total')
-    
-
-    
+     
   # -----------------------------------------------------------------------------
 
 
