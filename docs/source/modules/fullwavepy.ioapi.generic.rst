@@ -26,7 +26,6 @@ fullwavepy.ioapi.generic
    .. autosummary::
    
       ArrayFile
-      ArrayFilePlotter
       ArrayFileReader
       BinaryFile
       CsvFile

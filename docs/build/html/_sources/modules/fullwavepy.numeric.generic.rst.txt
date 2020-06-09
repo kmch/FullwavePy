@@ -15,6 +15,7 @@ fullwavepy.numeric.generic
       neighs1d
       neighs_of_float
       neighs_of_int
+      norm_bulk_max
       normalize
       rad2deg
       rms

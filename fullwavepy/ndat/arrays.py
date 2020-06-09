@@ -10,14 +10,13 @@ from matplotlib.gridspec import GridSpec
 
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.decor import widgets, timer
-from fullwavepy.plot.generic import figure, aspeqt
+from fullwavepy.plot.generic import figure, aspeqt, Plotter
 from fullwavepy.plot.plt2d import plot_image
 
 # NOTE
 # Arr3d -> Arr2d etc. can only be achieved by their slice() methods
 # Numpy's slice-index notation A[:,0,:] etc. works (i.e. reshapes)
 # but doesn't convert the type
-
 
 
 @traced
@@ -316,7 +315,7 @@ class Arr1d(Arr):
 
 @traced
 @logged
-class Arr2d(Arr):
+class Arr2d(Plotter, Arr):
   """
   
   """
@@ -400,7 +399,7 @@ class Arr2d(Arr):
 
 @traced
 @logged
-class Arr3d(Arr):
+class Arr3d(Plotter, Arr):
   """
   3D array.
   
@@ -932,16 +931,13 @@ def _set_array_modifiers(**kwargs):
   norm_bulk = kw('norm_bulk', None, kwargs)  
   func = kw('func', None, kwargs)
 
-  # bulk-normalization (BEFORE clipping)
+  # bulk-normalization (must be BEFORE clipping)
   if norm_bulk is not None:
     modifiers.append(norm_bulk_max) 
 
   if clip is not None or clip_min is not None or clip_max is not None:
     modifiers.append(clip_array)
     
-   
-  
-  
   #if func is not None:
     #modifiers.append(su_process)
   

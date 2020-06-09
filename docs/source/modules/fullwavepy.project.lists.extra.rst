@@ -18,6 +18,7 @@ fullwavepy.project.lists.extra
       DumpFileList
       ForwardWavefieldFileList
       WavefieldFileList
+      WavefieldPlotter
    
    
 

@@ -177,14 +177,14 @@ class ArrayFile(File, FilePlotter):
 
   # ----------------------------------------------------------------------------
 
-  def _plot(self, **kwargs):
-    """
-    We SHOULD self.read everytime, 
-    see its docstring for rationale.
+  # def _plot(self, **kwargs):
+  #   """
+  #   We SHOULD self.read everytime, 
+  #   see its docstring for rationale.
     
-    """
-    array = self.read(**kwargs)
-    return array.plot(**kwargs)
+  #   """
+  #   array = self.read(**kwargs)
+  #   return array.plot(**kwargs)
   
   # ----------------------------------------------------------------------------
 

@@ -92,8 +92,12 @@ class WavefieldFile(ExtenGridProjFile, VtrFile):
   # -----------------------------------------------------------------------------
   
   def plot(self, **kwargs):
-    kwargs['cmap'] = kw('cmap', 'seismic', kwargs) # BrBG (PALER)
-    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    kwargs['cmap'] = kw('cmap', 'RdBu', kwargs) # seismic, BrBG
+    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)    
+    kwargs['aspect'] = kw('aspect', 'equal', kwargs)
+    kwargs['norm_bulk'] = kw('norm_bulk', True, kwargs)
+    if kwargs['norm_bulk']: # otherwise don't clip by default 
+      kwargs['clip'] = kw('clip', 0.06, kwargs)
     super().plot(**kwargs)
 
   # -----------------------------------------------------------------------------

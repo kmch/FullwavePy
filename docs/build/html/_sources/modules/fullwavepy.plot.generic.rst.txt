@@ -15,13 +15,21 @@ fullwavepy.plot.generic
       figax
       figure
       flipy
-      save
-      save_fig
       set_xlabels
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FileListPlotter
+      FilePlotter
+      PlotPostprocessor
+      PlotPreprocessor
+      Plotter
    
    
 

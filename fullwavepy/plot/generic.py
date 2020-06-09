@@ -10,46 +10,54 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, strip
 
 
-
 @traced
 @logged
-class PlotPreprocessor(object):
-  def _preprocess(self, **kwargs):
-    pass
-
-
-# -------------------------------------------------------------------------------
-
-@traced
-@logged
-class PlotPostprocessor(object):
-  def _postprocess(self, grid={}, **kwargs):
-    assert isinstance(grid, dict)
-    if len(grid) > 0:
-      plt.grid(**grid)
-
-
-# -------------------------------------------------------------------------------
-
-
-@traced
-@logged
-class Plotter(PlotPreprocessor, PlotPostprocessor):
+class Plotter(object):
   """
-  Generic plotter.
-
+  Generic plotting mix-in. It wrapps the plot method of child classes.
+  The rationale is that _initalize, _finalize and _save should be the same,
+  regardless of the object properties to be plotted.
+   
+  If really needed in special cases, fine-grained customization 
+  should done in the plot method of child classes. Note that they can 
+  put the both 
   """
-  def plot(self, *args, **kwargs):
-    self._init(**kwargs)
-    # self._preprocess(**kwargs)
-    self._plot(*args, **kwargs)
-    self._postprocess(**kwargs)
-    self._save(**kwargs)
+  def plott(self, *args, **kwargs):
+    """
+    We use a different name (plott) to stay compatible with 
+    plot methods of child classes.
+    """
+    save = kwargs.get('save', True)
+    kwargs = self._initialize(**kwargs)
+    ax = self.plot(*args, **kwargs)
+    ax = self._finalize(**kwargs)
+    if save:
+      self._save(**kwargs)
 
   # -----------------------------------------------------------------------------
 
-  def _init(self, **kwargs):
+  def _initialize(self, **kwargs):
+    """
+    Set everything that needs to be set before the actual plotting
+    function (imshow etc.) is called.
+    """
     figure(**kwargs)
+    return kwargs
+  
+  # -----------------------------------------------------------------------------
+
+  def plot(self, **kwargs):
+    raise NotImplementedError('Overwritten in a child class.')
+
+  # -----------------------------------------------------------------------------
+
+  def _finalize(self, grid={}, **kwargs):
+    """
+    Add final formatting.
+    """
+    assert isinstance(grid, dict)
+    if len(grid) > 0:
+      plt.grid(**grid)
 
   # -----------------------------------------------------------------------------
 
@@ -70,17 +78,45 @@ class Plotter(PlotPreprocessor, PlotPostprocessor):
 @logged
 class FilePlotter(Plotter):
   """
-  Generic file plotter.
+  Generic file-plotting mix-in. Although mix-ins shouldn't inherit
+  from any other class, it seems to be cleaner in this case, hence
+  the exception. These two are the only options (either plot the data
+  directly, or from the file).
 
   """
+  def _initialize(self, **kwargs):
+    """
+    Here because currently we set title within imshow but it should
+    change (-> finalize).
+    """
+    assert hasattr(self, 'name') # NOTE name, not fname (would be too long)
+    kwargs['title'] = kwargs.get('title', self.name)
+    return super()._initialize(**kwargs)
+
+  # -----------------------------------------------------------------------------
+  
+  def plot(self, **kwargs):
+    """
+    This is a generic workflow for any file containing plottable data.
+    We should self.read everytime, see its docstring for rationale.
+    Note, it's plot not plott, so when plott is called it will always 
+    lead to Plotter first (no clash).
+    
+    """
+    data = self.read(**kwargs)
+    return data.plot(**kwargs) 
+  
+  # -----------------------------------------------------------------------------  
+  
   def _save(self, *args, **kwargs):
     """
     Save the plot using the file's original 
     name, just changing the extension.
 
-    Notes
-    -----
-    *args only to comply with the Liskov principle
+    Parameters
+    ----------
+    *args 
+      only to comply with the Liskov principle
     """
     assert hasattr(self, 'fname')
     super()._save(self.fname, **kwargs)
@@ -96,21 +132,21 @@ class FilePlotter(Plotter):
 class FileListPlotter(object):
   """
   """
-  def plot(self, max_files_no=None, **kwargs):
+  def plot(self, *args, **kwargs):
+    self._plot('plot', *args, **kwargs)
+  def plott(self, *args, **kwargs):
+    self._plot('plott', *args, **kwargs)    
+  def _plot(self, function, max_files_no=None, **kwargs):
     """
     """
     self.__log.debug('max no. of files allowed: %s' % max_files_no)
     
-    files = self._all_files()
-
-    for i, f in enumerate(files):
+    for i, f in enumerate(self._all_files()):
       if (max_files_no is not None) and (i == max_files_no): 
         break # when put here, 0 value works as well
       
       self.__log.info('Plotting %s' % f.fname)
-      # NOTE can't use kwargs['title'], as it would get stuck at the first file
-      title = kwargs.get('title', f.name) # NOTE name (fname would be too long)
-      f.plot(**dict(kwargs, title=title))
+      getattr(f, function)(**kwargs)
   
   # -----------------------------------------------------------------------------
 
