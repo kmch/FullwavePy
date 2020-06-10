@@ -27,8 +27,6 @@ fullwavepy.plot.generic
    
       FileListPlotter
       FilePlotter
-      PlotPostprocessor
-      PlotPreprocessor
       Plotter
    
    

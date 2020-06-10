@@ -141,7 +141,7 @@ class ArrayFileReader(object):
 # FIXME THIS SHOULD PROBABLY BE A MIXIN OR STH...
 @traced
 @logged
-class ArrayFile(File, FilePlotter):
+class ArrayFile(FilePlotter, File):
   """
   File storing data (model, seismograms, etc.) 
   as a custom Arr3d type of array which is a 

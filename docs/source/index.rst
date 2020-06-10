@@ -6,6 +6,22 @@
 FullwavePy: FWI workflow in Jupyter
 ===================================
 
+Key features
+------------
+Plotting i/o
+
+Key concepts
+------------
+Basic building blocks of a project are file-objects. 
+They are io-specific and the tricky part is to get 
+all the necessary data regardless of the io implementation.
+This can be challenging e.g. when no headers are associated
+with seismic data. An alternative way of getting this data
+has to be implemented. Or the user should be informed of the 
+limited functionality.
+
+Plotting of the data should be independent of the io.
+
 
 Requirements
 ------------

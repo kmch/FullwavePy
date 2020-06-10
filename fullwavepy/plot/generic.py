@@ -22,6 +22,17 @@ class Plotter(object):
   should done in the plot method of child classes. Note that they can 
   put the both 
   """
+  def overlay(self, *layers, **kwargs):
+    """
+    Actually, we should develop this one as last, since it can 
+    be achieved easily in the notebook.
+    """
+    self.plott(**kwargs)
+    for layer in layers:
+      layer.plot(**kwargs) # not plott, otherwise new figure
+
+  # -----------------------------------------------------------------------------
+
   def plott(self, *args, **kwargs):
     """
     We use a different name (plott) to stay compatible with 

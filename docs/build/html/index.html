@@ -36,6 +36,7 @@
   <h3><a href="#">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">FullwavePy: FWI workflow in Jupyter</a><ul>
+<li><a class="reference internal" href="#key-ideas">Key ideas</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -72,6 +73,17 @@
             
   <div class="section" id="fullwavepy-fwi-workflow-in-jupyter">
 <h1>FullwavePy: FWI workflow in Jupyter<a class="headerlink" href="#fullwavepy-fwi-workflow-in-jupyter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="key-ideas">
+<h2>Key ideas<a class="headerlink" href="#key-ideas" title="Permalink to this headline">¶</a></h2>
+<p>Basic building blocks of a project are file-objects.
+They are io-specific and the tricky part is to get
+all the necessary data regardless of the io implementation.
+This can be challenging e.g. when no headers are associated
+with seismic data. An alternative way of getting this data
+has to be implemented. Or the user should be informed of the
+limited functionality.</p>
+<p>Plotting of the data should independent of the io.</p>
+</div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p>Remember to add parent-path/fullwavepy to your PYTHONPATH.
