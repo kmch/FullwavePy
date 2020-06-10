@@ -36,7 +36,8 @@
   <h3><a href="#">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">FullwavePy: FWI workflow in Jupyter</a><ul>
-<li><a class="reference internal" href="#key-ideas">Key ideas</a></li>
+<li><a class="reference internal" href="#key-features">Key features</a></li>
+<li><a class="reference internal" href="#key-concepts">Key concepts</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -73,16 +74,30 @@
             
   <div class="section" id="fullwavepy-fwi-workflow-in-jupyter">
 <h1>FullwavePy: FWI workflow in Jupyter<a class="headerlink" href="#fullwavepy-fwi-workflow-in-jupyter" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="key-ideas">
-<h2>Key ideas<a class="headerlink" href="#key-ideas" title="Permalink to this headline">¶</a></h2>
-<p>Basic building blocks of a project are file-objects.
-They are io-specific and the tricky part is to get
+<div class="section" id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
+<p>Plotting i/o</p>
+</div>
+<div class="section" id="key-concepts">
+<h2>Key concepts<a class="headerlink" href="#key-concepts" title="Permalink to this headline">¶</a></h2>
+<p>FWI is conceptually simple but usually requires a lot of data manipulation
+and parameter tuning to make it work successfully. Hence a need for
+convenient, robust and extensible framework that automates the process and
+allows to focus on research questions rather than technicalities.</p>
+<p>FullwavePy’s project is something defined uniquely by FWI <strong>input</strong> files.</p>
+<p>E.g. a project has exactly one <em>Runfile</em> but can have multiple auxiliary, job-specific files (e.g. <em>Out.log</em>, <em>Run.pbs</em>, <em>JobInfo.txt</em>, etc.)
+that have job-file identifiers embedded in their names (actual names <em>Out0.log</em>, etc.). Obviously, <strong>output files</strong> are job-specific too, but currently they are <strong>overwritten after each job-run</strong> instead of being endowed with such ids (to save disk space). To preserve them, one needs to create a new project.</p>
+<p>The basic building blocks of any project are files.
+They are abstract objects i.e.
+they are not bound to any specific I/O implementation.</p>
+<p>The binding needed is done under the hood</p>
+<p>and the tricky part is to get
 all the necessary data regardless of the io implementation.
 This can be challenging e.g. when no headers are associated
 with seismic data. An alternative way of getting this data
 has to be implemented. Or the user should be informed of the
 limited functionality.</p>
-<p>Plotting of the data should independent of the io.</p>
+<p>Plotting of the data should be independent of the io.</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
@@ -430,10 +445,7 @@ down the bug.</p>
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.data.html#module-fullwavepy.seismic.data" title="fullwavepy.seismic.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.data</span></code></a></p></td>
-<td><p><ol class="loweralpha simple" start="3">
-<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
-</ol>
-</p></td>
+<td><p>Dealing with seismic data can be tricky for two reasons: it is usually stored as heavy binaries and it has associated metadata.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.metadata.html#module-fullwavepy.seismic.metadata" title="fullwavepy.seismic.metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.metadata</span></code></a></p></td>
 <td><p>This module defines a seismic field-experiment as a whole.</p></td>

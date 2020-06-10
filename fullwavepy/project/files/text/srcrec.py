@@ -43,7 +43,6 @@ class SRFile(TextProjFile):
     """
     extend: if True, add extra nodes
     """
-    
     #if not hasattr(self, 'd'): #IT'S A TINY FILE SO IT'S SAFER TO READ IT EVERYTIME
     io = self.proj.io
     if io == 'sgy':

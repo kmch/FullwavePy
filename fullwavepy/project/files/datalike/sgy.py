@@ -186,9 +186,6 @@ class SynDataFileSgy(DataFileSgy, SynDataFile):
   Synthetic data.
   
   """
-
-  # -----------------------------------------------------------------------------
-
   def __init__(self, proj, path, **kwargs):
     suffix = 'Synthetic'
     super().__init__(suffix, proj, path, **kwargs)

@@ -11,6 +11,12 @@ from fullwavepy.generic.parse import kw, strip, path_extract, path_leave
 from fullwavepy.generic.system import exists
 from fullwavepy.ioapi.generic import ArrayFile
 
+# def read_sources_fw3d():
+#   pass
+
+
+
+
 
 # -------------------------------------------------------------------------------
 # VTR 

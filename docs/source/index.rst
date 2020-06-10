@@ -12,8 +12,25 @@ Plotting i/o
 
 Key concepts
 ------------
-Basic building blocks of a project are file-objects. 
-They are io-specific and the tricky part is to get 
+FWI is conceptually simple but usually requires a lot of data manipulation
+and parameter tuning to make it work successfully. Hence a need for 
+convenient, robust and extensible framework that automates the process and 
+allows to focus on research questions rather than technicalities.
+
+FullwavePy's project is something defined uniquely by FWI **input** files. 
+
+
+E.g. a project has exactly one *Runfile* but can have multiple auxiliary, job-specific files (e.g. *Out.log*, *Run.pbs*, *JobInfo.txt*, etc.) 
+that have job-file identifiers embedded in their names (actual names *Out0.log*, etc.). Obviously, **output files** are job-specific too, but currently they are **overwritten after each job-run** instead of being endowed with such ids (to save disk space). To preserve them, one needs to create a new project.
+
+
+The basic building blocks of any project are files. 
+They are abstract objects i.e.
+they are not bound to any specific I/O implementation.
+
+The binding needed is done under the hood
+
+and the tricky part is to get 
 all the necessary data regardless of the io implementation.
 This can be challenging e.g. when no headers are associated
 with seismic data. An alternative way of getting this data

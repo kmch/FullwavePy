@@ -24,11 +24,7 @@ from fullwavepy.project.files.datalike.generic import DataFile, SynDataFile, Obs
 @logged
 class DataFileTtr(DataFile, TtrFile):
   """
-  
   """
-
-  # -----------------------------------------------------------------------------     
-  
   def __init__(self, suffix, proj, path, **kwargs):
     """
     

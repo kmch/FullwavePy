@@ -1,4 +1,8 @@
 """
+Dealing with seismic data can be tricky for two reasons:
+it is usually stored as heavy binaries and it has 
+associated metadata.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -20,6 +24,30 @@ from fullwavepy.plot.generic import *
 @traced
 @logged
 class DataFile(ArrayFile):
+  """
+  Generic seismic-data file. It is meant to 
+  handle arbitrarily large files through `window` 
+  and `split` methods that are I/O specific
+  and need to be implement in child classes.
+
+  It should generalize excellent implementation
+  of split etc. from DumpCompareFile.
+  
+  no read is defined here!
+  """
+  def _split(self, *args, **kwargs):
+    raise NotImplementedError('Overwrite in a child class')
+  
+  def _window(self, *args, **kwargs):
+    raise NotImplementedError('Overwrite in a child class')
+  
+  def _read_shot_gather(self, sid, **kwargs):
+    raise NotImplementedError('Overwrite in a child class')
+  
+  def _read_shot_line(self, sid, lid, **kwargs):
+    raise NotImplementedError('Overwrite in a child class')
+
+
   def cast(self, arr, **kwargs):
     self.array = Data(arr)
     return self.array
@@ -54,10 +82,6 @@ class DataFileSgy(DataFile, SgyFile):
     self.array = self.cast(arr, **kwargs)
     return self.array
 
-  def plot_metadata(self, **kwargs):
-
-    return ax
-
 
 # -------------------------------------------------------------------------------
 
@@ -79,17 +103,6 @@ class Data(Arr3d):
     else:
       return None
   
-  # def plot_phase(self, freq, ph_type, **kwargs):# sync it better with dumpcomp
-  #   """
-  #   ph_type : syn/obs/dif
-  #   """
-  #   if not hasattr(self, 'head'):
-  #     self.__log.warning('self.head not found. Returning')
-  #     return
-    
-  #   plt.scatter(self.head.sx, self.head.sy, vmin=-np.pi, vmax=+np.pi,
-  #               c=self.head['phase %s (%s Hz)' % (ph_type, freq)])
-
   def interleave(self, othe, **kwargs):
     return super().interleave(othe, slice_at='y', node=0, **kwargs)
     
@@ -106,6 +119,16 @@ class Data(Arr3d):
     
     super().plot(*args, **kwargs)
   
+  def plot_phase_DEBUG(self, freq, ph_type, **kwargs):# sync it better with dumpcomp
+    """
+    ph_type : syn/obs/dif
+    """
+    if not hasattr(self, 'head'):
+      self.__log.warning('self.head not found. Returning')
+      return
+  
+    plt.scatter(self.head.sx, self.head.sy, vmin=-np.pi, vmax=+np.pi,
+                c=self.head['phase %s (%s Hz)' % (ph_type, freq)])
 
 
 # -------------------------------------------------------------------------------
