@@ -6,6 +6,17 @@
 FullwavePy: FWI workflow in Jupyter
 ===================================
 
+Getting started
+---------------
+The best way to start is to play around with example notebooks
+in `fullwavepy/examples/` or create a new notebook and load 
+the defualt configuration:
+
+.. code:: python
+
+  %load /path/to/fullwavepy/nb_config.py
+
+
 Key features
 ------------
 Plotting i/o
@@ -50,6 +61,18 @@ If the autogen fails to find one of the modules unlike all
 the other modules, most likely there is a syntax error inside 
 this module. Try to import it from python interpreter to to track
 down the bug.
+
+.. table:: Truth table for "not"
+   :widths: auto
+
+   =====  =====
+     A    not A
+   =====  =====
+   False  True
+   True   False
+   =====  =====
+
+
 
 .. autosummary::
    :toctree: modules
