@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from autologging import logged, traced
 
-from fullwavepy.logging_config import log_lvl
+from fullwavepy.config.logging import log_lvl
 from fullwavepy.generic.decor import timer
 
 

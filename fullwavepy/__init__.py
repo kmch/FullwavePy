@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 #                         SelectMultiple, Checkbox,
 #                         Layout, TwoByTwoLayout)
 
-# from fullwavepy.logging_config import *
+# from fullwavepy.config.logging import *
 
 # from fullwavepy.generic.system import *
 # from fullwavepy.generic.parse import *

@@ -10,7 +10,7 @@ from autologging import logged, traced
 from inspect import currentframe
 from unittest import TestCase, skip
 
-from fullwavepy.logging_config import log_lvl
+from fullwavepy.config.logging import log_lvl
 from ..basic import *
 
 # 40 - suppress warnings and below
@@ -197,7 +197,7 @@ class TestProjSynOLD(object): #TestCase):
     It will be called as first for each and every test 
     function written in a test class.
     """
-    from fullwavepy.logging_config import log_lvl
+    from fullwavepy.config.logging import log_lvl
     log_lvl(40)
     self.startTime = time.time()
 
