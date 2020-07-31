@@ -287,6 +287,8 @@ class ProjGeometry(object):
         self.proj.enx2 = self.proj.nx2 + self.proj.efro + self.proj.ebac
       else:
         self.proj.enx2 = self.proj.nx2
+        self.proj.efro = 0
+        self.proj.ebac = 0
       
       self.proj.edims = (self.proj.enx1, self.proj.enx2, self.proj.enx3)
     
