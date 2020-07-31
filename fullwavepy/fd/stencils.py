@@ -1,4 +1,6 @@
 """
+It will be augmented by Devito eventually.
+
 (c) 2019-2020 Kajetan Chrapkiewicz.
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
@@ -9,8 +11,6 @@ from autologging import logged, traced
 from fullwavepy.generic.parse import kw, del_kw
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-
-# TRY Devito EVENTUALLY
 
 
 @traced
@@ -97,7 +97,7 @@ class Stencil2d_2t2x(Stencil):
       
       
       if i % self.dump == 0:
-        self.fw[int((i+1)/self.dump - 1)] = Arr3d(self.u_now[:,:,:])
+        self.fw[int((i+1)/self.dump - 1)] = self.u_now[:,:,:]
 
 
 # -------------------------------------------------------------------------------

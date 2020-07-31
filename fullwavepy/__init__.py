@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 # import cmocean.cm as cm
 # import plotly.express as px
 # import plotly.graph_objects as go
-# from ipywidgets import (interactive, interact, interact_manual, fixed,
-#                         IntSlider, FloatSlider, BoundedIntText, Dropdown, 
-#                         SelectMultiple, Checkbox,
-#                         Layout, TwoByTwoLayout)
+from ipywidgets import (interactive, interact, interact_manual, fixed,
+                        IntSlider, FloatSlider, BoundedIntText, Dropdown, 
+                        SelectMultiple, Checkbox,
+                        Layout, TwoByTwoLayout)
 
 # from fullwavepy.config.logging import *
 
@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 # from fullwavepy.plot.plt3d import *
 # from fullwavepy.plot.misc import time_freq
 
-# from fullwavepy.project.types.basic import *
+from fullwavepy.project.types.basic import *
 # from fullwavepy.project.types.deriv import *
 # from fullwavepy.project.types.extra import *
 

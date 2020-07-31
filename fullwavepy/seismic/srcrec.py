@@ -48,7 +48,7 @@ def vp2rho(vp, **kwargs):
   vp_max = 5000
   
   if (vp < vp_min):
-    vp2rho._log.warno("vp=%s < vp_min=%s of Gardner's relation, setting water density")
+    vp2rho._log.warning("vp=%s < vp_min=%s of Gardner's relation, setting water density")
     vp2rho._log.warning("Sync vp_min with Fullwave3D's Gardner cutoff etc.")
     rho = 1000
   elif (vp > vp_max):

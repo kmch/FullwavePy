@@ -13,6 +13,7 @@ from fullwavepy.generic.system import bash, exists
 from fullwavepy.ioapi.generic import File, TextFile, BinaryFile, ArrayFile
 
 
+# =associate with project
 @traced
 @logged
 class ProjFile(File):
@@ -82,6 +83,7 @@ class BinaryProjFile(ProjFile, BinaryFile):
 # -------------------------------------------------------------------------------
 
 
+# =create=save_vtr(array) 
 @traced
 @logged
 class ArrayProjFile(ProjFile, ArrayFile):
