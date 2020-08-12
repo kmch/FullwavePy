@@ -145,7 +145,7 @@ def dft_freqs(N, which='all', **kwargs):  # DEL?
 @logged
 def _dft_nfreqs_positive(N, **kwargs): # DEL?
   # NO. OF POSITIVE FREQS 
-  return np.ceil(N/2) 
+  return int(np.ceil(N/2))
 
 
 # -------------------------------------------------------------------------------

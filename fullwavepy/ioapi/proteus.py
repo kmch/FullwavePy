@@ -35,6 +35,8 @@ class ProteusExperiment(Experiment):
   """
   def __init__(self, **kwargs):
     """
+    FIXME: I don't know why it creates an empty figure 
+    when init. for the first time...    
     """
     from fullwavepy.seismic.models import StartVp
 

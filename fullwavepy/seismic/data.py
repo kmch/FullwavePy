@@ -21,6 +21,34 @@ from fullwavepy.plot.generic import *
 # FIXME: MERGE WITH datalike!
 
 
+
+def qc_datafile(datafile, ep, **kwargs):
+  from fullwavepy.plot.generic import figure
+  txlim = kw('txlim', None, kwargs)
+  tylim = kw('tylim', None, kwargs)
+  fxlim = kw('fxlim', None, kwargs)
+  fylim = kw('fylim', None, kwargs)
+  kwargs['win'] = dict(ep=[ep])
+  datafile.read(**kwargs)
+  figure(16,8)
+  plt.suptitle(datafile.name + ', line ' + str(ep))    
+  # time
+  plt.subplot(121)
+  datafile.array.plot(cmap='seismic', center_cmap=1, **kwargs)
+  plt.xlim(txlim)
+  plt.ylim(tylim)
+  plt.xlabel('trace no.')
+  plt.ylabel('sample')
+  # frequency
+  plt.subplot(122)
+  datafile.array.plot(cmap='hot', center_cmap=0, spect='ampl', dt=datafile.dt, **kwargs)
+  plt.xlim(fxlim)
+  plt.ylim(fylim)
+  plt.xlabel('trace no.')
+  plt.ylabel('frequency [Hz]')
+  plt.gca().set_aspect('auto') 
+
+
 @traced
 @logged
 class DataFile(ArrayFile):
