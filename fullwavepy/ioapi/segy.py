@@ -781,6 +781,8 @@ def read_geo(fname, unit='node', **kwargs):
       except KeyError as err:
         raise KeyError('For unit={} you need to provide origin of the coordinate frame.'.format(unit), err)
       
+      dx = kwargs['dx']
+
       xyz = [float(row[1])+x0, 
              float(row[2])+y0, 
              float(row[3]) - dx +z0]    # this is for btop=0 only!   
