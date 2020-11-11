@@ -317,10 +317,11 @@ class BashFile(JobFile, TextProjFile):
     self._prevent_overwriting(**kwargs)
     
     cat = kw('cat', True, kwargs)
+    truncate = kw('truncate', 150, kwargs)
     
     self.__log.info('Running Fullwave3D...')
     
-    o, e = bash(self.fname)
+    o, e = bash(self.fname, truncate=truncate)
     
     if len(o) != 0 and cat:
       self.__log.info(o)

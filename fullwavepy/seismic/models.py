@@ -92,9 +92,23 @@ class Model(Arr3d):
     if self.marine_or_land == 'marine':
       self.__log.debug('Nothing to do here...')
     else:
-      find_topo_max(vel_air, **kwargs)
+      self.find_topo_max(vel_air, **kwargs)
 
   # -----------------------------------------------------------------------------
+
+  def find_topo_max(self, vel_air, **kwargs):
+    """
+    FIXME: rename -> find... once the whole package
+    is shippable and changes in the notebooks are easy
+    and reliable.
+    """
+    for k in range(self.shape[-1]):
+      if not np.all(self[...,k] == vel_air):
+        self.__log.info('Maximum land elevation has array index (along Z axis): %s' % k)
+        self.k_max_land = k
+        return self.k_max_land
+    raise ValueError('Maximum land elevation could not be found')
+
 
 
 # class EarthModel(Model):
@@ -163,18 +177,6 @@ class StartVp(ModelVp):
 # -------------------------------------------------------------------------------
 
 
-def find_topo_max(vel_air, **kwargs):
-  """
-  FIXME: rename -> find... once the whole package
-  is shippable and changes in the notebooks are easy
-  and reliable.
-  """
-  for k in range(self.shape[-1]):
-    if not np.all(self[...,k] == vel_air):
-      self.__log.info('Maximum land elevation has array index (along Z axis): %s' % k)
-      self.k_max_land = k
-      return self.k_max_land
-  raise ValueError('Maximum land elevation could not be found')
 
 
 # -------------------------------------------------------------------------------

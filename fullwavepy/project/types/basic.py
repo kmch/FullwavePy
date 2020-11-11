@@ -55,7 +55,7 @@ class _ProjSyncer(object):
     self.__log.debug('Assuming inp and out rsync have the same (kw)args...')
     self.inp.rsync(*args, **kwargs)
     self.out.rsync(*args, **kwargs)
-
+  
   # -----------------------------------------------------------------------------
 
 

@@ -197,6 +197,9 @@ class Arr(np.ndarray):
     inds = np.zeros(box.shape)
     for axis, _ in enumerate(box):
       b0, b1 = box[axis]
+      if b0 == b1: # FOR 2D (DOUBLE-CHECK)
+        self.__log.warn('Skipping b0=b1=%s' % b0)
+        continue
       inds[axis][0] = self._metre2index(b0, axis)
       inds[axis][1] = self._metre2index(b1, axis) + 1 # NOTE: FOR np.arange(b1, b2) etc.
       self.__log.debug('axis %s: i1=%s, i2=%s' % (axis, inds[axis][0], inds[axis][1]))    

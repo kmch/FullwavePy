@@ -247,7 +247,7 @@ class SegyPrepFile(ParameterFile):
       az = a
       bz = b
       
-    print(kwargs)
+    self.__log.debug(kwargs)
     segyprep['souz']  = (float(kwargs['souz'] ) + az) * bz
     segyprep['recz']  = (float(kwargs['recz'] ) + az) * bz       
     segyprep['soux0'] = (float(kwargs['soux0']) + a) * b
@@ -504,10 +504,33 @@ class Runfile(ParameterFile):
     etop = kw('etop', 0, kwargs)  
     del_kw('btop', kwargs)
     del_kw('etop', kwargs)
-    b_abs = kw('b_abs', 40, kwargs)
-    e_abs = kw('e_abs', 50, kwargs)
-    del_kw('b_abs', kwargs)
-    del_kw('e_abs', kwargs)
+    # b_abs = kw('b_abs', 40, kwargs)
+    # e_abs = kw('e_abs', 50, kwargs)
+    # del_kw('b_abs', kwargs)
+    # del_kw('e_abs', kwargs)
+    
+    b = {}
+    for k in ['bbot', 'bleft', 'bright', 'bfront', 'bback']:
+      if k in kwargs and ('b_abs' not in kwargs):
+        b[k] = kwargs[k]
+      elif 'b_abs' in kwargs:
+        b[k] = kwargs['b_abs']
+      else:
+        b[k] = 40 # default 
+      
+      del_kw(k, kwargs)
+
+    e = {}
+    for k in ['ebot', 'elef', 'erig', 'efro', 'ebac']:
+      if k in kwargs and ('e_abs' not in kwargs):
+        e[k] = kwargs[k]
+      elif 'e_abs' in kwargs:
+        e[k] = kwargs['e_abs']
+      else:
+        e[k] = 50 # default 
+      
+      del_kw(k, kwargs)
+
     
     # READ THE TEMPLATE
     tmplt = self._get_template(**kwargs)
@@ -517,6 +540,10 @@ class Runfile(ParameterFile):
     # MERGE WITH SKELETON (CREATED BY SEGYPREP) IF PRESENT
     if exists(skelet_fname):
       skeleton = read_dict(skelet_fname)
+      try:
+        self.modify(io=skeleton['io'])
+      except KeyError:
+        pass
       self.modify(io=skeleton['io'], 
                   etime=skeleton['ttime'],
                   NX1=skeleton['nx1'], 
@@ -541,17 +568,17 @@ class Runfile(ParameterFile):
                 equation=self.proj.equation,
                 units=self.proj.units,
                 btop=str(btop),
-                bbot=str(b_abs), 
-                bleft=str(b_abs), 
-                bright=str(b_abs), 
-                bfront=str(b_abs), 
-                bback=str(b_abs), 
+                bbot=str(b['bbot']), 
+                bleft=str(b['bleft']), 
+                bright=str(b['bright']), 
+                bfront=str(b['bfront']), 
+                bback=str(b['bback']), 
                 etop=str(etop), 
-                ebot=str(e_abs), 
-                elef=str(e_abs), 
-                erig=str(e_abs), 
-                efro=str(e_abs), 
-                ebac=str(e_abs),
+                ebot=str(e['ebot']), 
+                elef=str(e['elef']), 
+                erig=str(e['erig']), 
+                efro=str(e['efro']), 
+                ebac=str(e['ebac']),
                 **kwargs)        
     
     self._set_iters(**kwargs)
@@ -645,8 +672,8 @@ class Runfile(ParameterFile):
      etime         : 10
     
     
-    ! G. INVERSION PARAMATERS
-     !iprop        : vp       ! INVERT PROPERTIES
+    ! G. INVERSION PARAMETERS
+     iprop         : vp       ! INVERT PROPERTIES
      func          : twonorm  ! FUNCTIONAL
      agc           : off      ! DEFAULT: off
      amplitude     : no       ! DEFAULT: no
@@ -659,7 +686,7 @@ class Runfile(ParameterFile):
      !OMITTED: huber
     
      
-    ! G. SMOOTHING & WINDOWING
+    ! H. SMOOTHING & WINDOWING
      usewin        : no
      win1          : 1
      win2          : 1
@@ -726,7 +753,7 @@ class Runfile(ParameterFile):
     return tmplt
     
   # -----------------------------------------------------------------------------
-
+  
   def _set_iters(self, **kwargs):
     """
     
@@ -884,13 +911,13 @@ class Runfile(ParameterFile):
     
     for line in content:
       if len(line) > 0 and line[0] == 'nits':
-        nits_total += int(line[2])
+        nits_total += int(float(line[2]))
       
     self.nits_total = nits_total
     return nits_total
 
   # -----------------------------------------------------------------------------
-
+  
 
 # -------------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@ from fullwavepy.project.files.text.submit import PbsFile
 
 
 proj_path_cx1 = '/rds/general/user/kmc3817/home/my_phd/PROJECTS/' # used by proj.inp.rsync
+proj_path_eph = '/rds/general/user/kmc3817/home/my_ephemeral/PROJECTS/' # used by proj.inp.rsync
 
 
 @traced

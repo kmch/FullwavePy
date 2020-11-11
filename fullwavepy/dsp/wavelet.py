@@ -65,7 +65,7 @@ def pad_traces(A, nsamp_pad, **kwargs):
   return An
 
 
-# -------------------------------------------------------------------------------
+# ------------------eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-------------------------------------------------------------
 
 
 @traced

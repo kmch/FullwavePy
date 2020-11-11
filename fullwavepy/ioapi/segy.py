@@ -96,7 +96,7 @@ class SgyFile(ArrayFile):
 
   # -----------------------------------------------------------------------------
   
-  def window(self, win, **kwargs): #, init_args=None, **kwargs):
+  def window(self, win, nfname=None, **kwargs): #, init_args=None, **kwargs):
     """
     win : dict
       Each value may have 1 of 2 formats:
@@ -387,7 +387,7 @@ class SgyHeader(CsvFile):
     """
     It assumes each receiver has the same source data (same shots).
     """
-    return self[self.tracf==1104]
+    return self[self.tracf==1104] # whattt???
         
 
 # -------------------------------------------------------------------------------

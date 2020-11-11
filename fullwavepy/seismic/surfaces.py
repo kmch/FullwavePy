@@ -62,6 +62,7 @@ class Surface(Arr3d):
 class FreeSurface(Surface):
   pass # NOTE it shouldn't be plotted the same way as BathyTopo!
 
+
 # -------------------------------------------------------------------------------
 
 
@@ -79,14 +80,14 @@ class Seabed(Surface):
 class BathyTopo(Surface):
   """
   """
-  def extract_seabed(self, **kwargs):
-    self.sb = Seabed(np.clip(self, self.z_sea, None))
+  def extract_seabed(self, dx, **kwargs):
+    self.sb = Seabed(np.clip(self, self.z_sea, None) / dx)
     self.sb.extent = self.extent
     return self.sb
   
-  def extract_freesurf(self, add, **kwargs):
+  def extract_freesurf(self, add, dx, **kwargs):
     self.__log.debug('self.extent %s' % self.extent)
-    self.fs = FreeSurface(np.clip(self, None, self.z_sea) + add)
+    self.fs = FreeSurface(np.clip(self, None, self.z_sea) / dx + add)
     self.fs.extent = self.extent
     return self.fs
 

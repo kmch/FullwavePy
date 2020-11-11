@@ -242,6 +242,9 @@ class ObsDataFile(DataFile):
   # -----------------------------------------------------------------------------
   
   def filt(self, **kwargs):
+    skip = kw('skip', False, kwargs)
+    if skip:
+      return
     self.__log.info('Filtering {}...'.format(self.fname))
     super().filt(**kwargs)
     self.fil.dupl(self.fname) 

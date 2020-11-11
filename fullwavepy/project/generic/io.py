@@ -197,6 +197,13 @@ class ProjThroughput(FileManager):
       from fullwavepy.ioapi.clusters.cx1 import proj_path_cx1
       host = "kmc3817@login.cx1.hpc.ic.ac.uk"
       remote_path = host + ':' + proj_path_cx1
+    elif host_nick == 'eph':
+      from fullwavepy.ioapi.clusters.cx1 import proj_path_eph
+      host = "kmc3817@login.cx1.hpc.ic.ac.uk"
+      remote_path = host + ':' + proj_path_eph  
+    elif host_nick == 'my_eph':
+      remote_path = '/home/kmc3817/rds_home/my_ephemeral/PROJECTS/'
+ 
     else:
       raise NotImplementedError('host nick: %s' % host_nick)
     

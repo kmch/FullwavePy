@@ -54,6 +54,9 @@ def time_freq(arg, kwargs_t={}, kwargs_f={}, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+# alias
+def plot_box(*args, **kwargs):
+  plot_square(*args, **kwargs)
 
 @traced
 @logged
@@ -94,7 +97,8 @@ def plot_square(x1, x2, y1, y2, **kwargs):
   plt.plot([x1, x2], [y1, y1], ls, c=c, lw=lw, alpha=alpha, label=label)
   plt.plot([x1, x2], [y2, y2], ls, c=c, lw=lw, alpha=alpha)
   plt.plot([x1, x1], [y1, y2], ls, c=c, lw=lw, alpha=alpha)
-  plt.plot([x2, x2], [y1, y2], ls, c=c, lw=lw, alpha=alpha)
+  plt.plot([x2, x2], [y1, y2], ls, c=c, lw=lw, alpha=alpha)    
+
 
   
 # ------------------------------------------------------------------------------
