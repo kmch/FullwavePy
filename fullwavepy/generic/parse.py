@@ -127,6 +127,8 @@ def path_extract(path, **kwargs):
   """
   from ntpath import split
   head, tail = split(path)  
+  if head == '':
+    head = './'
   return head
 
 

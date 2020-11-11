@@ -12,7 +12,8 @@ from autologging import logged, traced
 
 from fullwavepy.generic.system import bash, exists
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, strip, exten, path_leave
+from fullwavepy.generic.parse import kw, strip, exten, \
+  path_leave, path_extract
 from fullwavepy.ioapi.generic import ArrayFile, CsvFile
 
 json_header_suffix = '_HEAD.json'
@@ -56,97 +57,46 @@ class SgyFile(ArrayFile):
   plus Pandas reads .csv more efficiently (only selected columns).
   
   """
+  @classmethod
+  def new(cls, name, path, **kwargs):
+    return cls(name, path, **kwargs)
   
-  # def create(self, array, **kwargs):
-  #   save_vtr(array , strip(self.fname) + '.vtr')
+  def extract(self, suffix, *args, path=None, **kwargs):
+    if path is None:
+      fname = self.fname
+    else:
+      fname = path + self.name
+    nfname = '%s_%s.%s' %\
+      (strip(fname), suffix, exten(self.fname))
+    kwargs['nfname'] = nfname
+    d = self.read(*args, **kwargs)
+    return self.new(path_leave(nfname), path_extract(nfname))
 
-  # -----------------------------------------------------------------------------  
-  
-  def surange(self, **kwargs):
-    if not exists(self.fname):
-      raise FileNotFoundError(self.fname)    
+  def filt(self, pad, overwrite=False, **kwargs):
+    """
+    CAUTION
+    It overwrites the content of the file.
     
-    o, e = bash('segyread tape=' + self.fname + ' | ' +
-                'surange', **kwargs)
-    print(e + '\n' + o) # NOT log.info IN ORDER TO BE ALWAYS PRINTED
-  
-  # -----------------------------------------------------------------------------  
-  
-  def suximage(self, **kwargs):
-    if not exists(self.fname):
-      raise FileNotFoundError(self.fname)    
-    #FIXME
-    self.__log.warning('suximage does not work here for some reason but it used to')
-    o, e = bash('segyread tape=' + self.fname + ' | ' +
-                'suximage', **kwargs)
-    self.__log.info(e + '\n' + o)
-  
-  # -----------------------------------------------------------------------------
-  
-  def read_header(self, overwrite=True, **kwargs):
     """
-    Add reading csv, useful for heavy sgy files.
-    """
-    if (not hasattr(self, 'head')) or overwrite:
-      self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
-    return self.head
-  
-  def rh(self, *args, **kwargs):
-    return self.read_header(*args, **kwargs)
+    from fullwavepy.ioapi.su import sushw
+    from fullwavepy.dsp.su import su_filter_full
+    
+    self.__log.info('Using ' + str(pad) + ' samples of padding')
+    self.__log.info('Setting dt in the header of: ' + self.fname)
+    
+    if hasattr(self, 'proj'):
+      self.__log.debug('Taking dt = self.proj.dt')
+      dt = self.proj.dt
+    else:
+      dt = kwargs['dt']
 
-  # -----------------------------------------------------------------------------
-  
-  def window(self, win, nfname=None, **kwargs): #, init_args=None, **kwargs):
-    """
-    win : dict
-      Each value may have 1 of 2 formats:
-      (1) key: {'min': 10, 'max': 40} # subdict!
-      OR
-      (2) key: [value1,value2,...] # list also for singles [value1]
-       
-    """
-    from fullwavepy.ioapi.su import suwind
+    sushw(self.fname, 'dt', (dt*1e6), **kwargs)
+    # THIS PREVENTS OVERWRITING AND OUTPUTS INTERMEDIATE STEPS TOO
+    fname_out = su_filter_full(self.fname, pad, **kwargs)
+    self.__log.info('Filtered data output to ' + fname_out)
+    self.__log.warning('Overwriting ' + self.fname)
+    o, e = bash('mv {} {}'.format(fname_out, self.fname))
     
-    self.win = win
-    
-    fname = self.fname
-    nfname = strip(fname) + '_windowed.' + exten(fname)
-    nname = path_leave(nfname)
-    
-    suwind(fname, nfname, win, **kwargs)
-    
-    obj = ArrayFile(nname, self.path)
-    self.array = obj.read(**kwargs)
-    
-    return self.array
-    
-    #if init_args is None:
-    #  self.win = self.__class__(path_leave(nfname), self.path)
-    #else:
-    #  self.win = self.__class__(*init_args, **kwargs)
-    #  self.win.fname = nfname
-    #  self.win.name = path_leave(nfname)
-    
-    #return self.win.read(**kwargs)
-    
-  # -----------------------------------------------------------------------------
-  
-  def split(self, key, **kwargs):
-    from fullwavepy.ioapi.su import suwind
-    from fullwavepy.generic.parse import extend_fname
-    
-    setattr(self, key, {})
-    selfkey = getattr(self, key)
-    
-    values = self._gethw(key, unique_values=True, **kwargs)
-    
-    for value in values:
-      nfname = extend_fname(self.fname, [[key, value]])
-      suwind(self.fname, nfname, {key: [value]}, **kwargs)
-      selfkey[value] = self.__class__(path_leave(nfname), self.path)
-
-  # -----------------------------------------------------------------------------  
-  
   def _gethw(self, key, unique_values=False, **kwargs):
     """
     Get header-word values.
@@ -164,9 +114,75 @@ class SgyFile(ArrayFile):
     if unique_values:
       values = sorted(list(set(values)))
     return values
+
+  def _get_sr_coords(self, datafile=None, **kwargs):
+    """
+    Get HORIZONTAL (x,y) coordinates of sources and 
+    receivers.
     
-  # ----------------------------------------------------------------------------- 
-  
+    datafile : DataFile 
+      Different sgy file to 
+      parse a header from.
+    
+    """
+    self.__log.debug('Getting sx,sy,gx,gy from header')
+    if datafile is None:
+      datafile = self
+      
+    sx = datafile._gethw('sx', **kwargs)
+    sy = datafile._gethw('sy', **kwargs)
+    gx = datafile._gethw('gx', **kwargs)
+    gy = datafile._gethw('gy', **kwargs)
+    
+    #plt.plot(sx, sy, '.')
+    #plt.plot(gx, gy, '.')
+    s = list(zip(sx, sy))
+    r = list(zip(gx, gy))
+    self.s = s
+    self.r = r
+    
+    return s, r
+    
+  def mute(self, fbreaks, ntaper=100, twin=1, **kwargs):
+    """
+    """
+    from fullwavepy.dsp.su import su_mute
+    from fullwavepy.ioapi.generic import save_txt
+    
+    fbreaks = np.array(fbreaks)
+    picks = fbreaks * self.proj.dt
+    bpicks = picks + twin
+    nmute = len(picks)
+    xmute = range(1, nmute + 1)
+    tmute = picks
+    tmute2 = bpicks
+    
+    # THIS LOOP ENSURES WE MUTE THE WHOLE TRACE 
+    # IF THE FIRST ARRIVAL IS LATER THEN TOTALTIME (AS INDICATE BY pick==0)
+    # WITHOUT THIS, IT WAS BUGGY!
+    for i, pick in enumerate(picks):
+      if pick == 0:
+        bpicks[i] = 0    
+    
+    xmute = [str(i) for i in xmute]
+    tmute = [str(i) for i in tmute]
+    tmute2 = [str(i) for i in tmute2]
+    
+    for data, prefix in zip([xmute, tmute, tmute2], ['xmute', 'tmute', 'tmute2']):
+      file_txt = prefix + '.txt'
+      file_bin = prefix + '.bin'
+      save_txt(file_txt, data)
+      o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
+    
+    fname_out = strip(self.fname) + '_tmp' + exten(self.fname)
+    
+    cmd =  'segyread tape={} | '.format(self.fname)
+    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin}'.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin', tmute2_bin='tmute2.bin')
+    cmd += ' | segyhdrs | segywrite tape={}'.format(fname_out)
+    
+    o, e = bash(cmd)
+    o, e = bash('mv ' + fname_out + ' ' + self.fname)
+    
   def read(self, overwrite=True, **kwargs):
     """
     To read and plot! windowed data in one line.
@@ -188,8 +204,17 @@ class SgyFile(ArrayFile):
     self.__log.debug('self.array.extent %s' % str(self.array.extent))
     return self.array
     
-  # -----------------------------------------------------------------------------  
+  def read_header(self, overwrite=True, **kwargs):
+    """
+    Add reading csv, useful for heavy sgy files.
+    """
+    if (not hasattr(self, 'head')) or overwrite:
+      self.head = header2csv(self.fname, keys='all', suffix='_HEAD', **kwargs)
+    return self.head
   
+  def rh(self, *args, **kwargs):
+    return self.read_header(*args, **kwargs)
+
   def resize(self, box, **kwargs): #FIXME?
     """
     Cut the model to fit the proj.box.
@@ -271,108 +296,66 @@ class SgyFile(ArrayFile):
     self.__log.debug(cmd)
     o, e = bash(cmd)
     o, e = bash('mv ' + tmp_fname + ' ' + self.fname) 
+
+  def split(self, key, **kwargs):
+    from fullwavepy.ioapi.su import suwind
+    from fullwavepy.generic.parse import extend_fname
+    
+    setattr(self, key, {})
+    selfkey = getattr(self, key)
+    
+    values = self._gethw(key, unique_values=True, **kwargs)
+    
+    for value in values:
+      nfname = extend_fname(self.fname, [[key, value]])
+      suwind(self.fname, nfname, {key: [value]}, **kwargs)
+      selfkey[value] = self.__class__(path_leave(nfname), self.path)
+
+  def surange(self, **kwargs):
+    if not exists(self.fname):
+      raise FileNotFoundError(self.fname)    
+    
+    o, e = bash('segyread tape=' + self.fname + ' | ' +
+                'surange', **kwargs)
+    print(e + '\n' + o) # NOT log.info IN ORDER TO BE ALWAYS PRINTED
   
-  # -----------------------------------------------------------------------------
+  def suximage(self, **kwargs):
+    if not exists(self.fname):
+      raise FileNotFoundError(self.fname)    
+    #FIXME
+    self.__log.warning('suximage does not work here for some reason but it used to')
+    o, e = bash('segyread tape=' + self.fname + ' | ' +
+                'suximage', **kwargs)
+    self.__log.info(e + '\n' + o)
 
-  def filt(self, pad, overwrite=False, **kwargs):
+  def window(self, win, nfname=None, **kwargs):
     """
-    CAUTION
-    It overwrites the content of the file.
-    
+    win : dict
+      Each value may have 1 of 2 formats:
+      (1) key: {'min': 10, 'max': 40} # subdict!
+      OR
+      (2) key: [value1,value2,...] # list also for singles [value1]
+       
     """
-    from fullwavepy.ioapi.su import sushw
-    from fullwavepy.dsp.su import su_filter_full
+    from fullwavepy.ioapi.su import suwind
     
-    self.__log.info('Using ' + str(pad) + ' samples of padding')
-    self.__log.info('Setting dt in the header of: ' + self.fname)
+    self.win = win
     
-    if hasattr(self, 'proj'):
-      self.__log.debug('Taking dt = self.proj.dt')
-      dt = self.proj.dt
+    fname = self.fname
+    if nfname is None:
+      nfname = strip(fname) + '_windowed.' + exten(fname)
+      path = self.path
     else:
-      dt = kwargs['dt']
-
-    sushw(self.fname, 'dt', (dt*1e6), **kwargs)
-    # THIS PREVENTS OVERWRITING AND OUTPUTS INTERMEDIATE STEPS TOO
-    fname_out = su_filter_full(self.fname, pad, **kwargs)
-    self.__log.info('Filtered data output to ' + fname_out)
-    self.__log.warning('Overwriting ' + self.fname)
-    o, e = bash('mv {} {}'.format(fname_out, self.fname))
+      nfname = nfname 
+      path = path_extract(nfname)
     
-  # -----------------------------------------------------------------------------  
- 
-  def mute(self, fbreaks, ntaper=100, twin=1, **kwargs):
-    """
-    """
-    from fullwavepy.dsp.su import su_mute
-    from fullwavepy.ioapi.generic import save_txt
+    suwind(fname, nfname, win, **kwargs)
     
-    fbreaks = np.array(fbreaks)
-    picks = fbreaks * self.proj.dt
-    bpicks = picks + twin
-    nmute = len(picks)
-    xmute = range(1, nmute + 1)
-    tmute = picks
-    tmute2 = bpicks
+    obj = ArrayFile(path_leave(nfname), path)
+    self.array = obj.read(**kwargs)
     
-    # THIS LOOP ENSURES WE MUTE THE WHOLE TRACE 
-    # IF THE FIRST ARRIVAL IS LATER THEN TOTALTIME (AS INDICATE BY pick==0)
-    # WITHOUT THIS, IT WAS BUGGY!
-    for i, pick in enumerate(picks):
-      if pick == 0:
-        bpicks[i] = 0    
+    return self.array
     
-    xmute = [str(i) for i in xmute]
-    tmute = [str(i) for i in tmute]
-    tmute2 = [str(i) for i in tmute2]
-    
-    for data, prefix in zip([xmute, tmute, tmute2], ['xmute', 'tmute', 'tmute2']):
-      file_txt = prefix + '.txt'
-      file_bin = prefix + '.bin'
-      save_txt(file_txt, data)
-      o, e = bash('a2b < {} n1=1 > {}'.format(file_txt, file_bin))
-    
-    fname_out = strip(self.fname) + '_tmp' + exten(self.fname)
-    
-    cmd =  'segyread tape={} | '.format(self.fname)
-    cmd += 'sumute key=tracr nmute={nmute} mode=0 ntaper={ntaper} xfile={xmute_bin} tfile={tmute_bin} | sumute key=tracr nmute={nmute} mode=1 ntaper={ntaper} xfile={xmute_bin} tfile={tmute2_bin}'.format(nmute=nmute, ntaper=ntaper, xmute_bin='xmute.bin', tmute_bin='tmute.bin', tmute2_bin='tmute2.bin')
-    cmd += ' | segyhdrs | segywrite tape={}'.format(fname_out)
-    
-    o, e = bash(cmd)
-    o, e = bash('mv ' + fname_out + ' ' + self.fname)
-    
-  # -----------------------------------------------------------------------------  
-
-  def _get_sr_coords(self, datafile=None, **kwargs):
-    """
-    Get HORIZONTAL (x,y) coordinates of sources and 
-    receivers.
-    
-    datafile : DataFile 
-      Different sgy file to 
-      parse a header from.
-    
-    """
-    self.__log.debug('Getting sx,sy,gx,gy from header')
-    if datafile is None:
-      datafile = self
-      
-    sx = datafile._gethw('sx', **kwargs)
-    sy = datafile._gethw('sy', **kwargs)
-    gx = datafile._gethw('gx', **kwargs)
-    gy = datafile._gethw('gy', **kwargs)
-    
-    #plt.plot(sx, sy, '.')
-    #plt.plot(gx, gy, '.')
-    s = list(zip(sx, sy))
-    r = list(zip(gx, gy))
-    self.s = s
-    self.r = r
-    
-    return s, r
-    
-  # -----------------------------------------------------------------------------
-
 
 # -------------------------------------------------------------------------------
 
