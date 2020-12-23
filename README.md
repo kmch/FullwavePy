@@ -13,14 +13,16 @@ pandas, ipywidgets, ipyvolume, ...
 
 
 ## Basic usage
+```Python
 p = ProjSyn('test', dt=0.001, ns=1000, dx=50, dims=(101,1,41))
 dir(p) # or help(p)
 dir(p.inp) # ...
 dir(p.out)
+```
 
 ## Getting help
-Open in a browser:
+Open in a browser the following html files.
 ### Slides
 nb_slides.html
 ### Docs
-fullwavepy/docs/built/html/index.html
+docs/built/html/index.html
