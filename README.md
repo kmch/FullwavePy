@@ -27,6 +27,8 @@ dir(p.out)
 ## Getting help
 Open in a browser the following html files.
 ### Slides
-nb_slides.html
+`nb_slides.html` this may be useful to get the idea of how to use the package, even though
+some code blocks are in fact pseudo code.
+
 ### Docs
-docs/built/html/index.html
+`docs/built/html/index.html`
