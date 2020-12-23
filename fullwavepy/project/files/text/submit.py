@@ -286,9 +286,10 @@ class BashFile(JobFile, TextProjFile):
       
       
       f.write('rm ' + self.proj.name + '-*fw*vtr\n')
-      f.write('rm ' + self.proj.name + '-Observed-Time.tt?\n')
-      f.write('rm ' + self.proj.name + '-Synthetic.*\n')
-      f.write('rm ' + self.proj.name + '-Observed.*\n')  
+      if self.proj.problem == 'synthetic': 
+        f.write('rm ' + self.proj.name + '-Observed-Time.tt?\n')
+        f.write('rm ' + self.proj.name + '-Synthetic.*\n')
+        f.write('rm ' + self.proj.name + '-Observed.*\n')  
       
       #f.write('make -C ${path_make} -j fullwave3d\n')
       cmd = 'mpiexec -n {ompthreads} $path_fullwave {pname} 1> {out} 2> {err}'.format(

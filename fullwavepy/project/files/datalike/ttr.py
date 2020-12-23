@@ -367,7 +367,7 @@ class DumpCompareFile(DataFileTtr):
     
   # -----------------------------------------------------------------------------   
   
-  def plot_phase(self, freq, **kwargs):
+  def plot_phase(self, freq, arrow=None, box=None,**kwargs):
     """
     subtract : DataFile object
     
@@ -393,6 +393,16 @@ class DumpCompareFile(DataFileTtr):
                  c=self.head['phase %s (%s Hz)' % (ph_type, freq)])
       ax.scatter(self.head.gx[0], self.head.gy[0], s=20**2, 
                   marker='*', c='w', edgecolors='k')
+      if arrow is not None:
+        assert len(arrow) == 4
+        arrow_width = kwargs.get('arrow_width', 0.1)
+        arrow_color = kwargs.get('arrow_color', 'k')
+        ax.arrow(*arrow, shape='full', width=arrow_width, \
+          color=arrow_color)
+
+      if box is not None:
+        from fullwavepy.plot.misc import plot_box
+        raise NotImplementedError()
       ax.set_xlabel('x, metres')
       ax.set_ylabel('y, metres')
       ax.set_aspect('equal')

@@ -203,7 +203,7 @@ class ProjGeometry(object):
           (proj.nx3 is not None)):
       self.__log.debug('Setting proj.box and proj.dims based on' + 
                        ' the nx1, nx2, nx3 provided.')
-      proj.dims = [int(i) for i in [proj.nx1, proj.nx2, proj.nx3]]
+      proj.dims = [int(float(i)) for i in [proj.nx1, proj.nx2, proj.nx3]]
       proj.box = self.dims2box(proj.dims, proj.dx)
     
     else:

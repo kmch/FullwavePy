@@ -158,7 +158,7 @@ class SegyPrepFile(ParameterFile):
     from fullwavepy.ioapi.generic import save_dict
     
     cat = kw('cat', True, kwargs)
-    
+    self.kwargs = kwargs
     proj = self.proj
 
     nx1, nx2, nx3  = proj.dims 
@@ -212,7 +212,7 @@ class SegyPrepFile(ParameterFile):
       raise ValueError('Unknown geometry: ' + str(geometry))
       
     save_dict(self.fname, segyprep)  
-    
+    self.di = segyprep
     # WARN ABOUT ANOMALOUS BEHAVIOUR
     if segyprep['text'] != 'yes':
       self.__log.warning("'text'=" + segyprep['text'] + ". No .hed files " +
@@ -928,9 +928,6 @@ class Skeleton(Runfile):
   """
   
   """
-  
-  # -----------------------------------------------------------------------------     
-  
   def __init__(self, proj, path, **kwargs):
     suffix = 'Skeleton'
     super().__init__(proj, path, suffix=suffix, **kwargs)

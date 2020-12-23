@@ -313,6 +313,9 @@ def colors(n, cmap='rainbow', **kwargs): # move to generic
   """
   from matplotlib.cm import get_cmap
   
+  if isinstance(n, list):
+    n = len(n)
+
   cmap = get_cmap(cmap)
   cols = iter(cmap(np.linspace(0, 1, n)))
   

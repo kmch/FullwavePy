@@ -105,7 +105,7 @@ def check_stability(dx, dt, v_max, kernel, **kwargs):
                      '1. Decrease v_max of the model below: ' + str(C_max * dx / dt) + ' m\n' +
                      '2. Increase grid cell above: ' + str(dt * v_max / C_max) + ' m\n' +
                      '3. Decrease time step below: ' + str(C_max * dx / v_max) + ' s\n')
-
+  return C
 
 # -------------------------------------------------------------------------------
 
@@ -166,8 +166,10 @@ def check_accuracy(dx, v_min, f_max, kernel, **kwargs):
                      '3. Increase v_min of the model above: ' + 
                      "{0:.1f}".format(min_nodes_per_wavelen * f_max * dx) + ' m/s\n')   
    
-  check_stability._log.info(text)
+  check_accuracy._log.info(text)
+  return nodes_per_shortest_wavelength
   
+
 
 # -------------------------------------------------------------------------------
 

@@ -25,7 +25,11 @@ from fullwavepy.project.generic.io import _InpPreparer
 @traced
 @logged
 class _FwiRunner(object):
-  def run(self, no=0, runner='bash', **kwargs):
+  def run(self, *args, **kwargs):
+    proj = self
+    self.fwicode.run(proj, *args, **kwargs)
+  
+  def run_old(self, no=0, runner='bash', **kwargs):
     self.__log.info('Running a job no. %s' % no)
     self.out.rm(ls=False)
     if runner == 'bash':
@@ -76,12 +80,25 @@ class _ProjLister(object):
   # -----------------------------------------------------------------------------
 
 
+@traced
+@logged
+class _ProjMeta(object):
+  def lids(self, overwrite=False, lid_hw='ep'):
+    if self.problem == 'synthetic':
+      f = self.i.ose
+    elif self.problem == 'tomography':
+      f = self.i.obs
+    else:
+      raise NotImplementedError
+    head = f.read_header(overwrite=overwrite)
+    return list(sorted(head[lid_hw].unique()))
+
 # -------------------------------------------------------------------------------
 
 
 @traced
 @logged
-class Proj(_ProjSyncer, _ProjLister, _FwiRunner):
+class Proj(_ProjMeta, _ProjSyncer, _ProjLister, _FwiRunner):
   """
   Abstract parent class of all full-waveform projects.
   It initializes all the project-related objects.
@@ -408,10 +425,10 @@ class ProjSyn(_InpPreparer, Proj):
     """
     from matplotlib.gridspec import GridSpec
     
-
-    
-    gs = GridSpec(3,2, width_ratios=[3,1], height_ratios=[1,1,1])
-    figsize = (kw('figsize_x', 15, kwargs), kw('figsize_y', 10, kwargs))
+    gs = GridSpec(3,2, \
+      width_ratios=[3,1], height_ratios=[1,1,1])
+    figsize = (kw('figsize_x', 15, kwargs), \
+      kw('figsize_y', 10, kwargs))
     fig = plt.figure(figsize=figsize)    
     
     # SIGNATURES OF ALL SOURCES

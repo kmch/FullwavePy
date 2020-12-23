@@ -11,7 +11,7 @@ from inspect import currentframe
 from unittest import TestCase, skip
 
 from fullwavepy.config.logging import log_lvl
-from ..basic import *
+from fullwavepy.project.types.basic import *
 
 # 40 - suppress warnings and below
 log_lvl(40)

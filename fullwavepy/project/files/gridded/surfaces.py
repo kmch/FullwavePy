@@ -212,13 +212,27 @@ class FsFile(SurfZFile, GridProjFile):
   def __init__(self, proj, path, **kwargs):
     suffix = 'FreeSurf'
     super().__init__(suffix, proj, path, **kwargs)
-  
+
+  def immerse(self, ibmcode='default', **kwargs):
+    kwargs['truncate'] = kwargs.get('truncate', 1e4)
+    if ibmcode == 'default':
+      ibmcode = self.proj.ibmcode
+    else:
+      ibmcode = ibmcode
+
+    ibmcode.run(\
+      self.proj.name, \
+      self.proj.i.path, **kwargs)
+    
   def read(self, **kwargs):
     self.array = SurfZFile.read(self, **kwargs)
     self.array.extent = GridProjFile._extent(self, **kwargs)[ :-1] # SKIP Z-EXTENT
     return self.array
   
-  def run(self, **kwargs):
+  def run(self, *args, **kwargs):
+    self.immerse(*args, **kwargs)
+
+  def run_old(self, **kwargs):
     """
     set log_lvl(n<=10) to see the output messages.
     """
