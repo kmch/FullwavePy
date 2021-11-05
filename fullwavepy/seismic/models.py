@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from autologging import logged#, traced
 import numpy as np
 
-<<<<<<< HEAD
 from arrau.a3d import Arr3d
 # -------------------------------------------------------------------------------
 # to get rid of
@@ -39,12 +38,6 @@ class Vp(Param):
 # -------------------------------------------------------------------------------
 # Old-ish
 # -------------------------------------------------------------------------------
-=======
-from fullwavepy.generic.decor import timer
-from fullwavepy.generic.parse import kw, del_kw
-from fullwavepy.ndat.arrays import A3d #, Arr3d
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 @logged
 class Model(A3d):
   """
