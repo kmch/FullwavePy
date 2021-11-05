@@ -1,0 +1,32 @@
+﻿site number,Location,type,long,lat,elev,seismo,receiver,disk,GPS,comments,CRP Channel#
+801,SC Thera,bed rock,25.45151,36.36696,361,1189,3073,1067,Internal,,1
+802,SC Thera,dug hard,25.43982,36.37341,187,1349,3093,1087,Internal,,4
+803,C Thera,bed rock,25.43474,36.39148,64,2829,3123,1125,Internal,Orientation 2 deg to west,7
+804,S Thera,bed rock,25.44439,36.34175,79,1329,3078,1072,External,Elevation may be off,10
+805,SC Thera,dug soft,25.42263,36.36892,154,1877,3109,1100,Internal,Orientation 8 deg to west,13
+806,SW Thera,inside church,25.41954,36.35618,90,1817,3100,1090,External,,16
+808,N Thera,dug hard,25.38665,36.47567,31,1875,3107,1098,Internal,Orientation 10 deg to west,19
+809,N Thera,cement on rock,25.42113,36.46096,128,1886,3110,1101,Internal,,22
+810,N Thera,on concrete,25.45073,36.43181,46,1348,3092,1086,Internal,,25
+811,N Thera,bed rock?,25.41956,36.43243,247,1829,3103,1093,Internal,,28
+812,C Thera,on concrete,25.45343,36.41703,84,1356A,3096,1089,External,Orientation 10 deg to east,31
+813,SC Thera,bed rock,25.47873,36.36904,71,1876,3127,1045,Internal,Orientation 3 deg to east,34
+814,SC Thera,bed rock,25.46215,36.37524,217,1190,3074,1068,Internal,,37
+815,C Thera,dug hard,25.46329,36.39579,83,1339A,3086,1081,Internal,,40
+816,C Thera,dug,25.44287,36.40244,181,1187,3071,1066,Internal,Orientation 3 deg to west,43
+817,SW Thera,dug soft,25.36719,36.36445,77,1180,3070,1065,Internal,,46
+818,SW Thera,hard dig,25.38217,36.35504,136,1342,3088,1083,Internal,,49
+819,S Thera,bed rock,25.47114,36.36272,52,1346A,3090,1085,Internal,Due south.  GPS co-ords may be > 10 m out.,52
+820,S Thera,bed rock,25.46005,36.3584,36,1192,3075,1069,Internal,,55
+821,S Thera,bed rock,25.43896,36.34609,164,1340,3087,1115,Internal,,58
+822,Nea Kameni / STAX,in church,25.40451,36.39937,19,1332A,3082,1076,Internal,,61
+823,N Thera/ CMB0,on plinth,25.40562,36.47098,76,1827,3102,1091,Internal,,64
+824,N Thera/ THR2,inside,25.43527,36.44699,77,1331,3080,1074,External,Orientation 40 deg to east,67
+825,Nea Kameni / THR3,on plinth,25.40031,36.408,62,1331A,3081,1075,External,Orientation 40 deg to west,70
+826,Thirasia/ THR5,on plinth,25.34784,36.41715,196,1830,3104,1094,External,,73
+827,SW Thera/ THR6,on plinth,25.39725,36.3556,107,1831,3105,1095,Internal,,76
+828,C Thera/ THR8,bed rock,25.47905,36.40753,45,1872,3129,1003,Internal,Due south,79
+829,Palea Kameni,bed rock,25.38023,36.39895,8,1330,3079,1073,Internal,,82
+830,Thirasia,bed rock,25.34703,36.43818,164,1351,3094,1088,Internal,Orientation 40 deg to west,85
+831,Thirasia,bed rock,25.33752,36.44431,38,1346,3106,1097,Internal,Orientation 40 deg to west,88
+832,Thera,dug soft,25.37244,36.46922,49,1329,3077,1071,Internal,,91

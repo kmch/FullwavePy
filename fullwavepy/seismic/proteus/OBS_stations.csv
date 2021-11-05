@@ -1,0 +1,92 @@
+﻿Station,Pool,Data logger,Bad VZ,Bad HY,6Hz-Z,Preferred,HZ RMS,HZ noise,VZ/HY signal,Comment (CP 2017),Comment (EH 2016),Eval
+101,SIO,SP,,,XXX,,7.96,15.28,1.92,"HYD prearrival noise ~x2 compared to Z. A LOT of Z traces have 6Hz noise, often larger than signal.",,OK
+102,SIO,SP,,,XXX,,6.14,10.34,1.68,Similar noise. Z with a lot of 6Hz noise. HYD a lot of pre-arrival noise >18Hz (do not use),,OK
+103,WHOI,,,,,,0.85,1.98,2.32,HYD prearrival noise ~x2 compared to Z.,attenuation from -5 km to west,OK
+104,SIO,SP,,,X,,7.24,12.26,1.69,"Low f noise in Z (sometimes at ~6Hz, not always). Z slightly better pre-arrival noise than HYD. High f noise in HYD (>18Hz)",,OK
+105,WHOI,,,,,,0.70,1.72,2.44,HYD prearrival noise ~x2 compared to Z. Prefer Z,,OK
+106,SIO,SP,,,XX,,8.59,14.61,1.70,"Low f noise in Z (stongly at ~6Hz, not always). Z slightly better pre-arrival noise than HYD. High f noise in HYD (>20Hz)",,OK
+107,SIO,SP,,,,,,,,Bad data,BAD - data cut issue?,Not picked
+108,WHOI,,,,,,0.65,0.97,1.50,"HYD/Z same quality, same noise",,OK
+109,SIO,13,X,,,HYD,392.49,70.71,0.18,"Z has anomaloysly low-count level (x20 times), and much more pre-arrival noise for F>~8Hz, but waveforms can be recognized. Prefer HYD.",,OK
+110,WHOI,,,,,,0.81,1.10,1.36,Z slightly better pre-arrival noise than HYD,attenuation from -5 km to west,OK
+112,SIO,SP,,,XXX,HYD,7.57,11.39,1.50,A lot of 6Hz noise on Z. HYD has some more noise >20hz. Use HYD,attenuation from -5 km to west,OK
+113,SIO,SP,,,XXX,HYD,7.70,12.18,1.58,A lot of 6Hz noise on Z. HYD has some more noise >22hz. Use HYD,,OK
+114,SIO,SP,,,XXX,HYD,7.28,4.74,0.65,A lot of 6Hz noise on Z. HYD has some more noise >22hz. Use HYD,,OK
+115,WHOI,,,,X?,,0.98,1.48,1.51,"Low f noise in Z (sometimes at ~6Hz, not always). Z slightly better pre-arrival noise than HYD",,OK
+116,SIO,SP,,,,,,,,,NoDATA,No Data
+117,WHOI,,,,,Z,0.85,2.66,3.13,HYD prearrival noise ~x3 compared to Z. Prefer Z,,OK
+118,SIO,SP,X,,,HYD,1780.76,116.11,0.07,Z useless (bad). Use HYD,,OK
+119,SIO,13,X,,,HYD,4136.01,101.62,0.02,Z useless (bad). Use HYD,,OK
+120,SIO,13,,,X,,9.30,26.58,2.86,"Low f noise in Z (stongly at ~6Hz, not always). Z slightly better pre-arrival noise than HYD. High f noise in HYD (>25Hz)",,OK
+121,WHOI,,?,,,HYD,1.11,0.52,0.47,"Anomalously high frequency noise in Z, very clear in pre-arrival windows. Use HYD which looks OK!",,OK
+122,SIO,13,,,,,6.53,27.67,4.24,HYD has noise <5Hz and >22Hz. Z has occasional 5-10Hz noise. Prefer Z.,,OK
+123,WHOI,,,,,HYD,0.78,1.10,1.41,"Z slightly better pre-arrival noise than HYD. Occasional strong low-frequency (~3-4Hz) noise on Z, often strong for many shots!. Check both before choosing (Prefer HYD).",,OK
+124,SIO,SP,?,,,HYD,48.00,70.12,1.46,"Z has anomaloysly low-count level (x5-7 times), however looks good! Overall similar noize levels for HYD and Z.",,OK
+125,SIO,13,,,X,,7.18,22.87,3.18,Some 6Hz noise on Z. HYD has more noise >24hz.,,OK
+126,SIO,,,,,,,,,,BAD - Data cut?,Not picked
+127,WHOI,,,,,Z,0.69,2.01,2.91,HYD prearrival noise ~x3 compared to Z. Prefer Z,attenuation across the caldera. Deep reflection at 38 km,OK
+128,SIO,SP,,,XX,,8.10,19.68,2.43,Low ~6Hz noise in Z (several records). Z better pre-arrival noise than HYD (x2),,OK
+129,SIO,,,,,,,,,,NoDATA,No Data
+130,SIO,SP,,,,Z,8.42,26.12,3.10,HYD prearrival noise ~x3 compared to Z. Prefer Z,attentuation maybe across the caldera?,OK
+131,SIO,SP,,,XX,,7.68,31.15,4.06,Low ~6Hz noise in Z (several records). HYD prearrival noise ~x4 compared to Z. Prefer Z if no 6Hz noise is present,,OK
+132,SIO,SP,,,,,13.23,27.62,2.09,HYD prearrival noise ~x2 compared to Z.,,OK
+133,SIO,SP,,,,Z,8.19,22.51,2.75,HYD prearrival noise ~x3 compared to Z. Prefer Z,,OK
+134,SIO,SP,,,,,7.37,18.36,2.49,HYD prearrival noise ~x2 compared to Z.,deep reflection at 38 km,OK
+135,SIO,13,,,,,8.50,12.52,1.47,Similar noise. Z some low-frequency noise (6-8Hz). HYD with more noise at low frequencies (<5Hz),,OK
+136,SIO,13,,,X,,4.71,10.33,2.19,HYD prearrival noise ~x2 compared to Z. Z with some 6Hz and other low-frequency noise. HYD a lot of pre-arrival noise >~18Hz (do not use if possible),,OK
+137,SIO,13,X,,,HYD,1283.74,61.12,0.05,Z useless (bad). Use HYD,attenuation across the caldera?,OK
+138,WHOI,,,,,,0.84,1.89,2.26,HYD prearrival noise ~x2 compared to Z.,attenuation across the caldera?,OK
+139,WHOI,,?,,,HYD,0.80,0.25,0.31,"Z showing a lot of pre-arrival noise, local (1-2s high-frequency bursts) and more regional, resulting in large spectral amplitudes above 15Hz, not to be trusted for f > 20Hz. Use HYD, looks OK.",channel 4 good - seismometer is v noisy.,OK
+140,WHOI,,,,,,0.93,1.18,1.28,"Same noise, HYD slightly larger noise >20Hz, Z occasional pre-arrival spikes ",Good data in center of N caldera.,OK
+141,SIO,SP,,,,HYD,13.87,10.74,0.77,"Z more noise, mainly at low f (not always 6Hz). Prefer HYD.",useful to combine features from channels 1 & 4.,OK
+142,SIO,SP,,,X,,9.01,17.16,1.91,Similar noize (HYD more). HYD has a lot of pre-arival noise >~25Hz (do not use). Z occasional noise at low f (not always 6Hz). Check both!,Less attenuation. Deep reflected phase to east at 40 km?,OK
+143,SIO,13,Not picked,X,,,,,,,use channel 1 not channel 4.  attenuation across the caldera?,Not picked
+144,SIO,SP,X,,,HYD,200.14,132.17,0.66,"Z has anomaloysly low-count level (x5-25 times) and is very noisy. Prefer HYD, though it is also noisy",attenuation across the caldera?,OK
+145,SIO,13,,,XXX,,8.28,20.85,2.52,HYD prearrival noise ~x2 compared to Z. Z with significant 6Hz noise. HYD a lot of pre-arrival noise >~22Hz (do not use if possible). Prefer HYD,attenuation across the caldera?,OK
+146,WHOI,,?,,,,0.65,1.31,2.02,"Clear low frequency (3-5Hz) pre-arrival noise in some Z records, occasionally strong, not in HYD, HYD has pre-arrival noise >~17Hz",,OK
+147,WHOI,,,,,Z,0.80,2.65,3.32,HYD prearrival noise ~x3 compared to Z. Prefer Z,channel 1 better than channel 4,OK
+148,WHOI,,,,,Z,0.91,2.26,2.48,HYD prearrival noise ~x3 compared to Z. Prefer Z,,OK
+149,SIO,SP,,,,,,,,Bad Z and HYD,Channel 1 OK.,Not picked
+150,WHOI,,,,,,0.80,2.48,3.09,"Localized noise >20Hz in Z, often pre-arrival, do not use this spectral range in Z",150_1_line5 - deep phase at 40 km?,OK
+151,WHOI,,,,,,0.87,2.54,2.91,"HYD pre-arrival noise~x3 compared to Z, Z occasional pre-arrival spikes. Check both!",,OK
+152,SIO,SP,,,,,,,,,NoData,No Data
+153,WHOI,,,,,,0.95,1.83,1.93,HYD prearrival noise ~x2 compared to Z.,triplication at 34 km? Earthquake at 42 km east on line 5?,OK
+154,SIO,13,X,,,HYD,536.60,178.32,0.33,"Z has anomaloysly low-count level (x25-35 times) and is very noisy, especially >15Hz. Prefer HYD.",,OK
+155,SIO,13,,,X,,7.96,21.08,2.65,HYD prearrival noise ~x2 compared to Z. Z with some low-freq (6-8Hz) noise. HYD a lot of pre-arrival noise >~22Hz (do not use if possible).,,OK
+156,WHOI,,,,,,1.07,2.38,2.24,HYD prearrival noise ~x2 compared to Z.,,OK
+157,SIO,13,,,,Z,8.46,24.08,2.85,"HYD/Z spectral ratios increase above ~25Hz. Clear high-frequency noise in hydrophone, also pre-arrival. Z much better than HYD (X2). Prefer Z",,OK
+158,SIO,13,,,,HYD,6.23,7.89,1.27,"Same noise, HYD slightly larger noise >25Hz, Z strong noise <10Hz. Prefer HYD.",,OK
+160,SIO,13,X,,,HYD,1035.34,115.04,0.11,Z has anomaloysly low-count level (x50 times) and is unusable. HYD is noisy but usable.,nice shear wave to west,OK
+161,SIO,13,,,XXX,HYD,5.09,38.19,7.50,Both components very noisy. Z with a lot of ~6Hz noise. HYD noisy < ~8Hz and > ~22Hz. Perhaps use HYD.,BAD,OK
+162,WHOI,,,,,,0.99,1.70,1.72,HYD/Z spectral ratios increase below ~6Hz. Z slightly less pre-arrival noise. Use both above 7Hz.,,OK
+163,SIO,13,,,XX,,8.09,19.80,2.45,HYD prearrival noise ~x2 compared to Z. Significant 6Hz noise and other low-frequency (<8Hz) noise in Z. Pre-arrival noise in HYD >~24Hz. Check both!,,OK
+164,WHOI,,,,,Z,0.85,2.95,3.47,"HYD/Z spectral ratios increase above 20-25Hz. Clear high-frequency noise in hydrophone, also pre-arrival. Z much better than HYD",nice shear wave to west,OK
+165,SIO,13,,,XX,,8.67,26.45,3.05,HYD prearrival noise ~x3 compared to Z. Significant 6Hz  noise in Z. Pre-arrival noise in HYD >~25Hz. Check both!,,OK
+166,SIO,13,,,X,,7.00,20.73,2.96,HYD prearrival noise ~x3 compared to Z. Some 6Hz noise in Z. Pre-arrival noise in HYD >~22Hz. Check both!,,OK
+167,SIO,SP,,,,Z,9.56,36.58,3.82,HYD prearrival noise ~x3 compared to Z. Prefer Z,,OK
+168,SIO,SP,,,,Z,8.10,33.48,4.13,HYD prearrival noise ~x4 compared to Z. Prefer Z,,OK
+169,SIO,SP,,,XX,,8.22,20.66,2.51,HYD prearrival noise ~x2 compared to Z. Significant 6Hz noise in Z. Check both!,,OK
+170,WHOI,,,,,Z,0.86,3.19,3.70,HYD prearrival noise ~x3 compared to Z. Prefer Z,170_1_line 5 caustic at 34 km and a deep reflection?,OK
+171,SIO,SP,X,,,HYD,315.87,141.29,0.45,"Z has anomaloysly low-count level (x20 times), and much more pre-arrival noise, but waveforms can be recognized. Prefer HYD.",,OK
+172,WHOI,,X,,,HYD,138.60,8.25,0.06,"Channel 1 (Vertical) is OK up to shot 15163, drops by x350 after that!",channels 2 & 3 better than 4. Channel 1 bad.,???
+173,SIO,13,X?,X?,,,,,,,Poorly coupled? (HYD also bad…),Not picked
+174,WHOI,,,,,,0.73,1.80,2.46,HYD prearrival noise ~x2 compared to Z.,channel 1 better than channel 4,OK
+175,SIO,13,,,,Z,8.36,32.96,3.94,"HYD prearrival noise ~x3 compared to Z, especially >~25Hz. Prefer Z",,OK
+176,WHOI,,,,,,0.86,1.60,1.86,HYD prearrival noise ~x2 compared to Z.,channel 1 better than channel 4,OK
+177,SIO,13,,,XX,HYD,5.53,6.45,1.17,Similar noise. Significant 6Hz and low frequency noise in Z (<8Hz). Pre-arrival noise in HYD >~22Hz. Prefer HYD.,line 5 interesting. Caustic ~28 km to West and ~ 38 km on East,OK
+178,SIO,13,,,XX,HYD,6.09,8.16,1.34,Similar noise. Significant 6Hz and low frequency noise in Z (<8Hz). Pre-arrival noise in HYD >~20Hz. Prefer HYD.,,OK
+179,SIO,13,,,,HYD,6.29,7.30,1.16,Similar noise. HYD/Z spectral ratios increase with frequency. High-frequency noise in HYD (>~20Hz) and low-frequency (<~10Hz) in Z. Prefer HYD,going to be interesting data.,OK
+180,WHOI,,X?,X?,,,,,,,"Mostly bad, but Line 22 is nice w a deep phase at 40 km beneath volcano",Not picked
+181,SIO,SP,,,,Z,5.00,18.00,3.60,"HYD prearrival noise ~x3 compared to Z, especially >~20Hz. Prefer Z",Channel 4 the best. Very asymmetric because on flank of volcano. Deep phase at 40 km,OK
+182,SIO,SP,,,,,,,,,NoDATA,No Data
+183,WHOI,,,,,,0.99,2.26,2.29,HYD prearrival noise ~x2 compared to Z.,,OK
+184,SIO,SP,,,XX,,7.60,26.47,3.48,HYD prearrival noise ~x3 compared to Z. Quite some 6Hz noise in Z. Check both!,,OK
+185,SIO,13,,,X,,7.96,19.70,2.48,HYD prearrival noise ~x2 compared to Z. Z with some low-freq (6-8Hz) noise. HYD with more pre-arrival noise >~22Hz. Check both!,185_4_line5 phase to West at ~27 km,OK
+186,WHOI,,,,,HYD,0.85,1.16,1.36,Similar noise. Z with strong high-f noise >22Hz  and occasional low-f  pre arrival noise. Prefer HYD.,,OK
+187,SIO,SP,,,,,,,,,NoDATA,No Data
+188,WHOI,,,,,Z,1.12,3.45,3.08,HYD prearrival noise ~x3 compared to Z. Also low-f noise below 6Hz (do not use) for HYD. Prefer Z,phase coming in at ~18 km,OK
+189,SIO,SP,,,,Z,7.61,31.67,4.16,HYD prearrival noise ~x4 compared to Z. Prefer Z,189_4_line5 most interesting,OK
+190,WHOI,,,,,Z,0.85,2.04,2.39,HYD prearrival noise ~x3 compared to Z. Also low-f noise below 6Hz (do not use) for HYD. Prefer Z,caustic 24-28 km,OK
+191,SIO,SP,Not picked,,,,,,,,caustic at 21 km on both lines,Not picked
+192,SIO,SP,,,XX,HYD,5.21,8.84,1.70,Similar noise. Z with quite a lot of 6Hz noise. Prefer HYD.,triplication at 23 km,OK
+193,SIO,SP,,,,Z,6.69,20.41,3.05,"HYD prearrival noise ~x3 compared to Z, especially >~25Hz. Prefer Z.",linChannel 1 better than 4. e 21-22 beautiful triplication at ~17-18 km,OK
