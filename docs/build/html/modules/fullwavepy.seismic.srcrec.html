@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>fullwavepy.seismic.srcrec &#8212; FullwavePy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fullwavepy.seismic.surfaces" href="fullwavepy.seismic.surfaces.html" />
+    <link rel="prev" title="fullwavepy.seismic.models" href="fullwavepy.seismic.models.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.seismic.surfaces.html" title="fullwavepy.seismic.surfaces"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.seismic.models.html" title="fullwavepy.seismic.models"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fullwavepy.seismic.models.html"
+                        title="previous chapter">fullwavepy.seismic.models</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fullwavepy.seismic.surfaces.html"
+                        title="next chapter">fullwavepy.seismic.surfaces</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/fullwavepy.seismic.srcrec.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fullwavepy.seismic.srcrec">
+<span id="fullwavepy-seismic-srcrec"></span><h1>fullwavepy.seismic.srcrec<a class="headerlink" href="#module-fullwavepy.seismic.srcrec" title="Permalink to this headline">¶</a></h1>
+<p>(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>.</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vp2rho</span></code>(vp, **kwargs)</p></td>
+<td><p>Convert P-wave velocity into density using Gardner relation of the same form as in Fullwave3D.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">w2xyz</span></code>(w, extended_dims, **kwargs)</p></td>
+<td><p>For QC.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz2w</span></code>(xyz, extended_dims, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dipole</span></code></p></td>
+<td><p>axis : 0, 1 or 2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DipoleX</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DipoleY</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DipoleZ</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HyperPointSR</span></code>(pointsr, **kwargs)</p></td>
+<td><p>FIXME: implement check if we’re not out of bounds</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Monopole</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointSR</span></code></p></td>
+<td><p>ATTENTION It is supposed to have coordinates in nodes of the regular (not extended!) grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Receivers</span></code>(li, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SRs</span></code>(li, **kwargs)</p></td>
+<td><p>li : list</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sources</span></code>(li, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">VolumeSR</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.seismic.surfaces.html" title="fullwavepy.seismic.surfaces"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.seismic.models.html" title="fullwavepy.seismic.models"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Kajetan Chrapkiewicz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

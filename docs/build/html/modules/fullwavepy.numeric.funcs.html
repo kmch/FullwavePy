@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>fullwavepy.numeric.funcs &#8212; FullwavePy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fullwavepy.numeric.generic" href="fullwavepy.numeric.generic.html" />
+    <link rel="prev" title="fullwavepy.numeric.fourier" href="fullwavepy.numeric.fourier.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.numeric.generic.html" title="fullwavepy.numeric.generic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.numeric.fourier.html" title="fullwavepy.numeric.fourier"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fullwavepy.numeric.fourier.html"
+                        title="previous chapter">fullwavepy.numeric.fourier</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fullwavepy.numeric.generic.html"
+                        title="next chapter">fullwavepy.numeric.generic</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/fullwavepy.numeric.funcs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fullwavepy.numeric.funcs">
+<span id="fullwavepy-numeric-funcs"></span><h1>fullwavepy.numeric.funcs<a class="headerlink" href="#module-fullwavepy.numeric.funcs" title="Permalink to this headline">¶</a></h1>
+<p>(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>.</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bessel_fw3d</span></code>(x, **kwargs)</p></td>
+<td><p>Fullwave3D’s approximation of the modified zero-order Bessel’s function of the first kind.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dsinc_dx</span></code>(x, **kwargs)</p></td>
+<td><p>sinc’(x)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gauss</span></code>(x[, mu, sigma])</p></td>
+<td><p>Unnormalized Gaussian distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kaiser</span></code>(x[, r, dipole])</p></td>
+<td><p>Value of the Kaiser-windowing function at point x.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code>(x, alpha, y0, **kwargs)</p></td>
+<td><p>Find y-values of a linear function y = ax + b given X coordinates, slope angle and y(x[0]).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ricker</span></code>(fpeak, ns, dt)</p></td>
+<td><p><a class="reference external" href="http://subsurfwiki.org/wiki/Ricker_wavelet">http://subsurfwiki.org/wiki/Ricker_wavelet</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinc</span></code>(x, **kwargs)</p></td>
+<td><p>Calculate value of the sinc function defined as:</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sine</span></code>(t, freq_hz[, phase])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.numeric.generic.html" title="fullwavepy.numeric.generic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.numeric.fourier.html" title="fullwavepy.numeric.fourier"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Kajetan Chrapkiewicz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

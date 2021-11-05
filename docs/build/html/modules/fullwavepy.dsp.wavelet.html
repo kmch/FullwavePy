@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>fullwavepy.dsp.wavelet &#8212; FullwavePy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fullwavepy.fd.checks" href="fullwavepy.fd.checks.html" />
+    <link rel="prev" title="fullwavepy.dsp.su" href="fullwavepy.dsp.su.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.fd.checks.html" title="fullwavepy.fd.checks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.dsp.su.html" title="fullwavepy.dsp.su"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fullwavepy.dsp.su.html"
+                        title="previous chapter">fullwavepy.dsp.su</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fullwavepy.fd.checks.html"
+                        title="next chapter">fullwavepy.fd.checks</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/fullwavepy.dsp.wavelet.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fullwavepy.dsp.wavelet">
+<span id="fullwavepy-dsp-wavelet"></span><h1>fullwavepy.dsp.wavelet<a class="headerlink" href="#module-fullwavepy.dsp.wavelet" title="Permalink to this headline">¶</a></h1>
+<p>(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>.</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">align</span></code>(A, i_target, **kwargs)</p></td>
+<td><p>A : array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">derive_wavelet</span></code>(**kwargs)</p></td>
+<td><p>Using synthetic Green’s function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dist_l2</span></code>(v, w)</p></td>
+<td><p>Euclidean (L2) distance between two vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_dobs</span></code>(dobs, fname, dt, s_dobs, g_dobs, …)</p></td>
+<td><p>These fields are parsed by SP along with a few others that should be correct by default.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_wavelet</span></code>(fname, proj_name[, tend, ntaper])</p></td>
+<td><p>fname contains all the good traces, raw.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_passband</span></code>(A, dt[, thresh])</p></td>
+<td><p>Find frequency-range outside which amplitude &lt; thresh * max amplitude.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">limit_offsets</span></code>(fnames, offset_min, offset_max)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">offset</span></code>(s, r)</p></td>
+<td><p>It is a horizontal distance, thus we skip z coord.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pad_traces</span></code>(A, nsamp_pad, **kwargs)</p></td>
+<td><p>Pad each trace with trailing zeroes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_coords</span></code>(fname, **kwargs)</p></td>
+<td><p>Read coords of source and receiver for all traces in the file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_sushaper</span></code>([fname])</p></td>
+<td><p>return array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverbs</span></code>(fname, nmax, **kwargs)</p></td>
+<td><p>Find arrival times of reverberation for each trace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift_to_zero</span></code>(A[, fraction])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code>(A)</p></td>
+<td><p>Stack, i.e.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.fd.checks.html" title="fullwavepy.fd.checks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.dsp.su.html" title="fullwavepy.dsp.su"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Kajetan Chrapkiewicz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

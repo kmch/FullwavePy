@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>fullwavepy.ioapi.generic &#8212; FullwavePy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fullwavepy.ioapi.memmap" href="fullwavepy.ioapi.memmap.html" />
+    <link rel="prev" title="fullwavepy.ioapi.fw3d" href="fullwavepy.ioapi.fw3d.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.ioapi.memmap.html" title="fullwavepy.ioapi.memmap"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.ioapi.fw3d.html" title="fullwavepy.ioapi.fw3d"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fullwavepy.ioapi.fw3d.html"
+                        title="previous chapter">fullwavepy.ioapi.fw3d</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fullwavepy.ioapi.memmap.html"
+                        title="next chapter">fullwavepy.ioapi.memmap</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/fullwavepy.ioapi.generic.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fullwavepy.ioapi.generic">
+<span id="fullwavepy-ioapi-generic"></span><h1>fullwavepy.ioapi.generic<a class="headerlink" href="#module-fullwavepy.ioapi.generic" title="Permalink to this headline">¶</a></h1>
+<p>(c) 2019-2020 Kajetan Chrapkiewicz.
+Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>.</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_any</span></code>(fname[, overwrite_mmp])</p></td>
+<td><p>Read file of any format, possibly as a memory-mapped file if both the file is present on disk and the shape of the array is provided.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_any_format</span></code>(fname, **kwargs)</p></td>
+<td><p>Read an array from a file of any format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_dict</span></code>(fname, **kwargs)</p></td>
+<td><p>Read a dictionary data-structure from the file of the format:</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_txt</span></code>(fname, **kwargs)</p></td>
+<td><p>Read a text-file’s non-zero lines and split them using a blank-space separator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_txt_raw</span></code>(fname, **kwargs)</p></td>
+<td><p>Similar to read_txt but without splitting lines.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_dict</span></code>(fname, dictionary, **kwargs)</p></td>
+<td><p>Save a dictionary data-structure to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_txt</span></code>(fname, lines, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayFile</span></code>(name, path, **kwargs)</p></td>
+<td><p>File storing data (model, seismograms, etc.) as a custom Arr3d type of array which is a wrapper around np.ndarray.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayFileReader</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BinaryFile</span></code>(name, path, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CsvFile</span></code>(name, path, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CsvFileReader</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">File</span></code>(name, path, **kwargs)</p></td>
+<td><p>Generic file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextFile</span></code>(name, path, **kwargs)</p></td>
+<td><p>File storing some meta data, not directlfullwavepy.plottable as an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextFileReader</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.ioapi.memmap.html" title="fullwavepy.ioapi.memmap"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fullwavepy.ioapi.fw3d.html" title="fullwavepy.ioapi.fw3d"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Kajetan Chrapkiewicz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

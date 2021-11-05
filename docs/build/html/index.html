@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>FullwavePy: FWI workflow in Jupyter &#8212; FullwavePy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="fullwavepy.dsp.generic" href="modules/fullwavepy.dsp.generic.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules/fullwavepy.dsp.generic.html" title="fullwavepy.dsp.generic"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FullwavePy: FWI workflow in Jupyter</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li><a class="reference internal" href="#key-features">Key features</a></li>
+<li><a class="reference internal" href="#key-concepts">Key concepts</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="modules/fullwavepy.dsp.generic.html"
+                        title="next chapter">fullwavepy.dsp.generic</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="fullwavepy-fwi-workflow-in-jupyter">
+<h1>FullwavePy: FWI workflow in Jupyter<a class="headerlink" href="#fullwavepy-fwi-workflow-in-jupyter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>The best way to start is to play around with example notebooks
+in <cite>fullwavepy/examples/</cite> or create a new notebook and load
+the defualt configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fullwavepy</span><span class="o">/</span><span class="n">nb_config</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
+<p>Plotting i/o</p>
+</div>
+<div class="section" id="key-concepts">
+<h2>Key concepts<a class="headerlink" href="#key-concepts" title="Permalink to this headline">¶</a></h2>
+<p>FWI is conceptually simple but usually requires a lot of data manipulation
+and parameter tuning to make it work successfully. Hence a need for
+convenient, robust and extensible framework that automates the process and
+allows to focus on research questions rather than technicalities.</p>
+<p>FullwavePy’s project is something defined uniquely by FWI <strong>input</strong> files.</p>
+<p>E.g. a project has exactly one <em>Runfile</em> but can have multiple auxiliary, job-specific files (e.g. <em>Out.log</em>, <em>Run.pbs</em>, <em>JobInfo.txt</em>, etc.)
+that have job-file identifiers embedded in their names (actual names <em>Out0.log</em>, etc.). Obviously, <strong>output files</strong> are job-specific too, but currently they are <strong>overwritten after each job-run</strong> instead of being endowed with such ids (to save disk space). To preserve them, one needs to create a new project.</p>
+<p>The basic building blocks of any project are files.
+They are abstract objects i.e.
+they are not bound to any specific I/O implementation.</p>
+<p>The binding needed is done under the hood</p>
+<p>and the tricky part is to get
+all the necessary data regardless of the io implementation.
+This can be challenging e.g. when no headers are associated
+with seismic data. An alternative way of getting this data
+has to be implemented. Or the user should be informed of the
+limited functionality.</p>
+<p>Plotting of the data should be independent of the io.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>Remember to add parent-path/fullwavepy to your PYTHONPATH.
+(parent-path is not enough since we have:
+parent-path/fullwavepy/fullwavepy/__init__.py).</p>
+<p>If the autogen fails to find one of the modules unlike all
+the other modules, most likely there is a syntax error inside
+this module. Try to import it from python interpreter to to track
+down the bug.</p>
+<table class="colwidths-auto docutils align-default" id="id1">
+<caption><span class="caption-text">Truth table for “not”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>A</p></th>
+<th class="head"><p>not A</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.dsp.generic.html#module-fullwavepy.dsp.generic" title="fullwavepy.dsp.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.dsp.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.dsp.phase.html#module-fullwavepy.dsp.phase" title="fullwavepy.dsp.phase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.dsp.phase</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.dsp.su.html#module-fullwavepy.dsp.su" title="fullwavepy.dsp.su"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.dsp.su</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.dsp.wavelet.html#module-fullwavepy.dsp.wavelet" title="fullwavepy.dsp.wavelet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.dsp.wavelet</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.fd.checks.html#module-fullwavepy.fd.checks" title="fullwavepy.fd.checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.fd.checks</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.fd.stencils.html#module-fullwavepy.fd.stencils" title="fullwavepy.fd.stencils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.fd.stencils</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.generic.decor.html#module-fullwavepy.generic.decor" title="fullwavepy.generic.decor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.generic.decor</span></code></a></p></td>
+<td><p>This module defines decorators.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.generic.parse.html#module-fullwavepy.generic.parse" title="fullwavepy.generic.parse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.generic.parse</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.generic.system.html#module-fullwavepy.generic.system" title="fullwavepy.generic.system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.generic.system</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.clusters.archer.html#module-fullwavepy.ioapi.clusters.archer" title="fullwavepy.ioapi.clusters.archer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.clusters.archer</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.clusters.cx1.html#module-fullwavepy.ioapi.clusters.cx1" title="fullwavepy.ioapi.clusters.cx1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.clusters.cx1</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.clusters.thomas.html#module-fullwavepy.ioapi.clusters.thomas" title="fullwavepy.ioapi.clusters.thomas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.clusters.thomas</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.fw3d.html#module-fullwavepy.ioapi.fw3d" title="fullwavepy.ioapi.fw3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.fw3d</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.generic.html#module-fullwavepy.ioapi.generic" title="fullwavepy.ioapi.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.memmap.html#module-fullwavepy.ioapi.memmap" title="fullwavepy.ioapi.memmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.memmap</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.proteus.html#module-fullwavepy.ioapi.proteus" title="fullwavepy.ioapi.proteus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.proteus</span></code></a></p></td>
+<td><p>This module defines all objects specific to the PROTEUS experiment.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.reveal.html#module-fullwavepy.ioapi.reveal" title="fullwavepy.ioapi.reveal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.reveal</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.segy.html#module-fullwavepy.ioapi.segy" title="fullwavepy.ioapi.segy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.segy</span></code></a></p></td>
+<td><p>This module serves to read/write files in formats defined by Fullwave3D’s segy IO API, in particular SEG-Y files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ioapi.su.html#module-fullwavepy.ioapi.su" title="fullwavepy.ioapi.su"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ioapi.su</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ndat.arrays.html#module-fullwavepy.ndat.arrays" title="fullwavepy.ndat.arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ndat.arrays</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.ndat.manifs.html#module-fullwavepy.ndat.manifs" title="fullwavepy.ndat.manifs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ndat.manifs</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.ndat.points.html#module-fullwavepy.ndat.points" title="fullwavepy.ndat.points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.ndat.points</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.numeric.const.html#module-fullwavepy.numeric.const" title="fullwavepy.numeric.const"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.numeric.const</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.numeric.fourier.html#module-fullwavepy.numeric.fourier" title="fullwavepy.numeric.fourier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.numeric.fourier</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.numeric.funcs.html#module-fullwavepy.numeric.funcs" title="fullwavepy.numeric.funcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.numeric.funcs</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.numeric.generic.html#module-fullwavepy.numeric.generic" title="fullwavepy.numeric.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.numeric.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.numeric.operators.html#module-fullwavepy.numeric.operators" title="fullwavepy.numeric.operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.numeric.operators</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.plot.events.html#module-fullwavepy.plot.events" title="fullwavepy.plot.events"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.events</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.plot.generic.html#module-fullwavepy.plot.generic" title="fullwavepy.plot.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019 Kajetan ChrapkiewicA.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.plot.misc.html#module-fullwavepy.plot.misc" title="fullwavepy.plot.misc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.misc</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.plot.plt1d.html#module-fullwavepy.plot.plt1d" title="fullwavepy.plot.plt1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.plt1d</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.plot.plt2d.html#module-fullwavepy.plot.plt2d" title="fullwavepy.plot.plt2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.plt2d</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.plot.plt3d.html#module-fullwavepy.plot.plt3d" title="fullwavepy.plot.plt3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.plot.plt3d</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.datalike.generic.html#module-fullwavepy.project.files.datalike.generic" title="fullwavepy.project.files.datalike.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.datalike.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.datalike.sgy.html#module-fullwavepy.project.files.datalike.sgy" title="fullwavepy.project.files.datalike.sgy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.datalike.sgy</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.datalike.ttr.html#module-fullwavepy.project.files.datalike.ttr" title="fullwavepy.project.files.datalike.ttr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.datalike.ttr</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.generic.html#module-fullwavepy.project.files.generic" title="fullwavepy.project.files.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.derivs.html#module-fullwavepy.project.files.gridded.derivs" title="fullwavepy.project.files.gridded.derivs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.derivs</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.generic.html#module-fullwavepy.project.files.gridded.generic" title="fullwavepy.project.files.gridded.generic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.generic</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.misc.html#module-fullwavepy.project.files.gridded.misc" title="fullwavepy.project.files.gridded.misc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.misc</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.models.html#module-fullwavepy.project.files.gridded.models" title="fullwavepy.project.files.gridded.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.models</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.surfaces.html#module-fullwavepy.project.files.gridded.surfaces" title="fullwavepy.project.files.gridded.surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.surfaces</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.gridded.wavefields.html#module-fullwavepy.project.files.gridded.wavefields" title="fullwavepy.project.files.gridded.wavefields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.gridded.wavefields</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.other.ghost.html#module-fullwavepy.project.files.other.ghost" title="fullwavepy.project.files.other.ghost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.other.ghost</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.other.index.html#module-fullwavepy.project.files.other.index" title="fullwavepy.project.files.other.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.other.index</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.hed.html#module-fullwavepy.project.files.text.hed" title="fullwavepy.project.files.text.hed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.hed</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.logs.html#module-fullwavepy.project.files.text.logs" title="fullwavepy.project.files.text.logs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.logs</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.misc.html#module-fullwavepy.project.files.text.misc" title="fullwavepy.project.files.text.misc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.misc</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.runfiles.html#module-fullwavepy.project.files.text.runfiles" title="fullwavepy.project.files.text.runfiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.runfiles</span></code></a></p></td>
+<td><p>This module contains definitions of runfiles (parameter files read at run-time by various programs).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.srcrec.html#module-fullwavepy.project.files.text.srcrec" title="fullwavepy.project.files.text.srcrec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.srcrec</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.files.text.submit.html#module-fullwavepy.project.files.text.submit" title="fullwavepy.project.files.text.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.files.text.submit</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.generic.au.html#module-fullwavepy.project.generic.au" title="fullwavepy.project.generic.au"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.generic.au</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.generic.io.html#module-fullwavepy.project.generic.io" title="fullwavepy.project.generic.io"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.generic.io</span></code></a></p></td>
+<td><p>This module defines generic input and output of an FWI project (shared by all project-types).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.generic.qc.html#module-fullwavepy.project.generic.qc" title="fullwavepy.project.generic.qc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.generic.qc</span></code></a></p></td>
+<td><p>This module contains tools for quality control of FWI runs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.lists.basic.html#module-fullwavepy.project.lists.basic" title="fullwavepy.project.lists.basic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.lists.basic</span></code></a></p></td>
+<td><p>This module contains handles for collections of similar files e.g.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.lists.deriv.html#module-fullwavepy.project.lists.deriv" title="fullwavepy.project.lists.deriv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.lists.deriv</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.lists.extra.html#module-fullwavepy.project.lists.extra" title="fullwavepy.project.lists.extra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.lists.extra</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.types.basic.html#module-fullwavepy.project.types.basic" title="fullwavepy.project.types.basic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.types.basic</span></code></a></p></td>
+<td><p>This module defines basic project types ProjSyn and ProjInv along their parent Proj that serves only as a library of common features and should not be called directly.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.project.types.deriv.html#module-fullwavepy.project.types.deriv" title="fullwavepy.project.types.deriv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.types.deriv</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.project.types.extra.html#module-fullwavepy.project.types.extra" title="fullwavepy.project.types.extra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.project.types.extra</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.data.html#module-fullwavepy.seismic.data" title="fullwavepy.seismic.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.data</span></code></a></p></td>
+<td><p>Dealing with seismic data can be tricky for two reasons: it is usually stored as heavy binaries and it has associated metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.metadata.html#module-fullwavepy.seismic.metadata" title="fullwavepy.seismic.metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.metadata</span></code></a></p></td>
+<td><p>This module defines a seismic field-experiment as a whole.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.models.html#module-fullwavepy.seismic.models" title="fullwavepy.seismic.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.models</span></code></a></p></td>
+<td><p>This module defines seismic models: backgrounds and anomalies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.srcrec.html#module-fullwavepy.seismic.srcrec" title="fullwavepy.seismic.srcrec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.srcrec</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.surfaces.html#module-fullwavepy.seismic.surfaces" title="fullwavepy.seismic.surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.surfaces</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.wavefields.html#module-fullwavepy.seismic.wavefields" title="fullwavepy.seismic.wavefields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.wavefields</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modules/fullwavepy.seismic.wavelets.html#module-fullwavepy.seismic.wavelets" title="fullwavepy.seismic.wavelets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fullwavepy.seismic.wavelets</span></code></a></p></td>
+<td><p><ol class="loweralpha simple" start="3">
+<li><p>2019-2020 Kajetan Chrapkiewicz.Copywright: Ask for permission writing to <a class="reference external" href="mailto:k&#46;chrapkiewicz17&#37;&#52;&#48;imperial&#46;ac&#46;uk">k<span>&#46;</span>chrapkiewicz17<span>&#64;</span>imperial<span>&#46;</span>ac<span>&#46;</span>uk</a>..</p></li>
+</ol>
+</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules/fullwavepy.dsp.generic.html" title="fullwavepy.dsp.generic"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">FullwavePy 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Kajetan Chrapkiewicz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>
