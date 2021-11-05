@@ -1,4 +1,4 @@
-# FullwavePy
+# :white_square_button: FullwavePy
 Python interface for full-waveform modelling and inversion. Currently only for the proprietary `FULLWAVE3D` code which can be accessed through academic collaboration with Imperial College London or a membership of the FULLWAVE consortium (Warner et al., 2013). Serving other codes can be easily accomplished through suitable APIs.
 
 ## Getting started
