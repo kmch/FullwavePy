@@ -11,22 +11,14 @@ from autologging import logged #, traced
 import numpy as np
 import pandas as pd # only in _get_stations_within_extent
 
-<<<<<<< HEAD
 from arrau.a2d import Arr2d
 from arrau.api.io import extent2str
 from fullwavepy.ioapi.generic import save_txt  # for mute
-=======
-from arrau.api.io import extent2str #
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.su import suwind
 from nsh.generic import ShellFactory
 from nsh.utils import core, exists, extract_file_name, \
-<<<<<<< HEAD
   get_file_names, extract_ext, extract_path, strip
-=======
-  get_file_names, extract_path
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 # ----------------------------------------------------------------------------
 # To get rid of.
 # ----------------------------------------------------------------------------
@@ -38,7 +30,6 @@ from fullwavepy.ioapi.generic import ArrayFile # FIXME
 from fullwavepy.plot.generic import * # FIXME
 # ----------------------------------------------------------------------------
 
-<<<<<<< HEAD
 class Dat:
   def __init__(self, file_object, dt):
     self.dt = dt
@@ -81,8 +72,6 @@ class Dat:
     ntr, ns = arr.shape
     tmax = self.dt * ns
     return [[1,ntr],[0,tmax]]
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 class DataIOFactory:
   subclasses = {}
   @classmethod
@@ -111,7 +100,6 @@ class DataIO(ABC):
   @abstractmethod
   def _set_pattern(self):
     pass
-<<<<<<< HEAD
 class DataMuter(ABC):
   @abstractmethod
   def mute(self):
@@ -177,31 +165,21 @@ class DataMuterSUSGY(DataMuter):
 class DataSet:
   def __init__(self, path, io='proteus_hy', regex=None, \
     shell='linux', get_files=True):
-=======
-class DataSet:
-  def __init__(self, path, io='proteus_hy', regex=None, shell='linux'):
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     """
     Parameters
     ----------
     path : str
         Path to directory with data files.
-<<<<<<< HEAD
     io : str
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     regex : str
         Regular-expression pattern matching
         the data file names. E.g. '*.sgy'.
         If None, it will be read from self.io
     shell : str
         By default 'linux'.
-<<<<<<< HEAD
     get_files : bool
         Run _get_files if True. This may be slow
         hence optional.
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     """
     self.files = {}
     self.io = DataIOFactory.create(io)
@@ -210,11 +188,8 @@ class DataSet:
     self._set_regex(regex)
     self._get_file_names()
     self._get_sids()
-<<<<<<< HEAD
     if get_files: 
       self._get_files()
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def extract(self, extent, name='extracted',\
      path='./', stations=None, exclude=[]):
     """
@@ -320,10 +295,7 @@ class DataSet:
         continue
       self.files[sid] = self.io.DataFile(name, self.path)
     self.files = dict(sorted(self.files.items()))
-<<<<<<< HEAD
     self._set_files_alias()
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     return self.files
   def _get_files_within_extent(self, extent, stations=None, exclude=[]):
     """
@@ -340,11 +312,8 @@ class DataSet:
       self.shell = ShellFactory.create(shell)
     else:
       self.shell = shell
-<<<<<<< HEAD
   def _set_files_alias(self):
     self.id = self.files
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def _set_regex(self, regex):
     if regex is None:
       self.regex = self.io.pattern

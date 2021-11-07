@@ -31,10 +31,7 @@ class Box3d(Box):
   def __init__(self, x1, x2, y1, y2, z1, z2):
     self.box = [x1, x2, y1, y2, z1, z2]
     self.extent = [[x1, x2], [y1, y2], [z1, z2]]
-<<<<<<< HEAD
     self.xy = [[x1, x2], [y1, y2]]
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     self.x1, self.x2, self.y1, self.y2, self.z1, self.z2 = self.box  
   def dims(self, dx):
     x1, x2, y1, y2, z1, z2 = self.box

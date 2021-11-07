@@ -4,22 +4,13 @@ from autologging import logged, traced
 import matplotlib.pyplot as plt
 import numpy as np
 
-<<<<<<< HEAD
 from fullwavepy.ndat.arrays import Arr3d # a-b
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 from fullwavepy.plot.generic import * 
 from fullwavepy.project.generic.au import ProjBox
 from fullwavepy.project.generic.au import ProjGeometry
 from fullwavepy.project.types.basic import ProjSyn, ProjInv
 
-<<<<<<< HEAD
 # PROJECT PARAMS
-=======
-
-# PROJECT PARAMS
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 @logged
 class Discret(ProjGeometry):
     def __init__(self, dt, ns, dx, dims):
@@ -176,20 +167,10 @@ def syn_plot_out(p, ts):
     plt.subplot(224)
     _ = plt.imshow(p.o.fw.it[1][1][ts].read(overwrite_mmp=1, overwrite=1)[:,0,:].T)
 
-<<<<<<< HEAD
 # MODELS AND THEIR INTERFACES
 def a_minus_b(a, b, clip=500, **kwargs):
     kwargs['cmap'] = kwargs.get('cmap', 'RdBu') 
     Arr3d(a.read() - b.read()).plot(vmin=-clip, vmax=clip, **kwargs)
-=======
-
-# MODELS AND THEIR (INNER) BOUNDARIES
-def a_minus_b(a, b, clip=500, **kwargs):
-    from fullwavepy.ndat.arrays import Arr3d 
-    Arr3d(a.read() - b.read()).plot(cmap='seismic', \
-        vmin=-clip, vmax=clip, **kwargs)
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def extract_vp_and_fs(exp_svp, exp_bt, box, dx, plot=True):
     assert dx == exp_svp.dx[0]
     assert len(set(exp_svp.dx == 1)) # dx=dy=dz
@@ -201,10 +182,6 @@ def extract_vp_and_fs(exp_svp, exp_bt, box, dx, plot=True):
     if plot:
         plot_bt_and_model(bt, vp, k_fs=node_fs-1)
     return vp, fs
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def check_compatibility_vp_and_fs(vp, fs, k_fs, vp_min=0):
     def format_plot(val=None):
         plt.gca().set_aspect('equal')
@@ -236,10 +213,6 @@ def check_compatibility_vp_and_fs(vp, fs, k_fs, vp_min=0):
         plt.title('Difference (middle - left)')
         plt.imshow((b - a).T, **kws)
         format_plot(val=a[0])  
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def make_vp_compatible_with_fs(vp, fs, vel_air):
     assert vp.shape[:-1] == fs.shape[:-1]
     nvp = np.copy(vp)
@@ -274,10 +247,6 @@ def make_vp_compatible_with_fs(vp, fs, vel_air):
     plt.grid()
 
     return nnvp  
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def compare_vp_and_fs(vp, fs, k_fs):
     plt.figure(figsize=(14,7))
     plt.subplot(121)
@@ -288,10 +257,6 @@ def compare_vp_and_fs(vp, fs, k_fs):
     # levels 7 doesn't work <= 
     # plt.contour(fs_kameni[...,0].T, levels=[7]) #, extent=fs_kameni.extent[:-1].flatten(), levels=[7], colors='k')
     plt.gca().set_aspect('equal')
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_bt_and_model(bt, vp, k_fs):
     def figure():
         plt.figure(figsize=(20,10))
@@ -308,10 +273,6 @@ def plot_bt_and_model(bt, vp, k_fs):
     bt.extract_seabed(dx=vp.dx[0]).plot(z=0, cmap='magma', center_cmap=0, **k)
     plt.title('extracted seabed')
     print(vp.shape, bt.shape)
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def qc_mod3d(mod, z_zoom):
     figure(16,5)
     plt.subplot(121)
@@ -321,10 +282,6 @@ def qc_mod3d(mod, z_zoom):
     plt.subplot(122)
     plt.imshow(mod[0].T)
     plt.ylim(z_zoom+2, z_zoom-2) 
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_4zslices(a, z, xlim, ylim):
     def fmt():
         plt.xlim(xlim)
@@ -344,21 +301,10 @@ def plot_4zslices(a, z, xlim, ylim):
     plt.subplot(224)
     a.plot(z=z[3])
     fmt()
-<<<<<<< HEAD
 def nb_scroller():
   fig = figure(5,20)
   tracker = (vp != 0).scrollall(fig, cmap='viridis')
   return fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
-=======
-
-def nb_scroller():
-    # %mn
-    # %mn
-    fig = figure(5,20)
-    tracker = (vp != 0).scrollall(fig, cmap='viridis')
-    fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 
 # DATA QC AND PROCESSING
 def qc_datafile(datafile, ep, cmap1='Greys', cmap2='hot', \
@@ -384,10 +330,6 @@ def qc_datafile(datafile, ep, cmap1='Greys', cmap2='hot', \
     plt.xlabel('trace no.')
     plt.ylabel('frequency [Hz]')
     plt.gca().set_aspect('auto') 
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def qc_filt(p, psyn, sid=None, ep=None, overwrite=False, overwrite_mmp=False):
     sids = [s.ID for s in p.i.s.read().li]
     eps = sorted(p.i.obs.read_header()['ep'].unique())
@@ -444,10 +386,6 @@ def qc_filt(p, psyn, sid=None, ep=None, overwrite=False, overwrite_mmp=False):
     plt.ylim(ylim)     
     #     plt.ylabel(fylabel)        
     plt.xlabel(xlabel)
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_data_and_geom(datafile, md, sid, ep, **kwargs):
     from fullwavepy.plot.plt2d import colorbar
     save = kwargs.get('save', False)
@@ -456,17 +394,10 @@ def plot_data_and_geom(datafile, md, sid, ep, **kwargs):
     val = ep
     figx = kwargs.get('figx', 16)
     figy = kwargs.get('figx', 14)
-<<<<<<< HEAD
     txlim = kwargs.get('txlim', None)
     tylim = kwargs.get('tylim', None)
     fxlim = kwargs.get('fxlim', None)
     fylim = kwargs.get('fylim', None)
-=======
-    txlim = kw('txlim', None, kwargs)
-    tylim = kw('tylim', None, kwargs)
-    fxlim = kw('fxlim', None, kwargs)
-    fylim = kw('fylim', None, kwargs)
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     kwargs['win'] = dict(tracf=[sid], ep=[ep])
     kwargs['norm'] = 'max'
     datafile.read(**kwargs)
@@ -497,10 +428,6 @@ def plot_data_and_geom(datafile, md, sid, ep, **kwargs):
     if save:
         plt.savefig('dataqc_sid%s_ep%s.png' % (sid, ep))
         plt.close()
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def set_ticks(datafile, **kwargs):
     #     datafile.read_header()
     #     decim = 10 #kwargs['decim']
@@ -512,10 +439,6 @@ def set_ticks(datafile, **kwargs):
     #     _ = plt.xlabel(hw)
     #     _ = plt.ylabel('sample')
     pass # it's not that easy because we have to window the header too!
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_acq_geom(df, attr, val, sid, ep):
     from fullwavepy.plot.plt2d import colorbar
     # plt.title('Station %s, SEGY keyword: %s; highlighted value: %s' % (sid, attr, val))
@@ -526,10 +449,6 @@ def plot_acq_geom(df, attr, val, sid, ep):
     plt.scatter(ndf['sx'], ndf['sy'], c='red')
     plt.scatter(df['gx'], df['gy'], c='magenta') #marker=dict(color=color, size=size))
     aspeqt(plt.gca())
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_station_pools():
     # great plot with different pools (WHOI, SIO, land)
     # markersize = 50 
@@ -553,10 +472,6 @@ def plot_station_pools():
     # # plt.gca().set_aspect('equal')
     # plt.grid('--', c='Grey')
     pass
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def get_phase(dc, freq):
   try:
     phi = dc.read_header(overwrite=0)['phase dif (%s Hz)' % freq]
@@ -564,10 +479,6 @@ def get_phase(dc, freq):
     dc._get_phase(freq)
     phi = dc.read_header(overwrite=0)['phase dif (%s Hz)' % freq]
   return phi
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def phase_hists(p, sid, freq, it2, it1=1, bins=40):
     dc1 = p.o.dc.it[it1][sid]
     dc2 = p.o.dc.it[it2][sid]
@@ -581,10 +492,6 @@ def phase_hists(p, sid, freq, it2, it1=1, bins=40):
     _ = plt.xlabel('phase difference [rad]')
     _ = plt.ylabel('counts')    
     plt.legend()
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def find_shoot_dir(lid, md):
     line = md[md['ep']==lid]
     f0, f1 = line['fldr'][:2]
@@ -593,10 +500,6 @@ def find_shoot_dir(lid, md):
         raise ValueError 
     direction = 'left_to_right' if x1 > x0 else 'right_to_left'
     return direction
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def find_marginal_shot(lid, md, shoot_dir):
     line = md[md['ep']==lid]
     if shoot_dir == 'left_to_right':
@@ -614,10 +517,6 @@ def find_marginal_shot(lid, md, shoot_dir):
         sy = sy[0]
     
     return sx, sy
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def arrow_for_shot_line(lid, md, dx):
     shoot_dir = find_shoot_dir(lid, md)
     sx, sy = find_marginal_shot(lid, md, shoot_dir)
@@ -626,10 +525,6 @@ def arrow_for_shot_line(lid, md, dx):
     else:
         arrow = [sx+dx, sy, dx, 0]
     return arrow
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def plot_out_data(p, it, sid, lid, freq, interleave,\
      phase=True, save=False, overwrite=1, **kwargs):
     dc = p.o.dumpcomp
@@ -674,13 +569,7 @@ def plot_out_data(p, it, sid, lid, freq, interleave,\
             f.plot_phase(freq, overwrite=overwrite, arrow=arrow,\
                 arrow_width=arrow_width, arrow_color=arrow_color, **kwargs)
 
-<<<<<<< HEAD
 # VARIA
-=======
-
-# VARIA
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def add_spherical_anomaly(m, center=(100,235,50), radius=20, anom=-0.4, smooth=True):
     """
     center : tuple of 3 floats
@@ -713,10 +602,6 @@ def add_spherical_anomaly(m, center=(100,235,50), radius=20, anom=-0.4, smooth=T
     tvp = m.array + sphf * m.array
     m.prep(Arr3d(tvp, extent=m.extent))
     return m
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def tintegrate_wvlt(rsg, plot=False):
     """
     """
@@ -738,10 +623,6 @@ def tintegrate_wvlt(rsg, plot=False):
         plt.plot(RS)
     #         qc_integration(rs, RS, rsg.read().dx[-1])
     return rsg
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 def correct_depth_WRONG(p, ioapi='sgy'): # use SP's addtodepth instead
     from fwipy.shell.specific.linux import run_linux
     assert ioapi == 'sgy'
@@ -779,8 +660,3 @@ def correct_depth_WRONG(p, ioapi='sgy'): # use SP's addtodepth instead
             f.write(source_id + ' ' + x  + ' ' + y  + ' ' + z  + '\n')
         f.close()
     p.i.s.cat()
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08

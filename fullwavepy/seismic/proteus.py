@@ -11,7 +11,6 @@ import numpy as np
 import os  # only for prot_path
 import pandas as pd
 
-<<<<<<< HEAD
 from arrau.a1d import Arr1d
 from arrau.a3d import Arr3d
 import fullwavepy # only for prot_path
@@ -24,14 +23,6 @@ from fullwavepy.seismic.surfs import SeaLand
 from fullwavepy.seismic.wavelets import SourceWavelet
 
 from nsh.generic import ShellFactory
-=======
-import fullwavepy # only for prot_path
-from fullwavepy.seismic.data import DataFileSgy, DataIO, DataIOFactory
-from fullwavepy.seismic.exp import Experiment
-from fullwavepy.seismic.plots import PlotExp
-from fullwavepy.seismic.surfs import SeaLand
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 path_prot = '%s/proteus/' % os.path.dirname(fullwavepy.seismic.__file__)
 
 class PROTEUS(Experiment,PlotExp):
@@ -42,14 +33,9 @@ class PROTEUS(Experiment,PlotExp):
   """
   def __init__(self, **kwargs):
     self.all_not_read = True
-<<<<<<< HEAD
     self._init_boxes()
     self._init_start_vp()
     self._init_wavelet()
-=======
-    self._init_base_files(**kwargs)
-    self._init_start_vp()
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def read_all(self):
     self.read_bathy_topo()
     self.read_metadata()
@@ -72,22 +58,10 @@ class PROTEUS(Experiment,PlotExp):
     lan = df[df.pool == 'land']
     pool = {'sio':sio,'who':who,'lan':lan}
     return pool
-<<<<<<< HEAD
   def _init_boxes(self):
     self.box = {
       'kol1': Box3d(8000.0, 25000.0, -3000.0, 15000.0, 0, 4000.0)
     }
-=======
-  def _init_base_files(self, **kwargs):
-    # from fullwavepy.ioapi.proteus import ProteusExperiment
-    # self.pro = ProteusExperiment() # FIXME
-    # self.met = kwargs.get('met_base', self.pro.md)
-    # self.obs = kwargs.get('obs_base', self.pro.dataset)
-    # self.wvl = kwargs.get('wvl_base', self.pro.wavelet['19-09-22'])
-    # self.tpg = kwargs.get('tpg_base', self.pro.bathytopo)
-    # self.svp = kwargs.get('vp_base', self.pro.svp['bh']['18-04-24'])
-    pass
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def _init_paths(self):
     base_path = '/home/kmc3817/heavy_PhD/'
     self.path = {
@@ -99,7 +73,6 @@ class PROTEUS(Experiment,PlotExp):
     }
   def _init_start_vp(self):
     """
-<<<<<<< HEAD
     Inits a `self.svp_all` attribute - a nested dictionary 
     containing starting models derived 
     by different authors and processed in 
@@ -120,37 +93,12 @@ class PROTEUS(Experiment,PlotExp):
       'heath19': Mod(vp, param='vp'),
     }
     self.svp = self.svp_all['heath19']
-=======
-    Inits a `self.svp` attribute which
-    is a multi-nested dictionary 
-    containing starting models derived 
-    by different authors and processed in 
-    different ways, constrained by different 
-    boxes.
-    """
-    self.svp = {
-      'bh': {
-        '18-04-24': {
-          'processed_v1': {
-            'full': 'Ben_whole_model_18-04-24.sgy',
-            'kol1': 'kol.sgy',
-            'kam1': 'kam.sgy'
-          },
-          'processed_v2': {
-            'full': None,
-          }
-        }
-      },
-      'bm': {}
-    }    
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def _init_segy_mapping(self):
     self.sgyhw = {
       'sid': 'tracf',
       'rid': 'fldr',
       'lid': 'ep',
     }     
-<<<<<<< HEAD
   def _init_wavelet(self):
     fname = 'wavelet_19-09-22_ns2000_dt25ms.mmp'
     fname = '%s/%s' % (path_prot, fname)
@@ -218,86 +166,6 @@ class CoordSystemPROTEUS:
     sec = float(sec) / 3600.
     deg_float = deg + min + sec
     return deg_float # NOTE discard NSWE, it's always NE in our case
-=======
-class CoordSystem:
-  def latlon2local(ix,iy,nhl,delim):
-    """
-    A function to automate coordinates transformation - 
-    Michele Paulatto - 11/05/2017
-    This is the transformation used by Ben for Santorini
-    Must provide projection parameters (hard-wired), input and output files
-     and column 
-    indexes correspoding to longitude and latitude (assumed to be in decimal 
-    degrees)
-    Also provide number of header lines to skip (nhl) and the text delimiter.
-    If nhl is set to -1 it will try to read variable names from the header. 
-    This may not work if the names contain characters that are not allowed in 
-    the Matlab 
-    database.
-    This function will convert the coordinates and add them as extra columns
-    to the input.
-    Usage example from the command ine:
-    matlab -nodisplay -nojvm -r "latlon2local 'input.txt' 'output.txt' 1 2 1 '\t';
-    exit"
-    """
-    lat0=36.4042
-    lon0=25.3971
-    rotation=25.5
-    #    #%I am not sure if this is necessary, depends how the function is used
-    # ix=str2num(ix);
-    # iy=str2num(iy);
-    # nhl=str2num(nhl);   
-    #    #%Read data and extract coordinates using indexes provided
-    # if nhl == -1
-    #     data=readtable(inputfile,'Delimiter',delim,'MultipleDelimsAsOne',1, ...
-    #     'ReadVariableNames',1,'FileType','text');
-    # elseif nhl == 0
-    #     data=readtable(inputfile,'Delimiter',delim,'MultipleDelimsAsOne',1, ...
-    #     'HeaderLines',0,'FileType','text');
-    # else
-    #     data=readtable(inputfile,'Delimiter',delim,'MultipleDelimsAsOne',1, ...
-    #     'HeaderLines',nhl,'FileType','text');
-    # end
-    # mapx=table2array(data(:,ix));
-    # mapy=table2array(data(:,iy));
-
-    # #    #%Set up a structure defining the origin and rotation
-    # #    #%This unecessary, but is kept due to legacy code
-    # srGeometry=struct('latitude',lat0,'longitude',lon0,'rotation',rotation);
-  
-    # #%Initialize projection
-    # mstruct = defaultm('mercator');
-    # #%Set projection origin x y
-    # origin = [srGeometry.latitude srGeometry.longitude];
-    # #%Add orientation?
-    # mstruct.origin = [origin 0];
-    # #%Not sure why we need this
-    # mstruct = defaultm(mstruct);
-
-    # #%Apply transformation from mapx mapy to dx dy using projection defined above.
-    # [dx1,dy1] = mfwdtran( mstruct, mapy, mapx);
-
-    # #%This seems to be using a spherical Earth. Implies that the transformation above
-    # #%produced coordinates in radians?
-    # dx2 = rad2km( dx1, 6371 )*1000;
-    # dy2 = rad2km( dy1, 6371 )*1000;
-
-    # #%Rotate coordinates
-    # rota  = srGeometry.rotation*pi/180;
-    # sinrota = sin(rota);
-    # cosrota = cos(rota);
-    # local_x =  cosrota*dx2 + sinrota*dy2;
-    # local_y = -sinrota*dx2 + cosrota*dy2;
-
-    # #%Output
-    # data.local_x = local_x;
-    # data.local_y = local_y;
-    # if nhl == -1
-    #     writetable(data,outputfile,'Delimiter',' ','WriteVariableNames',1,'FileType','text');
-    # else
-    #     writetable(data,outputfile,'Delimiter',' ','WriteVariableNames',0,'FileType','text');
-    # end
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 
 @DataIOFactory.register_subclass('proteus')
 class DataIO_PROTEUS(DataIO):
@@ -311,7 +179,6 @@ class DataIO_PROTEUS(DataIO):
     -------
     list of integer source-IDs.
 
-<<<<<<< HEAD
     Note that we use < instead of <=.
     Apparently that's SP / fullwave3d are 
     even stricter and exclude stations / shots
@@ -324,15 +191,6 @@ class DataIO_PROTEUS(DataIO):
     df = pd.read_csv('%s/recs.csv' % path_prot)
     srcids = list(df.loc[(df.gx > x1) & \
       (df.gx < x2) & (df.gy > y1) & (df.gy < y2)].id)
-=======
-    Note that we use <= instead of <
-    Check if SU / fullwave3d does the same.
-    """
-    [[x1, x2], [y1, y2]] = extent
-    df = pd.read_csv('%s/recs.csv' % path_prot)
-    srcids = list(df.loc[(df.gx >= x1) & \
-      (df.gx <= x2) & (df.gy >= y1) & (df.gy <= y2)].id)
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
     return srcids
   def _set_file_class(self):
     self.DataFile = DataFileSgy
@@ -350,7 +208,3 @@ class DataIO_PROTEUS_VZ(DataIO_PROTEUS):
 class DataIO_PROTEUS_HYVZ(DataIO_PROTEUS):
   def _set_pattern(self):
     self.pattern = 'MGL1521_????_[1,4].sgy'
-<<<<<<< HEAD
-=======
-
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08

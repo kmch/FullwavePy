@@ -13,12 +13,6 @@ from abc import ABC, abstractmethod
 
 class Experiment(ABC):
   @abstractmethod
-<<<<<<< HEAD
-=======
-  def _init_base_files(self):
-    pass
-  @abstractmethod
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
   def _init_paths(self):
     pass
   @abstractmethod
