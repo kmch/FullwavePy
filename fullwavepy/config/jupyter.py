@@ -25,11 +25,7 @@ plt.style.use(['default', 'ggplot'])
 from fullwavepy.config.logging import *
 # -----------------------------------------------------------------------------
 # Set level of log-messages
-<<<<<<< HEAD
 log_lvl(ERROR) 
-=======
-log_lvl(INFO) 
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
 # Other options in order of increasing importance and 
 # decreasing verbosity:
 # TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL

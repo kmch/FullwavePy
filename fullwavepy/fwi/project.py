@@ -19,6 +19,10 @@ from autologging import logged, traced
 from fullwavepy.fwi.throughput import Inp, Out
 from nsh.generic import ShellFactory
 
+class ProjEnsemble:
+  def __init__(self, name, path):
+    self.name = name
+    self.path = path
 class Project(ABC):
   """
   A generic FWI project.

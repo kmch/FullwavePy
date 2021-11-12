@@ -46,7 +46,7 @@ from fullwavepy.project.types.basic import *
 # from fullwavepy.project.types.extra import *
 
 from fullwavepy.seismic.data import DataSet
-# from fullwavepy.seismic.proteus import PROTEUS
+from fullwavepy.seismic.proteus import PROTEUS
 # from fullwavepy.seismic.metadata import *
 from fullwavepy.seismic.misc import BoxFactory, Box3d
 from fullwavepy.seismic.models import *

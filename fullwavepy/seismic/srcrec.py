@@ -3,6 +3,7 @@
 Copywright: Ask for permission writing to k.chrapkiewicz17@imperial.ac.uk.
 
 """
+from abc import ABC, abstractmethod
 import time # to help find bottle-necks
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,6 +20,19 @@ from fullwavepy.numeric.funcs import kaiser, sinc, dsinc_dx
 # FIXME sync it somehow with hick_sources.f90
 clip_at = 1e-9 # spread-factors smaller than this will be neglected
 
+class SrcRecs(ABC):
+  def __init__(self, file_object):
+    self.file = file_object
+  def read(self, *args, **kwargs):
+    return super().read(*args, **kwargs)
+class Srcs(SrcRecs):
+  pass
+class Recs(SrcRecs):
+  pass
+
+# -------------------------------------------------------------------------------
+# Older api
+# -------------------------------------------------------------------------------
 
 @traced
 @logged

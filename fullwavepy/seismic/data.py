@@ -35,8 +35,8 @@ class Dat:
     self.dt = dt
     self.file = file_object
   def plot(self, *args, **kwargs):
-    if not hasattr(self, 'arr'):
-      self.read(*args, **kwargs)
+    # if not hasattr(self, 'arr'):
+    self.read(*args, **kwargs)
     kwargs['aspect'] = kwargs.get('aspect', 'auto')
     kwargs['cmap'] = kwargs.get('cmap', 'seismic')
     kwargs['center_cmap'] = kwargs.get('center_cmap', 'True')
@@ -58,6 +58,8 @@ class Dat:
       kws = {}
     elif line is None:
       kws = dict(win=dict(tracf=[station]))
+    elif station is None:
+      kws = dict(win=dict(ep=[line]))
     else:
       kws = dict(win=dict(tracf=[station], ep=[line]))
     arr = self.file.read(**kws)

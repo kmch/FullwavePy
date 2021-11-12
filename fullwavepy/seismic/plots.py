@@ -15,42 +15,46 @@ class PlotExp:
   A plotting mix-in for PROTEUS(Experiment).
   """
   def plot_acq(self, extent=[[-6e4,6e4],[-12e3,3e4]], acq=True, bt=True, \
-    box=True, zoom=True, fig=None):
+    box=True, zoom=True, fig=None, markersize=7, cmap=None):
     if self.all_not_read:
       self.read_all()
     if fig is None:
       figure(20,7)
     if bt:
-      self._plot_bathy_topo(extent)
+      self._plot_bathy_topo(extent, cmap)
     if box:
       self._plot_box(extent)
     if acq:
-      self._plot_stations(extent)
+      self._plot_stations(extent, markersize)
     if zoom:
       self._zoom(extent)
-  def _plot_bathy_topo(self, extent=None):
+  def _plot_bathy_topo(self, extent=None, cmap=None):
     if extent is None:
       bt = self.bt
     else:
       bt = self.bt.extract(extent)
-    bt.plot()
-  def _plot_box(self, extent):
+    if cmap is None:
+      bt.plot()
+    else:
+      bt.plot(cmap=cmap)
+  def _plot_box(self, extent, **kwargs):
     if not extent is None:
       [[x1, x2], [y1, y2]] = extent
-      plot_square(x1, x2, y1, y2)
-  def _plot_stations(self, extent=None):
+      plot_square(x1, x2, y1, y2, **kwargs)
+  def _plot_stations(self, extent=None, markersize=7):
     """
     Plot acquisition with mpl.
     """
     srcs, recs = self.srcs, self.recs
     sio, who, lan = [self.pool[key] for key in ['sio', 'who', 'lan']]
-    kw_recs = dict(linestyle='', markersize=7, 
+    kw_recs = dict(linestyle='', \
+      markersize=markersize, 
             markeredgecolor='k', markeredgewidth=1, markerfacecolor='w')
-    plt.plot(srcs.sx, srcs.sy, linestyle='', marker='.',
+    plt.plot(srcs.sx, srcs.sy, linestyle='', marker='.', label='shot',
         markersize=1, markerfacecolor='k', markeredgecolor='k')
-    plt.plot(sio.gx, sio.gy, marker='s', **kw_recs)
-    plt.plot(who.gx, who.gy, marker='o', **kw_recs)
-    plt.plot(lan.gx, lan.gy, marker='^', **kw_recs)
+    plt.plot(sio.gx, sio.gy, marker='o', label='SIO', **kw_recs)
+    plt.plot(who.gx, who.gy, marker='^', label='WHOI', **kw_recs)
+    plt.plot(lan.gx, lan.gy, marker='s', label='land', **kw_recs)
     shift = 3e2
     for ID, x, y in zip(recs.id, recs.gx, recs.gy):
       xytext = (x+shift, y+shift)

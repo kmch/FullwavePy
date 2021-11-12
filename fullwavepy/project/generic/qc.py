@@ -139,12 +139,14 @@ class Functional(object):
   # ----------------------------------------------------------------------------- 
   
   #@widgets('sids', 'run_ids')
-  def plot(self, widgets=False, cmap='rainbow', **kwargs):
+  def plot(self, widgets=False, cmap='gist_rainbow',\
+    grid=True, legend=True, legend_size=16, **kwargs):
     """
     
     run_ids : list 
       Not every run has an Out.log parsable or meaningful.
       Choose which ones have.
+      
     
     """
     from fullwavepy.plot.plt1d import colors
@@ -185,9 +187,11 @@ class Functional(object):
     
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
-    
-    if len(functional) < 50:
-      plt.legend(prop={'size': 6})
+    if grid:
+      plt.grid() #color='Gray', linestyle='-', linewidth=.5)
+    # if len(functional) < 50:
+    if legend:
+      plt.legend(prop={'size': legend_size}, ncol=2)
     
     return ax
     

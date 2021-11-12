@@ -3,7 +3,8 @@ from fullwavepy.seismic.proteus import PROTEUS, CoordSystemPROTEUS
 class TestPROTEUS(TestCase):
   def test_(self):
     xp = PROTEUS()
-    assert xp.svp.arr.shape == (2481, 861, 131)
+    # skip, as I moved the heavy model out of the package
+    # assert xp.svp.arr.shape == (2481, 861, 131)
     assert xp.wvl.arr.shape == (2000,)
 class TestCoordSystemPROTEUS(TestCase):
   def test_local2geogr(self):
