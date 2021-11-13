@@ -1,12 +1,21 @@
+import numpy as np
 from unittest import TestCase, skip
-<<<<<<< HEAD
-from fullwavepy.seismic.data import DataSet, DataFileSgy, DataMuterSUSGY
-=======
-from fullwavepy.seismic.data import DataSet, DataFileSgy
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08
+from arrau.a2d import Arr2d
+from fullwavepy.seismic.data import Dat, DataSet, DataFileSgy, DataMuterSUSGY
 
 path = '/home/kmc3817/heavy_PhD/DATA/Santorini_2015/seismic/OBS/segy_local_coords/'
 
+class TestDat(TestCase):
+  def test_init(self):
+    dat = Dat(.001)
+  def test_read(self):
+    dat = Dat(.001, arr=Arr2d(np.zeros((2,2))))
+    dat.read()
+  def test_interlace(self):
+    d1 = Dat(.001, arr=Arr2d(np.zeros((2,2))))
+    d2 = Dat(.001, arr=Arr2d(np.ones((2,2))))
+    ic = d1.interlace(d2, chunk_size=1)
+    assert np.all(ic == [[0., 0.], [1., 1.]])
 class TestDataSet(TestCase):
   @skip
   def test_extract(self):
@@ -33,13 +42,9 @@ class TestDataSet(TestCase):
     extent = [[8000.0, 25000.0], [-3000.0, 15000.0]]
     sids = ds._get_stations_within_extent(extent)
     assert len(sids) == 16
-<<<<<<< HEAD
-
 class TestDataMuter(TestCase):
   def test_data_muter_susgy(self):
     dm = DataMuterSUSGY()
     dm.mute('fname_in.sgy', tmute=[1,2,4], twin=2, fname_out= 'fname_out.sgy')
     cmd = 'segyread tape=fname_in.sgy | sumute key=tracr nmute=3 mode=0 ntaper=100 xfile=xmute.bin tfile=tmute.bin | sumute key=tracr nmute=3 mode=1 ntaper=100 xfile=xmute.bin tfile=tmute2.bin | segyhdrs | segywrite tape=fname_out.sgy'
     assert dm.cmd == cmd
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08

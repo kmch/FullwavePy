@@ -29,11 +29,24 @@ from fullwavepy.ndat.arrays import Arr3d # FIXME
 from fullwavepy.ioapi.generic import ArrayFile # FIXME
 from fullwavepy.plot.generic import * # FIXME
 # ----------------------------------------------------------------------------
-
 class Dat:
-  def __init__(self, file_object, dt):
+  def __init__(self, dt, arr=None, file_object=None):
+    """
+    dt : float 
+        Time-sampling in seconds.
+    arr : arrau.a2d.Arr2d
+        Default: None (to be read from file).
+    file : file object, e.g. fullwavepy.ioapi.segy.SgyFile
+    """
+    assert isinstance(dt, float)
     self.dt = dt
+    self.arr = arr
     self.file = file_object
+  def interlace(self, other_dat, **kwargs):
+    for dat in [self, other_dat]:
+      dat.read(**kwargs)
+      dat.arr.normalise()
+    return self.arr.interlace(other_dat.arr, **kwargs)
   def plot(self, *args, **kwargs):
     # if not hasattr(self, 'arr'):
     self.read(*args, **kwargs)
@@ -53,7 +66,31 @@ class Dat:
     ax.set_xlabel('trace no.')
     ax.set_ylabel('time, s')
     ax.invert_yaxis()
-  def read(self, station=None, line=None, normalise='max', **kwargs):
+  def read(self, normalise='max', **kwargs):
+    if (self.file is None) and (self.arr is None):
+      raise AttributeError('Either self.file or self.arr cannot be None.')
+    elif self.file is None:
+      arr = self.arr
+    else:
+      arr = self.read_file(**kwargs)
+    assert len(self.arr.shape) == 2
+    arr.normalise(normalise)
+    self.arr = arr
+    return self.arr      
+  def read_file(self, station=None, line=None, **kwargs):
+    kws = self._get_kws(station, line)
+    arr = self.file.read(**kws)
+    if len(arr.shape) == 3:
+      assert arr.shape[1] == 1
+      arr = arr[:,0,:]
+    extent = self._get_extent(arr)
+    self.arr = Arr2d(arr, extent=extent)
+    return self.arr
+  def _get_extent(self, arr):
+    ntr, ns = arr.shape
+    tmax = self.dt * ns
+    return [[1,ntr],[0,tmax]]
+  def _get_kws(self, station, line):
     if station is None and line is None:
       kws = {}
     elif line is None:
@@ -61,19 +98,8 @@ class Dat:
     elif station is None:
       kws = dict(win=dict(ep=[line]))
     else:
-      kws = dict(win=dict(tracf=[station], ep=[line]))
-    arr = self.file.read(**kws)
-    if len(arr.shape) == 3:
-      assert arr.shape[1] == 1
-      arr = arr[:,0,:]
-    extent = self._get_extent(arr)
-    self.arr = Arr2d(arr, extent=extent)
-    self.arr.normalise(normalise)
-    return self.arr
-  def _get_extent(self, arr):
-    ntr, ns = arr.shape
-    tmax = self.dt * ns
-    return [[1,ntr],[0,tmax]]
+      kws = dict(win=dict(tracf=[station], ep=[line]))    
+    return kws
 class DataIOFactory:
   subclasses = {}
   @classmethod

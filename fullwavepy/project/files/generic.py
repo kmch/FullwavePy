@@ -33,14 +33,16 @@ class ProjFile(File):
     self.pname = proj.name    
     self.path = path
     self.proj = proj
-
-  # -----------------------------------------------------------------------------
-  
+  def cp_from_cx1(self):
+    # it doesn't know if inp or out now...
+    # remote_path = '/home/kmc3817/rds_home/my_ephemeral/PROJECTS/'
+    # path = remote_path + self.proj.parent_dir + self.proj.name
+    # source = '%s/%s' % (path, self.name)
+    # destin = self.fname
+    # print('source: %s\n, destination: %s' % (source, destin))
+    raise NotImplementedError()
   def _is_compatible(self, **kwargs):
     raise NotImplementedError('Only in child classes')
-
-  # -----------------------------------------------------------------------------
-   
   def _make_compatible(self, **kwargs):
     raise NotImplementedError('Only in child classes')
 
