@@ -30,7 +30,7 @@ from fullwavepy.ioapi.generic import ArrayFile # FIXME
 from fullwavepy.plot.generic import * # FIXME
 # ----------------------------------------------------------------------------
 class Dat:
-  def __init__(self, dt, arr=None, file_object=None):
+  def __init__(self, dt, arr=None, file=None):
     """
     dt : float 
         Time-sampling in seconds.
@@ -41,12 +41,13 @@ class Dat:
     assert isinstance(dt, float)
     self.dt = dt
     self.arr = arr
-    self.file = file_object
-  def interlace(self, other_dat, **kwargs):
+    self.file = file
+  def interlace(self, other_dat, chunk_size=10, **kwargs):
+    assert self.dt == other_dat.dt
     for dat in [self, other_dat]:
       dat.read(**kwargs)
       dat.arr.normalise()
-    return self.arr.interlace(other_dat.arr, **kwargs)
+    return Dat(self.dt, arr=self.arr.interlace(other_dat.arr, chunk_size))
   def plot(self, *args, **kwargs):
     # if not hasattr(self, 'arr'):
     self.read(*args, **kwargs)
@@ -132,6 +133,7 @@ class DataMuter(ABC):
   @abstractmethod
   def mute(self):
     pass
+@logged
 class DataMuterSUSGY(DataMuter):
   def mute(self, fname, tmute, twin=1, ntaper=100, \
     fname_out=None, shell='linux'):
@@ -148,6 +150,7 @@ class DataMuterSUSGY(DataMuter):
     self._save_mute_files(xmute, tmute, tmute2, shell)
     self._set_fname_out(fname, fname_out)
     cmd =  'segyread tape={} | '.format(fname)
+    # cmd +=  'sushw key=ntr a={} | '.format(nmute)
     # top mute
     cmd += 'sumute key=tracr nmute={nmute} mode=0 '.format(nmute=nmute)
     cmd += 'ntaper={ntaper} '.format(ntaper=ntaper)

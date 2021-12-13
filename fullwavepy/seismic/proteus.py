@@ -161,7 +161,13 @@ class CoordSystemPROTEUS:
   def _parse_proj_lonlat(cls, lonlat):
     deg, rest = lonlat.split('d')
     min, rest = rest.split("'")
-    sec, NSWE = rest.split("\"")
+    # in some cases, seconds are not provided
+    # and the parser needs to take this into account
+    try:
+      sec, NSWE = rest.split("\"")
+    except ValueError:
+      sec = 0
+      NSWE = rest
     # print(deg, min, sec)
     deg = float(deg)
     min = float(min) / 60.

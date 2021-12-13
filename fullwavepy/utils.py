@@ -171,6 +171,21 @@ def syn_plot_out(p, ts):
 def a_minus_b(a, b, clip=500, **kwargs):
     kwargs['cmap'] = kwargs.get('cmap', 'RdBu') 
     Arr3d(a.read() - b.read()).plot(vmin=-clip, vmax=clip, **kwargs)
+def extent2absorb(extent, dx, etop, e_abs):
+    """
+    Extend `extent` to absorbing layers.
+    """    
+    if etop <= 2:
+        etop = 2
+    [[x1,x2],[y1,y2],[z1,z2]] = extent
+    elef, erig, efro, ebac, ebot = [e_abs] * 5
+    x1 = x1 - elef * dx
+    y1 = y1 - efro * dx
+    z1 = z1 - etop * dx
+    x2 = x2 + erig * dx
+    y2 = y2 + ebac * dx
+    z2 = z2 + ebot * dx
+    return [[x1,x2],[y1,y2],[z1,z2]]
 def extract_vp_and_fs(exp_svp, exp_bt, box, dx, plot=True):
     assert dx == exp_svp.dx[0]
     assert len(set(exp_svp.dx == 1)) # dx=dy=dz

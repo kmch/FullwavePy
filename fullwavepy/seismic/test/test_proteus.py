@@ -22,3 +22,8 @@ class TestCoordSystemPROTEUS(TestCase):
     xy = CoordSystemPROTEUS.rotate_anticlock(xy, 90)
     assert abs(xy[0]) < 1e-8 # numeric zero
     assert xy[1] == 1
+  def test_parse_proj_lonlat(self):    
+    lon = CoordSystemPROTEUS._parse_proj_lonlat("25d29'E")
+    lon = '%.4f' % lon
+    assert lon == '25.4833'
+    

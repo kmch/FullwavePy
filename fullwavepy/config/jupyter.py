@@ -1,4 +1,5 @@
 from fullwavepy import * # Load modules imported in fullwavepy/__init__.py
+from arrau import *
 # -----------------------------------------------------------------------------
 # Set aliases of frequently used jupyter magic commands
 # -----------------------------------------------------------------------------
