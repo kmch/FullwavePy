@@ -16,9 +16,8 @@ from autologging import logged #, traced
 import pandas as pd
 
 from fullwavepy.generic.decor import timer
-from fullwavepy.generic.system import bash#, exists
-from fullwavepy.generic.parse import strip
-from nsh.utils import exists, extract_path
+from fullwavepy.generic.system import bash, exists
+from fullwavepy.generic.parse import strip, path_extract
 
 @logged
 def suwind(fname, nfname, window, **kwargs):
@@ -34,7 +33,7 @@ def suwind(fname, nfname, window, **kwargs):
   assert isinstance(window, dict)
   
   # Check if path for new file exists
-  new_path = extract_path(nfname)
+  new_path = path_extract(nfname)
   if not exists(new_path):
     raise FileNotFoundError(new_path) 
 

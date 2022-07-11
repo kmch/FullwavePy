@@ -323,8 +323,8 @@ class DumpCompareFile(DataFileTtr):
   def plot(self, **kwargs):
     self.__log.info('Plotting whole content (syn, obs, dif) of ' + self.fname)
     self.read(**kwargs)
-    kwargs['cmap'] = kw('cmap', 'seismic', kwargs)
-    kwargs['center_cmap'] = kw('center_cmap', True, kwargs)
+    kwargs['cmap'] = kwargs.get('cmap', 'seismic')
+    kwargs['center_cmap'] = kwargs.get('center_cmap', True)
     return self.array.plot(**kwargs)
    
   # -----------------------------------------------------------------------------

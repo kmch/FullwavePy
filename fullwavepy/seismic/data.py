@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd # only in _get_stations_within_extent
 
 from arrau.a2d import Arr2d
-from arrau.api.io import extent2str
+#from arrau.api.io import extent2str
 from fullwavepy.ioapi.generic import save_txt  # for mute
 from fullwavepy.ioapi.segy import SgyFile
 from fullwavepy.ioapi.su import suwind
