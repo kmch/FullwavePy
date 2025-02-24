@@ -12,6 +12,46 @@ from fullwavepy.numeric.const import *
 from fullwavepy.numeric.generic import *
 
 
+def curvature(x, y):
+    dx = x[1] - x[0]
+    dydx = np.gradient(y, dx)
+    d2ydx2 = np.gradient(dydx, dx)
+    kf = d2ydx2 / (1 + dydx**2.)**(3/2.)
+    assert len(kf) == len(x)
+    return x, kf
+
+def fit_hyperbola(x, y, n=100):
+  """
+  Fit the hyperbola to the data using curve_fit
+
+  Parameters
+  ----------
+  x : _type_
+      _description_
+  y : _type_
+      _description_
+  n : int, optional
+      Number of points to generate data from fitted function, by default 100
+
+  Returns
+  -------
+  x_fit, y_fit
+      n data points generated from fitted function in the same x range as the 
+      original x,y data points.
+  """
+  from scipy.optimize import curve_fit
+  def hyperbola(x, a, b):
+    return a / x + b
+  params, covariance = curve_fit(hyperbola, x, y)
+  # Get the fitted parameters
+  a_fit, b_fit = params
+
+  # Generate points on the fitted hyperbola for plotting
+  x_fit = np.linspace(np.min(x), np.max(x), 100)
+  y_fit = hyperbola(x_fit, a_fit, b_fit)  
+  return x_fit, y_fit
+
+
 @traced
 @logged
 def linear(x, alpha, y0, **kwargs):

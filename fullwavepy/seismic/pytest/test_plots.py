@@ -38,10 +38,7 @@ class Test(TestCase):
     plt.xlim(-1e4,1e4)
     plt.ylim(-8e3,1e4)
     return plt.gcf()
-<<<<<<< HEAD
   @pytest.mark.mpl_image_compare
   def test_PROTEUS_svp_plot(self):    
     PROTEUS().svp.plot(0,0,0)
     return plt.gcf()
-=======
->>>>>>> 8b70a67d53c9b756ccbc6f04530d314d35991b08

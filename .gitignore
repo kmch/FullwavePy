@@ -3,3 +3,5 @@ signal/__pycache__/__init__.cpython-37.pyc
 *pickle
 *rst
 *rst.txt
+*__pycache__
+*.ipynb_checkpoints
